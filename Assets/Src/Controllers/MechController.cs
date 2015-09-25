@@ -34,6 +34,8 @@ public class MechController : MonoBehaviour {
     // Movement states that mechs can do
     protected MoveState_Normal moveState_Normal;
 
+
+
     // Use this for initialization
     protected virtual void Start () {
         // Just some initialization and warnings
@@ -41,9 +43,7 @@ public class MechController : MonoBehaviour {
         if(movementComponent == null) {
             Debug.LogWarning("MechController: <" + name + "> Does not have a CharacterController2D component, movement will not work!");
         }
-
-        mechComponent = GetComponent<MechActor>();
-
+        
         if(headTransform == null) {
             Debug.LogWarning("MechController: <" + name + "> Head Transform is not set!");
         }
@@ -55,6 +55,18 @@ public class MechController : MonoBehaviour {
         currentMoveState = moveState_Normal;
     }
 
+
+    /// <summary>
+    /// Called by world manager when a mech is spawned
+    /// </summary>
+    public virtual void OnSpawnInitialization() {
+        mechComponent = GetComponent<MechActor>();
+
+        // proagate initialization to the actor component
+        mechComponent.OnSpawnInitialization();
+    }
+
+
     // Update is called once per frame
     protected virtual void Update () {
 	    
@@ -65,6 +77,15 @@ public class MechController : MonoBehaviour {
         return transform.up;
     }
 
+
+
+    /// <summary>
+    /// Calculates a damage bonus for the input weapon
+    /// </summary>
+    /// <returns></returns>
+    public virtual float GetDamageBonus(Weapon weaponType) {
+        return 0.0f;
+    }
 
 
 }

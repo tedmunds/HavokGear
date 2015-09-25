@@ -104,4 +104,31 @@ public abstract class Weapon : MonoBehaviour {
     }
 
 
+
+    /// <summary>
+    /// Tries to find a mech actor component attached to this object somehow, either
+    /// directly or on a parent
+    /// </summary>
+    public static Actor CheckIsActor(GameObject hitObject) {
+        Actor victim = hitObject.GetComponent<Actor>();
+        if(victim == null) {
+            while(hitObject != null) {
+                Transform objParent = hitObject.transform.parent;
+                if(objParent != null) {
+                    hitObject = hitObject.transform.parent.gameObject;
+
+                    victim = hitObject.GetComponent<Actor>();
+                    if(victim != null) {
+                        break;
+                    }
+                }
+                else {
+                    hitObject = null;
+                }
+            }
+        }
+
+        return victim;
+    }
+
 }

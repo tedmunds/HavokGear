@@ -30,10 +30,16 @@ public class MechActor : Actor {
 
 	protected override void Start() {
         base.Start();
-
-        controller = GetComponent<MechController>();
     }
     
+
+    /// <summary>
+    /// Called from controller component when this mech is spawned by world manager
+    /// </summary>
+    public virtual void OnSpawnInitialization() {
+        controller = GetComponent<MechController>();
+    }
+
 
     protected override void Update() {
         base.Update();
@@ -71,5 +77,14 @@ public class MechActor : Actor {
 
 
 
+    /// <summary>
+    /// Called when the mechs health goes below 0
+    /// </summary>
+    public override void Died() {
+        base.Died();
+
+        // TODO: death effects and stuff
+        Destroy(gameObject);
+    }
 
 }

@@ -49,8 +49,6 @@ public class CameraController : MonoBehaviour {
 
     void OnEnable() {
         cameraComponent = GetComponent<Camera>();
-
-        playerTarget.PlayerCamera = GetComponent<Camera>();
     }
 
 

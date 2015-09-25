@@ -19,8 +19,6 @@ public class PlayerController : MechController {
     [SerializeField]
     public AnimationCurve inputRamp;
     
-
-    public Weapon testWeapon;
     
     /// <summary>
     /// Main camera that is tracking player / scene camera depending on what we decide
@@ -42,8 +40,6 @@ public class PlayerController : MechController {
 
     protected override void Start () {
         base.Start();
-
-        mechComponent.DoAttachment(MechActor.EAttachSide.Left, testWeapon.gameObject, Vector3.zero);
     }
 
 
@@ -131,6 +127,12 @@ public class PlayerController : MechController {
     }
 
 
+    public override float GetDamageBonus(Weapon weaponType) {
+        float baseBonus = base.GetDamageBonus(weaponType);
 
+        // TODO: Upgrade system will link in here
+
+        return baseBonus;
+    }
 
 }

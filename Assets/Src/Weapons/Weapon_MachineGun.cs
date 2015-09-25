@@ -8,7 +8,8 @@ public class Weapon_MachineGun : Weapon {
     [SerializeField]
     public float maxRange;
 
-
+    [SerializeField]
+    public float baseDamage;
 	
 	protected override void Start() {
         base.Start();
@@ -35,17 +36,25 @@ public class Weapon_MachineGun : Weapon {
             fireDirection = transform.up;
         }
 
-        RaycastHit2D hitresult = Physics2D.Raycast(firePoint.position, fireDirection, maxRange, detectLayers);
+        RaycastHit2D hitResult = Physics2D.Raycast(firePoint.position, fireDirection, maxRange, detectLayers);
 
         // Decide on the endpoint for effects and stuff
         Vector3 endPoint;
-        if(hitresult.collider == null) {
+        if(hitResult.collider == null) {
             endPoint = firePoint.position + fireDirection * maxRange;
         }
         else {
-            endPoint = hitresult.point;
+            endPoint = hitResult.point;
         }
 
+        // check what was hit, and apply the damage to it if its an Actor
+        if(hitResult.collider != null && hitResult.collider.gameObject != null) {
+            Actor victim = CheckIsActor(hitResult.collider.gameObject);
+            if(victim != null && victim != owner) {
+                victim.TakeDamage(baseDamage, owner, this);
+            }
+        }
+        
 #if debug_fire
         Debug.DrawLine(firePoint.position, endPoint, Color.yellow, 1.0f);
 #endif
