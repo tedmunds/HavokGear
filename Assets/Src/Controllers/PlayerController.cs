@@ -1,18 +1,9 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class PlayerController : MonoBehaviour {
 
-
-    /// <summary>
-    /// Transform for the head sprite that rotates towards aim direction
-    /// </summary>
-    [SerializeField]
-    public Transform headTransform;
-
-    [SerializeField]
-    public Transform legTransform;
-
+public class PlayerController : MechController {
+    
     [SerializeField]
     public string verticleInput = "Vertical";
 
@@ -20,13 +11,16 @@ public class PlayerController : MonoBehaviour {
     public string horizontalInput = "Horizontal";
 
     [SerializeField]
-    public AnimationCurve inputRamp;
-    
-    [SerializeField]
-    public float baseMoveSpeed = 5.0f;
+    public string fireMainInput = "Fire1";
 
     [SerializeField]
-    public float baseAimRotSpeed = 1.0f;
+    public string fireAuxInput = "Fire2";
+
+    [SerializeField]
+    public AnimationCurve inputRamp;
+    
+
+    public Weapon testWeapon;
     
     /// <summary>
     /// Main camera that is tracking player / scene camera depending on what we decide
@@ -45,30 +39,21 @@ public class PlayerController : MonoBehaviour {
     private Vector3 aimDirection;
 
 
-    private CharacterController2D movementComponent;
 
+    protected override void Start () {
+        base.Start();
 
-
-    private void Start () {
-        // Just some initialization and warnings
-        movementComponent = GetComponent<CharacterController2D>();
-        if(movementComponent == null) {
-            Debug.LogWarning("Player Controller: <" + name + "> Does not have a CharacterController2D component, movement will not work!");
-        }
-
-        if(headTransform == null) {
-            Debug.LogWarning("Player Controller: <" + name +"> Head Transform is not set!");
-        }
+        mechComponent.DoAttachment(MechActor.EAttachSide.Left, testWeapon.gameObject, Vector3.zero);
     }
-	
-	
-	private void Update () {
-        Vector2 inputVector = GetInputVector();
 
-        //transform.position += (Vector3)inputVector * baseMoveSpeed * Time.deltaTime;
-        if(movementComponent != null) {
-            movementComponent.Move(inputVector * baseMoveSpeed * Time.deltaTime);
-        }
+
+    protected override void Update () {
+        base.Update();
+
+        Vector2 inputVector = GetInputVector();
+        
+        // Do base character movement, using the state based movement system
+        movementComponent.Move(currentMoveState.GetMovementVector(inputVector) * Time.deltaTime);
 
         // and rotate the head to face the current aim location
         currentAimLoc = GetAimLocation();
@@ -79,6 +64,31 @@ public class PlayerController : MonoBehaviour {
             Vector3 currentFacing = headTransform.up;
             
             headTransform.up = Vector3.RotateTowards(currentFacing, aimDirection, baseAimRotSpeed * Time.deltaTime, 0.0f);
+        }
+
+        // Do the fireing input checks
+        if(Input.GetButtonDown(fireMainInput)) {
+            if(mechComponent.leftWeapon != null) {
+                mechComponent.leftWeapon.BeginFire();
+            }
+        }
+
+        if(Input.GetButtonUp(fireMainInput)) {
+            if(mechComponent.leftWeapon != null) {
+                mechComponent.leftWeapon.EndFire();
+            }
+        }
+
+        if(Input.GetButtonDown(fireAuxInput)) {
+            if(mechComponent.rightWeapon != null) {
+                mechComponent.rightWeapon.BeginFire();
+            }
+        }
+
+        if(Input.GetButtonUp(fireAuxInput)) {
+            if(mechComponent.rightWeapon != null) {
+                mechComponent.rightWeapon.EndFire();
+            }
         }
     }
 
@@ -107,7 +117,7 @@ public class PlayerController : MonoBehaviour {
     /// <summary>
     /// Aim location along the 0 Z plane
     /// </summary>
-    public Vector3 GetAimLocation() {
+    public override Vector3 GetAimLocation() {
         if(playerCamera == null) {
             return Vector3.up;
         }

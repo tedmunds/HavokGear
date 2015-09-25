@@ -23,7 +23,7 @@ using System.Collections.Generic;
 
 
 [RequireComponent(typeof(BoxCollider2D), typeof(Rigidbody2D))]
-public class CharacterController2D : MonoBehaviour {
+public class MovementController2D : MonoBehaviour {
 
 
     struct CharacterRaycastOrigins {
