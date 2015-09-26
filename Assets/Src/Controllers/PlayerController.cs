@@ -28,7 +28,7 @@ public class PlayerController : MechController {
         get { return playerCamera; }
         set { playerCamera = value; }
     }
-
+    
 
     /// <summary>
     /// Where the player was last recorded aiming at
@@ -58,7 +58,7 @@ public class PlayerController : MechController {
         // Interpolate the rotation for a smooth transition, at a max speed
         if(headTransform != null) {
             Vector3 currentFacing = headTransform.up;
-            
+
             headTransform.up = Vector3.RotateTowards(currentFacing, aimDirection, baseAimRotSpeed * Time.deltaTime, 0.0f);
         }
 
@@ -86,8 +86,13 @@ public class PlayerController : MechController {
                 mechComponent.rightWeapon.EndFire();
             }
         }
-    }
 
+        // TEMP: a simple boost thingy
+        if(Input.GetKeyDown(KeyCode.Space)) {
+            mechComponent.AddForce(aimDirection, 50.0f);
+        }
+    }
+    
 
 
     private Vector2 GetInputVector() {

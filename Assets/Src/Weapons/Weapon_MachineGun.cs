@@ -10,6 +10,9 @@ public class Weapon_MachineGun : Weapon {
 
     [SerializeField]
     public float baseDamage;
+
+    [SerializeField]
+    public bool applyForce;
 	
 	protected override void Start() {
         base.Start();
@@ -52,12 +55,24 @@ public class Weapon_MachineGun : Weapon {
             Actor victim = CheckIsActor(hitResult.collider.gameObject);
             if(victim != null && victim != owner) {
                 victim.TakeDamage(baseDamage, owner, this);
+
+                if(applyForce) {
+                    victim.AddForce(fireDirection, 10.0f);
+                }
             }
         }
         
 #if debug_fire
         Debug.DrawLine(firePoint.position, endPoint, Color.yellow, 1.0f);
 #endif
+
+        // Do some camera shake, if its the player shooting. TOTO: more generalized way to do camera shake
+        if(owner.GetType() == typeof(PlayerController)) {
+            CameraController.CameraShake shakeData = new CameraController.CameraShake(0.1f, 0.5f, 5.0f, 1.0f, false);
+            
+            PlayerController playerOwner = (PlayerController)owner;
+            playerOwner.PlayerCamera.GetComponent<CameraController>().StartCameraShake(ref shakeData, -fireDirection);
+        }
     }
 
 }

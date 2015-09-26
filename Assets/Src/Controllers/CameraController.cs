@@ -95,13 +95,15 @@ public class CameraController : MonoBehaviour {
 
     
 
-    public void StartCameraShake(ref CameraShake shakeData) {
+    public void StartCameraShake(ref CameraShake shakeData, Vector3 shakeDirection) {
         if(bIsShaking) {
             return;
         }
 
+        shakeDirection.Normalize();
+
         currentShakeData = shakeData;
-        shakeOffset = Vector3.up * currentShakeData.shakeStrength;
+        shakeOffset = shakeDirection * currentShakeData.shakeStrength;
         bIsShaking = true;
 
         // record which camera used this data

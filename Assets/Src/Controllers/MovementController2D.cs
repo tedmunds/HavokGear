@@ -105,6 +105,17 @@ public class MovementController2D : MonoBehaviour {
     [Range(2, 20)]
     public int totalVerticalRays = 8;
 
+    /// <summary>
+    /// Simple physics simulation properties
+    /// </summary>
+    [SerializeField]
+    private float physicsMass = 1.0f;
+
+    [SerializeField]
+    private float physicsFriction = 0.3f;
+
+    private Vector3 physicsVel;
+
 
     [HideInInspector]
     [NonSerialized]
@@ -224,6 +235,26 @@ public class MovementController2D : MonoBehaviour {
         ignoreOneWayPlatformsThisFrame = false;
     }
     
+
+
+    /// <summary>
+    /// Applies a linear force to the mover
+    /// </summary>
+    public void ApplyForce(Vector3 force) {
+        if(physicsMass > 0.0f) {
+            force = force / physicsMass;
+            physicsVel += force;
+        }
+    }
+
+    private void Update() {
+        if(physicsVel.magnitude > 0.0f) {
+            Move(physicsVel * Time.deltaTime);
+
+            physicsVel *= physicsFriction;
+        }
+    }
+
 
     /// <summary>
     /// this should be called anytime you have to modify the BoxCollider2D at runtime. It will recalculate the distance between the rays used for collision detection.
