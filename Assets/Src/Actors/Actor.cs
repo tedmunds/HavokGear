@@ -2,7 +2,8 @@
 using System.Collections;
 
 /// <summary>
-/// Actor is the base class for all objects in the game taht can take damage and stuff
+/// Actor is the base class for all objects in the game that can take damage and stuff.
+/// In other words Actors are a collection of State, and should have minimal behaviour
 /// </summary>
 public class Actor : MonoBehaviour {
     

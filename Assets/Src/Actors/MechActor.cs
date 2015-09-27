@@ -1,6 +1,12 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+
+/// <summary>
+/// MechActors are the main actors in the game. It contains all state for mechs like their health, armor
+/// weapons and etc. The controller is the thing that actually uses these states however, and the Actor 
+/// should never actually do stuff on its own.
+/// </summary>
 public class MechActor : Actor {
 
     public enum EAttachSide {

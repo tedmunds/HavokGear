@@ -4,6 +4,7 @@ using System.Collections;
 
 public class PlayerController : MechController {
     
+    // TODO: control customization?
     [SerializeField]
     public string verticleInput = "Vertical";
 
@@ -16,12 +17,14 @@ public class PlayerController : MechController {
     [SerializeField]
     public string fireAuxInput = "Fire2";
 
+    /// <summary>
+    /// Input ramp remaps the engine input value to a custom curve for fine tuned movement input acceleration
+    /// </summary>
     [SerializeField]
     public AnimationCurve inputRamp;
     
-    
     /// <summary>
-    /// Main camera that is tracking player / scene camera depending on what we decide
+    /// Main camera that is tracking player / the scene camera depending on what we decide (rooms or open level)
     /// </summary>
     private Camera playerCamera;
     public Camera PlayerCamera {
@@ -31,13 +34,12 @@ public class PlayerController : MechController {
     
 
     /// <summary>
-    /// Where the player was last recorded aiming at
+    /// Where the player was last recorded aiming at & the cached direction to that point
     /// </summary>
     private Vector3 currentAimLoc;
     private Vector3 aimDirection;
 
-
-
+    
     protected override void Start () {
         base.Start();
     }
@@ -87,14 +89,16 @@ public class PlayerController : MechController {
             }
         }
 
-        // TEMP: a simple boost thingy
+        // TEMP: a simple boost thingy TODO: how should boost actually be implemented
         if(Input.GetKeyDown(KeyCode.Space)) {
-            mechComponent.AddForce(aimDirection, 50.0f);
+            mechComponent.AddForce(inputVector.normalized, 50.0f);
         }
     }
     
 
-
+    /// <summary>
+    /// Gets the current input axis for movement, and remaps them along the input ramp
+    /// </summary>
     private Vector2 GetInputVector() {
         float vert_axis = Input.GetAxis(verticleInput);
         float horz_axis = Input.GetAxis(horizontalInput);
@@ -116,7 +120,8 @@ public class PlayerController : MechController {
 
     
     /// <summary>
-    /// Aim location along the 0 Z plane
+    /// Aim location along the 0 Z plane (based on mouse poition). 
+    /// NOTE: If we want to add controller suppor, this will need an alt method with just aim direction
     /// </summary>
     public override Vector3 GetAimLocation() {
         if(playerCamera == null) {

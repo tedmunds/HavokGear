@@ -2,7 +2,9 @@
 using System.Collections;
 
 /// <summary>
-/// Base controller class for players and AI entities
+/// Base controller class for players and AI entities. Requires a mechActor component, which contains all of the 
+/// state stuff for mechs. Controllers state should be based around its behaviour in some way. The actor is the 
+/// actual "model" of a mech, the controller is more like its pilot.
 /// </summary>
 [RequireComponent(typeof(MechActor))]
 public class MechController : MonoBehaviour {
