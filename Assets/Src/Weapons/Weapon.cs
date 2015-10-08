@@ -131,4 +131,23 @@ public abstract class Weapon : MonoBehaviour {
         return victim;
     }
 
+
+    /// <summary>
+    /// Gets the direction to the aim location, constrained within the aim arc range
+    /// </summary>
+    protected Vector3 GetAimDirection() {
+        Vector3 aimLoc = owner.GetAimLocation();
+        Vector3 fireDirection = aimLoc - firePoint.position;
+
+        // How far from forward is the fire direction, if its over than the aim point is way off of mech facing, so default to facing
+        float aimArcOffset = Vector3.Dot(transform.up, fireDirection);
+        if(aimArcOffset < maxFireArc) {
+            fireDirection = transform.up;
+        }
+
+        return fireDirection;
+    }
+
+
+
 }

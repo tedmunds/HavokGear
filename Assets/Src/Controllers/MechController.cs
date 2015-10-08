@@ -27,6 +27,9 @@ public class MechController : MonoBehaviour {
 
     protected MovementController2D movementComponent;
     protected MechActor mechComponent;
+    public MechActor MechComponent {
+        get { return mechComponent; }
+    }
 
     /// <summary>
     /// Governs the current movement method

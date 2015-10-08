@@ -30,7 +30,6 @@ public class AIController : MechController {
 
         // TODO: move to spawn init when I add ai spawning
         stateMachine = new BehaviourSM(this);
-        AiStartSensing();
     }
 
 
@@ -72,6 +71,15 @@ public class AIController : MechController {
     }
 
 
+    // Called by photon whip when it steals a weapon belongiong to this AI
+    public void WeaponWasStolen() {
+        // It has no weapons left!
+        if(MechComponent.leftWeapon == null && MechComponent.rightWeapon == null) {
+            // TODO: flee behaviour
+        }
+    }
+
+
 
     /// <summary>
     /// Checks if there is a LOS to the ai's target
@@ -91,6 +99,15 @@ public class AIController : MechController {
 
             // also ignore if its a child of self
             if(hits[i].collider.transform.parent != null && hits[i].collider.transform.parent.gameObject == this.gameObject) {
+                continue;
+            }
+
+            // ignore trigger obviously
+            if(hits[i].collider.isTrigger) {
+                continue;
+            }
+
+            if(hits[i].collider.gameObject.tag == gameObject.tag) {
                 continue;
             }
 

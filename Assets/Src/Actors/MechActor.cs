@@ -64,21 +64,57 @@ public class MechActor : Actor {
 
         // do the attachment through parenting
         if(attachSide == EAttachSide.Left) {
+            if(leftWeapon != null) {
+                Detach(leftWeapon.gameObject);
+            }
+
             attachment.transform.parent = leftAttachPoint;
             leftWeapon = weaponComponent;
         }
         else {
+            if(rightWeapon != null) {
+                Detach(rightWeapon.gameObject);
+            }
+
             attachment.transform.parent = rightAttachPoint;
             rightWeapon = weaponComponent;
         }
 
         // add whatever offset to the object
         attachment.transform.localPosition = attachOffset;
+        attachment.transform.localRotation = Quaternion.identity;
 
         // if it was a weapon that was attached, then set its owner to this mech
         if(weaponComponent != null) {
             weaponComponent.owner = controller;
         }
+    }
+
+
+    /// <summary>
+    /// Attempts to detach the input oobject if it is attached 
+    /// </summary>
+    public GameObject Detach(GameObject detachTarget) {
+        if(detachTarget == null) {
+            return null;
+        }
+
+        if(leftWeapon.gameObject == detachTarget) {
+            GameObject detached = leftWeapon.gameObject;
+            detached.transform.parent = null;
+            leftWeapon = null;
+
+            return detached;
+        }
+        else if(rightWeapon.gameObject == detachTarget) {
+            GameObject detached = rightWeapon.gameObject;
+            detached.transform.parent = null;
+            rightWeapon = null;
+
+            return detached;
+        }
+
+        return null;
     }
 
 

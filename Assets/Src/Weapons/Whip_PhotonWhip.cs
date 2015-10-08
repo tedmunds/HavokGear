@@ -17,6 +17,18 @@ public class Whip_PhotonWhip : Weapon {
     [SerializeField]
     private float whipEasingSpeed;
 
+    [SerializeField]
+    private float snapRange = 1.0f;
+
+    [SerializeField]
+    private LayerMask weaponDetectionLayers;
+
+    // Should the old weapon get destroyed when a new one is stolen
+    private bool destroyOldWeapon = true;
+
+    // Weapon that the whip is currently targeting: Can be null
+    private Weapon targetWeapon;
+
     protected override void Start() {
         base.Start();
         whipEffect = firePoint.GetComponent<LineRenderer>();
@@ -29,7 +41,7 @@ public class Whip_PhotonWhip : Weapon {
 
         
         if(isFiring) {
-            Vector3 aimPoint = owner.GetAimLocation();
+            Vector3 aimPoint = targetWeapon == null? owner.GetAimLocation() : targetWeapon.transform.position;
             Vector3 toAimPoint = aimPoint - transform.position;
             Vector3 dirToAimPoint = toAimPoint.normalized;
             float segmentSpacing = toAimPoint.magnitude / whipSegments;
@@ -53,6 +65,9 @@ public class Whip_PhotonWhip : Weapon {
 
             Vector3 endPoint = aimPoint;
             whipEffect.SetPosition(whipSegments - 1, endPoint);
+
+            // Check for weapons to steal
+            CheckNearbyWeapons();
         }
     }
 
@@ -76,19 +91,53 @@ public class Whip_PhotonWhip : Weapon {
         base.EndFire();
 
         whipEffect.enabled = false;
-        // TODO: have a "whip back" effect
+        
+        // If there is a weapon snalled, detach and reattach to owner
+        if(targetWeapon != null && targetWeapon.owner != null) {
 
-        // TODO: check for weapons under some small area at the aim location?, and do a weapon steal however that works
+            MechActor targetActor = targetWeapon.owner.MechComponent;
+            if(targetActor != null) {
+
+                // Detach the weapon from target
+                GameObject detached = targetActor.Detach(targetWeapon.gameObject);
+
+                // Cache teh old weapon
+                GameObject oldWeapon = owner.MechComponent.leftWeapon != null? owner.MechComponent.leftWeapon.gameObject : null;
+
+                // and attach it to the owner on the left side
+                owner.MechComponent.DoAttachment(MechActor.EAttachSide.Left, detached, Vector3.zero);
+
+                if(destroyOldWeapon && oldWeapon != null) {
+                    Destroy(oldWeapon);
+                }
+
+                // Also, if it was an AI controller, tell it that its weapon was stolen
+                if(targetWeapon.owner.GetType() == typeof(AIController)) {
+                    ((AIController)targetWeapon.owner).WeaponWasStolen();
+                }
+            }
+        }
     }
 
 
+    
 
+    private void CheckNearbyWeapons() {
+        Vector3 ownerAimPoint = owner.GetAimLocation();
+        
+        RaycastHit2D[] overlaps = Physics2D.CircleCastAll(ownerAimPoint, snapRange, Vector2.zero, 0.0f, weaponDetectionLayers);
+        for(int i = 0; i < overlaps.Length; i++) {
+            // Was overlapping a weapon
+            Weapon overlapWeapon = overlaps[i].collider.gameObject.GetComponent<Weapon>();
 
-    /// <summary>
-    /// Whip fire is very special case weapon, it actually tries to steal opponents weapon
-    /// </summary>
-    //protected override void Fire() {
-    //     base.Fire();
-    //}
+            // check that the owner doesnt match the whip's, so taht player doesn;t steal their own weapon
+            if(overlapWeapon != null && overlapWeapon.owner != owner) {
+                targetWeapon = overlapWeapon;
+                return;
+            }
+        }
+
+        targetWeapon = null;
+    }
 
 }

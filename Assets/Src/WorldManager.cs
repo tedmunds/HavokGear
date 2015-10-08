@@ -111,10 +111,10 @@ public class WorldManager : MonoBehaviour {
     /// Spawn a mech bot Ai entity. Will spawn an instance of the input prefab and attach input weapon prefabs:
     /// startSensing = should the bot immediatly start sensing, or wait for some other instruction to do so
     /// </summary>
-    public void SpawnMechBot(Vector3 spawnLocation, GameObject botPrefab, bool startSensing,
+    public AIController SpawnMechBot(Vector3 spawnLocation, GameObject botPrefab, bool startSensing,
                              GameObject weaponPrefabLeft = null, GameObject weaponPrefabRight = null) {
         if(botPrefab == null) {
-            return;
+            return null;
         }
 
         // spawn the bot
@@ -147,6 +147,8 @@ public class WorldManager : MonoBehaviour {
                 mechComponent.DoAttachment(MechActor.EAttachSide.Right, spawnedWeapon, Vector3.zero);
             }
         }
+
+        return botCharacter;
     }
 
 }
