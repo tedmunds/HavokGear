@@ -42,6 +42,8 @@ public class Whip_PhotonWhip : Weapon {
     // Is the whiup expanding or retracting
     private bool isExpanding;
 
+    private bool whipActive;
+
 
 
     protected override void Start() {
@@ -53,58 +55,39 @@ public class Whip_PhotonWhip : Weapon {
 
     protected override void Update() {
         base.Update();
-
-
-        //if(isFiring) {
-        //    float timeSinceFire = Time.time - fireTime;
-
-        //    Vector3 aimPoint = targetWeapon == null? owner.GetAimLocation() : targetWeapon.transform.position;
-        //    Vector3 toAimPoint = aimPoint - transform.position;
-        //    Vector3 dirToAimPoint = toAimPoint.normalized;
-        //    float segmentSpacing = toAimPoint.magnitude / whipSegments;
-
-        //    // start at second point b/c first point is always at origin
-        //    segmentPositions[0] = firePoint.position;
-        //    whipEffect.SetPosition(0, segmentPositions[0]);
-
-        //    for(int i = 1; i < whipSegments - 1; i++) {
-        //        Vector3 currentPos = segmentPositions[i];
-
-        //        // Lerp towrads new position faster at earlier segment to ease towards a roughly straight line
-        //        float lerpFactor = (1.0f - i / whipSegments) * Time.deltaTime * whipEasingSpeed;
-        //        Vector3 newPos = Vector3.Lerp(currentPos, firePoint.position + dirToAimPoint * i * segmentSpacing, lerpFactor);
-
-        //        // add some randomization to the movement
-        //        segmentPositions[i] = newPos +(Vector3)Random.insideUnitCircle * segmentRandomization;
-
-        //        whipEffect.SetPosition(i, segmentPositions[i]);
-        //    }
-
-        //    Vector3 endPoint = aimPoint;
-        //    whipEffect.SetPosition(whipSegments - 1, endPoint);
-
-        //    // Check for weapons to steal
-        //    CheckNearbyWeapons();
-        //}
-
+        
         float timeSinceFire = Time.time - fireTime;
         float fireDistance = (targetLocation - firePoint.position).magnitude;
-
+        
         // Whip is moving towards the target location
         if(timeSinceFire < travelTime) {
-            lerpedEndPoint = Vector3.Lerp(lerpedEndPoint, targetLocation, (1.0f / fireDistance) / travelTime);
+            Vector3 lerpTarget = targetWeapon != null? targetWeapon.transform.position : targetLocation;
+
+            lerpedEndPoint = Vector3.Lerp(lerpedEndPoint, lerpTarget, (1.0f / fireDistance) / travelTime);
         }
         else if(isExpanding) {
             // Switch to retracting
             isExpanding = false;
+
+            // Detach the weapon, so it can fly back!
+            if(targetWeapon != null && targetWeapon.owner != null) {
+                MechActor targetActor = targetWeapon.owner.MechComponent;
+                GameObject detached = targetActor.Detach(targetWeapon.gameObject);
+            }
         }
 
         if(!isExpanding && timeSinceFire < (travelTime * 2)) {
-            lerpedEndPoint = Vector3.Lerp(lerpedEndPoint, firePoint.position, (1.0f / fireDistance) / travelTime);
+            // The end point is either this weapons fire point or the left weapon, if a weapon was stolen
+            Vector3 endLocation = targetWeapon != null? owner.MechComponent.leftAttachPoint.position : firePoint.position;
+
+            lerpedEndPoint = Vector3.Lerp(lerpedEndPoint, endLocation, (1.0f / fireDistance) / travelTime);
+            if(targetWeapon != null) {
+                targetWeapon.transform.position = lerpedEndPoint;
+            }
         }
         
         // Whip sequence is done
-        if(timeSinceFire > (travelTime * 2)) {
+        if(timeSinceFire > (travelTime * 2) && whipActive) {
             EndWhipSequence();
         }
 
@@ -112,6 +95,7 @@ public class Whip_PhotonWhip : Weapon {
         segmentPositions[0] = firePoint.position;
         whipEffect.SetPosition(0, segmentPositions[0]);
 
+        // Now place the line segments along the way to the end point, with some randomization
         Vector3 toAimPoint = lerpedEndPoint - transform.position;
         Vector3 dirToAimPoint = toAimPoint.normalized;
         float segmentSpacing = toAimPoint.magnitude / whipSegments;
@@ -131,16 +115,18 @@ public class Whip_PhotonWhip : Weapon {
 
         Vector3 endPoint = lerpedEndPoint;
         whipEffect.SetPosition(whipSegments - 1, endPoint);
-        
     }
 
 
 
     public override bool BeginFire() {
+        const string intersectLayerName = "Terrain";
+
         bool beganFire = base.BeginFire();
 
         fireTime = Time.time;
         isExpanding = true;
+        whipActive = true;
 
         // Before activating the effect, reset all points
         for(int i = 0; i < whipSegments; i++) {
@@ -148,11 +134,21 @@ public class Whip_PhotonWhip : Weapon {
             whipEffect.SetPosition(i, segmentPositions[i]);
         }
 
-        CheckNearbyWeapons();
+        // Check there there is nothing inthe way of the whip (only check for terrain though)
+        Vector3 endPoint = owner.GetAimLocation();
+        Vector3 toAimPoint = owner.GetAimLocation() - firePoint.position;
 
-        targetLocation = targetWeapon != null? targetWeapon.transform.position : owner.GetAimLocation();
+        RaycastHit2D hit = Physics2D.Raycast(firePoint.position, toAimPoint.normalized, toAimPoint.magnitude);
+        if(hit.collider != null && hit.collider.gameObject.layer == LayerMask.NameToLayer(intersectLayerName)) {
+            endPoint = hit.point;
+        }
+
+        // Check for weapon at the end point to snap to
+        CheckNearbyWeapons(endPoint);
+
+        targetLocation = targetWeapon != null? targetWeapon.transform.position : endPoint;
         lerpedEndPoint = firePoint.position;
-
+        
         whipEffect.enabled = true;
         return beganFire;
     }
@@ -160,45 +156,37 @@ public class Whip_PhotonWhip : Weapon {
 
     public override void EndFire() {
         base.EndFire();
+    }
 
-        //whipEffect.enabled = false;
-        
-        // If there is a weapon snalled, detach and reattach to owner
-        if(targetWeapon != null && targetWeapon.owner != null) {
 
-            MechActor targetActor = targetWeapon.owner.MechComponent;
-            if(targetActor != null) {
+    private void EndWhipSequence() {
+        whipEffect.enabled = false;
+        whipActive = false;
 
-                // Detach the weapon from target
-                GameObject detached = targetActor.Detach(targetWeapon.gameObject);
+        if(targetWeapon != null) {
+            // Cache the old weapon
+            GameObject oldWeapon = owner.MechComponent.leftWeapon != null ? owner.MechComponent.leftWeapon.gameObject : null;
 
-                // Cache teh old weapon
-                GameObject oldWeapon = owner.MechComponent.leftWeapon != null? owner.MechComponent.leftWeapon.gameObject : null;
+            // and attach it to the owner on the left side
+            owner.MechComponent.DoAttachment(MechActor.EAttachSide.Left, targetWeapon.gameObject, Vector3.zero);
 
-                // and attach it to the owner on the left side
-                owner.MechComponent.DoAttachment(MechActor.EAttachSide.Left, detached, Vector3.zero);
+            if(destroyOldWeapon && oldWeapon != null) {
+                Destroy(oldWeapon);
+            }
 
-                if(destroyOldWeapon && oldWeapon != null) {
-                    Destroy(oldWeapon);
-                }
-
-                // Also, if it was an AI controller, tell it that its weapon was stolen
-                if(targetWeapon.owner.GetType() == typeof(AIController)) {
-                    ((AIController)targetWeapon.owner).WeaponWasStolen();
-                }
+            // Also, if it was an AI controller, tell it that its weapon was stolen
+            if(targetWeapon.owner.GetType() == typeof(AIController)) {
+                ((AIController)targetWeapon.owner).WeaponWasStolen();
             }
         }
     }
 
-    private void EndWhipSequence() {
-        whipEffect.enabled = false;
-    }
 
 
-    private void CheckNearbyWeapons() {
-        Vector3 ownerAimPoint = owner.GetAimLocation();
+    private void CheckNearbyWeapons(Vector3 originPoint) {
+        //Vector3 ownerAimPoint = owner.GetAimLocation();
         
-        RaycastHit2D[] overlaps = Physics2D.CircleCastAll(ownerAimPoint, snapRange, Vector2.zero, 0.0f, weaponDetectionLayers);
+        RaycastHit2D[] overlaps = Physics2D.CircleCastAll(originPoint, snapRange, Vector2.zero, 0.0f, weaponDetectionLayers);
         for(int i = 0; i < overlaps.Length; i++) {
             // Was overlapping a weapon
             Weapon overlapWeapon = overlaps[i].collider.gameObject.GetComponent<Weapon>();

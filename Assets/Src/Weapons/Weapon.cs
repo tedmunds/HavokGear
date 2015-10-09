@@ -15,6 +15,9 @@ public abstract class Weapon : MonoBehaviour {
     [SerializeField]
     public float maxFireArc;
 
+    [SerializeField]
+    public float cameraRecoil = 0.1f;
+
     /// <summary>
     /// Does the weapon automatically fire after refire delay
     /// </summary>
@@ -75,6 +78,14 @@ public abstract class Weapon : MonoBehaviour {
         }
 
         Fire();
+        
+        // Do some camera shake, if its the player shooting. TOTO: more generalized way to do camera shake
+        if(owner.GetType() == typeof(PlayerController)) {
+            CameraController.CameraShake shakeData = new CameraController.CameraShake(0.1f, cameraRecoil, 5.0f, 1.0f, false);
+
+            PlayerController playerOwner = (PlayerController)owner;
+            playerOwner.PlayerCamera.GetComponent<CameraController>().StartCameraShake(ref shakeData, -GetAimDirection());
+        }
 
         isFiring = true;
         return true;

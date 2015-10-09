@@ -52,7 +52,9 @@ public class ProjectileController : MonoBehaviour {
 
         RaycastHit2D hit;
         hit = Physics2D.Raycast(transform.position, moveDisplacement, moveDisplacement.magnitude, ignoreLayer);
-        if(hit.collider != null && hit.collider.gameObject != sourceWeapon.gameObject && !hit.collider.isTrigger) {
+        if(hit.collider != null && 
+            (sourceWeapon != null && hit.collider.gameObject != sourceWeapon.gameObject) && 
+            !hit.collider.isTrigger) {
             // A different thing has been hit, call impact handler
             OnImpact(hit, hit.collider);
         }

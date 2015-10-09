@@ -52,7 +52,9 @@ public class Actor : MonoBehaviour {
     public void AddForce(Vector3 forceDirection, float force) {
         MovementController2D movementComponent = GetComponent<MovementController2D>();
 
-        movementComponent.ApplyForce(forceDirection.normalized * force);
+        if(movementComponent != null) {
+            movementComponent.ApplyForce(forceDirection.normalized * force);
+        }
     }
 
 

@@ -1,4 +1,4 @@
-﻿#define debug_fire
+﻿//#define debug_fire
 
 using UnityEngine;
 using System.Collections;
@@ -15,15 +15,49 @@ public class Weapon_MachineGun : Weapon {
     public bool applyForce;
 
     [SerializeField]
-    public float cameraRecoil = 0.1f;
+    public ParticleSystem hitEffectPrototype;
+
+    [SerializeField]
+    private Color trailStartColor;
+
+    [SerializeField]
+    private Color trailEndColor;
+
+    private LineRenderer bulletTrailRenderer;
+    private ParticleSystem hitEffect;
 
     protected override void Start() {
         base.Start();
-	}
+        
+        // Init the special effects for this weapon
+        bulletTrailRenderer = GetComponent<LineRenderer>();
+        bulletTrailRenderer.enabled = false;
+
+        if(hitEffectPrototype != null) {
+            hitEffect = Instantiate(hitEffectPrototype);
+            hitEffect.gameObject.SetActive(false);
+        }
+    }
 
 
     protected override void Update() {
-        base.Update();   
+        base.Update();
+
+        // Update bullet renderer
+        if(bulletTrailRenderer != null) {
+            float elapsed = Time.time - lastFireTime;
+            if(elapsed < refireDelay) {
+                Color startColor = trailStartColor;
+                Color endColor = trailEndColor;
+                startColor.a = trailStartColor.a * (1.0f - elapsed / refireDelay);
+                endColor.a = trailEndColor.a * (1.0f - elapsed / refireDelay);
+
+                bulletTrailRenderer.SetColors(startColor, endColor);
+            }
+            else {
+                bulletTrailRenderer.enabled = false;
+            }
+        }
 	}
 
 
@@ -62,12 +96,17 @@ public class Weapon_MachineGun : Weapon {
         Debug.DrawLine(firePoint.position, endPoint, Color.yellow, 1.0f);
 #endif
 
-        // Do some camera shake, if its the player shooting. TOTO: more generalized way to do camera shake
-        if(owner.GetType() == typeof(PlayerController)) {
-            CameraController.CameraShake shakeData = new CameraController.CameraShake(0.1f, cameraRecoil, 5.0f, 1.0f, false);
-            
-            PlayerController playerOwner = (PlayerController)owner;
-            playerOwner.PlayerCamera.GetComponent<CameraController>().StartCameraShake(ref shakeData, -fireDirection);
+        // Do bullet effect
+        if(bulletTrailRenderer != null) {
+            bulletTrailRenderer.SetPosition(0, firePoint.position);
+            bulletTrailRenderer.SetPosition(1, endPoint);
+            bulletTrailRenderer.enabled = true;
+        }
+
+        if(hitEffect != null) {
+            hitEffect.transform.position = endPoint;
+            hitEffect.gameObject.SetActive(true);
+            hitEffect.Play();
         }
     }
 

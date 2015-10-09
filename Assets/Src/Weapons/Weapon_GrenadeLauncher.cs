@@ -6,10 +6,6 @@ public class Weapon_GrenadeLauncher : Weapon {
     [SerializeField]
     public GameObject projectilePrototype;
     
-    [SerializeField]
-    public float cameraRecoil = 0.3f;
-
-
 
     protected override void Start() {
         base.Start();

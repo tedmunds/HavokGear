@@ -55,6 +55,10 @@ public class CameraController : MonoBehaviour {
     void Update() {
         Vector3 newPosition = transform.position;
 
+        if(playerTarget == null) {
+            return;
+        }
+
         // Move the camera location towrads the aim location (mouse) based on how fast the ship is going
         Vector3 targetPosition = playerTarget.transform.position;
         Vector3 aimPosition = playerTarget.GetAimLocation();

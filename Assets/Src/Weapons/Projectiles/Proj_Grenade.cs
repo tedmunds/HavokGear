@@ -15,6 +15,9 @@ public class Proj_Grenade : ProjectileController {
     [SerializeField]
     private float baseDamage;
 
+    [SerializeField]
+    private Animator explosionEffectPrefab;
+
 
     private int numBounces;
 
@@ -72,10 +75,12 @@ public class Proj_Grenade : ProjectileController {
             MechActor mech = overlaps[i].GetComponent<MechActor>();
             if(mech != null) {
                 mech.TakeDamage(baseDamage, mech.GetComponent<MechController>(), sourceWeapon);
-
-                Debug.DrawLine(transform.position, mech.transform.position, Color.red, 5.0f);
             }
         }
+
+        // Create the effect
+        Animator explosionAnimator = (Animator)Instantiate(explosionEffectPrefab, transform.position, Quaternion.identity);
+        Destroy(explosionAnimator.gameObject, 0.3f);
     }
 
 }
