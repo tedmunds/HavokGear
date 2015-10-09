@@ -3,6 +3,9 @@ using System.Collections;
 
 public class Whip_PhotonWhip : Weapon {
 
+    // Should the old weapon get destroyed when a new one is stolen
+    private bool destroyOldWeapon = true;
+
     /// <summary>
     /// The effect system that makes up the actual whip trail
     /// </summary>
@@ -18,16 +21,28 @@ public class Whip_PhotonWhip : Weapon {
     private float whipEasingSpeed;
 
     [SerializeField]
+    private float travelTime;
+
+    [SerializeField]
     private float snapRange = 1.0f;
 
     [SerializeField]
     private LayerMask weaponDetectionLayers;
 
-    // Should the old weapon get destroyed when a new one is stolen
-    private bool destroyOldWeapon = true;
+    // the location selected for where the whip will shoot to
+    private Vector3 targetLocation;
+    private Vector3 lerpedEndPoint;
 
     // Weapon that the whip is currently targeting: Can be null
     private Weapon targetWeapon;
+
+    // Time that the fire was started
+    private float fireTime;
+
+    // Is the whiup expanding or retracting
+    private bool isExpanding;
+
+
 
     protected override void Start() {
         base.Start();
@@ -39,18 +54,69 @@ public class Whip_PhotonWhip : Weapon {
     protected override void Update() {
         base.Update();
 
+
+        //if(isFiring) {
+        //    float timeSinceFire = Time.time - fireTime;
+
+        //    Vector3 aimPoint = targetWeapon == null? owner.GetAimLocation() : targetWeapon.transform.position;
+        //    Vector3 toAimPoint = aimPoint - transform.position;
+        //    Vector3 dirToAimPoint = toAimPoint.normalized;
+        //    float segmentSpacing = toAimPoint.magnitude / whipSegments;
+
+        //    // start at second point b/c first point is always at origin
+        //    segmentPositions[0] = firePoint.position;
+        //    whipEffect.SetPosition(0, segmentPositions[0]);
+
+        //    for(int i = 1; i < whipSegments - 1; i++) {
+        //        Vector3 currentPos = segmentPositions[i];
+
+        //        // Lerp towrads new position faster at earlier segment to ease towards a roughly straight line
+        //        float lerpFactor = (1.0f - i / whipSegments) * Time.deltaTime * whipEasingSpeed;
+        //        Vector3 newPos = Vector3.Lerp(currentPos, firePoint.position + dirToAimPoint * i * segmentSpacing, lerpFactor);
+
+        //        // add some randomization to the movement
+        //        segmentPositions[i] = newPos +(Vector3)Random.insideUnitCircle * segmentRandomization;
+
+        //        whipEffect.SetPosition(i, segmentPositions[i]);
+        //    }
+
+        //    Vector3 endPoint = aimPoint;
+        //    whipEffect.SetPosition(whipSegments - 1, endPoint);
+
+        //    // Check for weapons to steal
+        //    CheckNearbyWeapons();
+        //}
+
+        float timeSinceFire = Time.time - fireTime;
+        float fireDistance = (targetLocation - firePoint.position).magnitude;
+
+        // Whip is moving towards the target location
+        if(timeSinceFire < travelTime) {
+            lerpedEndPoint = Vector3.Lerp(lerpedEndPoint, targetLocation, (1.0f / fireDistance) / travelTime);
+        }
+        else if(isExpanding) {
+            // Switch to retracting
+            isExpanding = false;
+        }
+
+        if(!isExpanding && timeSinceFire < (travelTime * 2)) {
+            lerpedEndPoint = Vector3.Lerp(lerpedEndPoint, firePoint.position, (1.0f / fireDistance) / travelTime);
+        }
         
-        if(isFiring) {
-            Vector3 aimPoint = targetWeapon == null? owner.GetAimLocation() : targetWeapon.transform.position;
-            Vector3 toAimPoint = aimPoint - transform.position;
-            Vector3 dirToAimPoint = toAimPoint.normalized;
-            float segmentSpacing = toAimPoint.magnitude / whipSegments;
+        // Whip sequence is done
+        if(timeSinceFire > (travelTime * 2)) {
+            EndWhipSequence();
+        }
 
-            // start at second point b/c first point is always at origin
-            segmentPositions[0] = firePoint.position;
-            whipEffect.SetPosition(0, segmentPositions[0]);
+        // start at second point b/c first point is always at origin
+        segmentPositions[0] = firePoint.position;
+        whipEffect.SetPosition(0, segmentPositions[0]);
 
-            for(int i = 1; i < whipSegments - 1; i++) {
+        Vector3 toAimPoint = lerpedEndPoint - transform.position;
+        Vector3 dirToAimPoint = toAimPoint.normalized;
+        float segmentSpacing = toAimPoint.magnitude / whipSegments;
+
+        for(int i = 1; i < whipSegments - 1; i++) {
                 Vector3 currentPos = segmentPositions[i];
 
                 // Lerp towrads new position faster at earlier segment to ease towards a roughly straight line
@@ -59,16 +125,13 @@ public class Whip_PhotonWhip : Weapon {
 
                 // add some randomization to the movement
                 segmentPositions[i] = newPos +(Vector3)Random.insideUnitCircle * segmentRandomization;
-                
+
                 whipEffect.SetPosition(i, segmentPositions[i]);
-            }
-
-            Vector3 endPoint = aimPoint;
-            whipEffect.SetPosition(whipSegments - 1, endPoint);
-
-            // Check for weapons to steal
-            CheckNearbyWeapons();
         }
+
+        Vector3 endPoint = lerpedEndPoint;
+        whipEffect.SetPosition(whipSegments - 1, endPoint);
+        
     }
 
 
@@ -76,11 +139,19 @@ public class Whip_PhotonWhip : Weapon {
     public override bool BeginFire() {
         bool beganFire = base.BeginFire();
 
+        fireTime = Time.time;
+        isExpanding = true;
+
         // Before activating the effect, reset all points
         for(int i = 0; i < whipSegments; i++) {
             segmentPositions[i] = firePoint.position;
             whipEffect.SetPosition(i, segmentPositions[i]);
         }
+
+        CheckNearbyWeapons();
+
+        targetLocation = targetWeapon != null? targetWeapon.transform.position : owner.GetAimLocation();
+        lerpedEndPoint = firePoint.position;
 
         whipEffect.enabled = true;
         return beganFire;
@@ -90,7 +161,7 @@ public class Whip_PhotonWhip : Weapon {
     public override void EndFire() {
         base.EndFire();
 
-        whipEffect.enabled = false;
+        //whipEffect.enabled = false;
         
         // If there is a weapon snalled, detach and reattach to owner
         if(targetWeapon != null && targetWeapon.owner != null) {
@@ -119,8 +190,10 @@ public class Whip_PhotonWhip : Weapon {
         }
     }
 
+    private void EndWhipSequence() {
+        whipEffect.enabled = false;
+    }
 
-    
 
     private void CheckNearbyWeapons() {
         Vector3 ownerAimPoint = owner.GetAimLocation();
