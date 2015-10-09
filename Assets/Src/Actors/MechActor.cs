@@ -187,12 +187,12 @@ public class MechActor : Actor {
         
         // figure out which weapon was detached
         GameObject detached = null;
-        if(leftWeapon.gameObject == detachTarget) {
+        if(leftWeapon != null && leftWeapon.gameObject == detachTarget) {
             detached = leftWeapon.gameObject;
             detached.transform.parent = null;
             leftWeapon = null;
         }
-        else if(rightWeapon.gameObject == detachTarget) {
+        else if(rightWeapon != null && rightWeapon.gameObject == detachTarget) {
             detached = rightWeapon.gameObject;
             detached.transform.parent = null;
             rightWeapon = null;

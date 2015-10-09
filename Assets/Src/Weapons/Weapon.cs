@@ -47,8 +47,7 @@ public abstract class Weapon : MonoBehaviour {
     /// </summary>
     [HideInInspector]
     public MechController owner;
-
-
+    
     /// <summary>
     /// The weapon is currently firing
     /// </summary>

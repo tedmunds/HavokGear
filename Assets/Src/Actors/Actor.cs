@@ -12,6 +12,9 @@ public class Actor : MonoBehaviour {
 
     // Current health
     protected float health;
+    public float Health {
+        get { return health; }
+    }
 
     protected float lastReceivedDamage;
 

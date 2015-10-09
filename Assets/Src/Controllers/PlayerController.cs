@@ -158,4 +158,16 @@ public class PlayerController : MechController {
         return baseBonus;
     }
 
+
+    /// <summary>
+    /// Gets the amount of ammo remaining in current left gun
+    /// </summary>
+    public int GetCurrentAmmo() {
+        if(mechComponent.leftWeapon == null) {
+            return 0;
+        }
+
+        return mechComponent.leftWeapon.currentAmmo;
+    }
+
 }
