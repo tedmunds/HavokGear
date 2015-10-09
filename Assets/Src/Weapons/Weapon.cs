@@ -18,6 +18,12 @@ public abstract class Weapon : MonoBehaviour {
     [SerializeField]
     public float cameraRecoil = 0.1f;
 
+    [SerializeField]
+    public int currentAmmo;
+
+    [SerializeField]
+    public int ammoPerShot = 1;
+
     /// <summary>
     /// Does the weapon automatically fire after refire delay
     /// </summary>
@@ -97,7 +103,15 @@ public abstract class Weapon : MonoBehaviour {
     /// overloaded per weapon for ammo and whatever else it may check
     /// </summary>
     protected virtual bool CanRefire() {
-        return(Time.time - lastFireTime > refireDelay);
+        if(Time.time - lastFireTime > refireDelay) {
+
+            // check that the weapon has enough ammo
+            if(currentAmmo >= ammoPerShot) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
 
@@ -112,6 +126,12 @@ public abstract class Weapon : MonoBehaviour {
 
     protected virtual void Fire() {
         lastFireTime = Time.time;
+
+        // use up some amount of ammo
+        currentAmmo -= ammoPerShot;
+        if(currentAmmo <= 0) {
+            currentAmmo = 0;
+        }
     }
 
 
@@ -122,6 +142,7 @@ public abstract class Weapon : MonoBehaviour {
     /// </summary>
     public static Actor CheckIsActor(GameObject hitObject) {
         Actor victim = hitObject.GetComponent<Actor>();
+
         if(victim == null) {
             while(hitObject != null) {
                 Transform objParent = hitObject.transform.parent;

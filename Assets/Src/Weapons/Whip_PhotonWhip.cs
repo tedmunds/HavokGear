@@ -13,6 +13,9 @@ public class Whip_PhotonWhip : Weapon {
     private const int whipSegments = 10;
     private Vector3[] segmentPositions = new Vector3[whipSegments];
 
+    [SerializeField]
+    public float energyPerUse;
+
     // Whip movement properties
     [SerializeField]
     private float segmentRandomization;
@@ -123,8 +126,12 @@ public class Whip_PhotonWhip : Weapon {
     public override bool BeginFire() {
         const string intersectLayerName = "Terrain";
 
+        // base check for can fire
         bool beganFire = base.BeginFire();
-
+        if(!beganFire) {
+            return false;
+        }
+        
         fireTime = Time.time;
         isExpanding = true;
         whipActive = true;
@@ -153,7 +160,25 @@ public class Whip_PhotonWhip : Weapon {
         whipEffect.enabled = true;
         return beganFire;
     }
-    
+
+
+    /// <summary>
+    /// Overloaded to use energy 
+    /// </summary>
+    protected override bool CanRefire() {
+        bool canRefire = base.CanRefire();
+        if(canRefire) {
+            // Check if the owner has the energy
+            if(owner.MechComponent.EnergyLevel > energyPerUse) {
+                owner.MechComponent.ConsumeEnergy(energyPerUse);
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+
 
     public override void EndFire() {
         base.EndFire();

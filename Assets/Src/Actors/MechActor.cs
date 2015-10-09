@@ -21,7 +21,13 @@ public class MechActor : Actor {
 
     [SerializeField]
     public float shieldRechargeRate;
-    
+
+    [SerializeField]
+    public float maxEnergyLevel;
+
+    [SerializeField]
+    public float energyRechargeRate;
+
     /// <summary>
     /// Attachment points for guns or whatever
     /// </summary>
@@ -46,11 +52,20 @@ public class MechActor : Actor {
     private MechController controller;
 
     private float currentShield;
+    public float CurrentShield {
+        get { return currentShield; }
+    }
+
+    private float currentEnergyLevel;
+    public float EnergyLevel {
+        get { return currentEnergyLevel;  }
+    }
 
     protected override void Start() {
         base.Start();
 
         currentShield = maxShield;
+        currentEnergyLevel = maxEnergyLevel;
     }
     
 
@@ -68,14 +83,39 @@ public class MechActor : Actor {
         // Can start recharging shield
         if(Time.time - lastReceivedDamage > shieldRechargeDelay) {
             if(currentShield < maxShield) {
-                currentShield += shieldRechargeRate * Time.deltaTime;
+                // recharge the shield by consuming energy
+                float rechargeTick = ConsumeEnergy(shieldRechargeRate * Time.deltaTime);
+                currentShield += rechargeTick;
 
                 if(currentShield > maxShield) {
                     currentShield = maxShield;
                 }
             }
         }
+
+        // energy regeneration
+        if(currentEnergyLevel < maxEnergyLevel) {
+            currentEnergyLevel += energyRechargeRate * Time.deltaTime;
+
+            if(currentEnergyLevel > maxEnergyLevel) {
+                currentEnergyLevel = maxEnergyLevel;
+            }
+        }
 	}
+
+
+    /// <summary>
+    /// Reduces current energy level byt he base amount, unless there is not enough energy.
+    /// Returns how much enery was actually consumed
+    /// </summary>
+    public float ConsumeEnergy(float baseAmount) {
+        float amountConsumed = Mathf.Min(baseAmount, currentEnergyLevel);
+
+        currentEnergyLevel -= amountConsumed;
+        return amountConsumed;
+    }
+
+
 
     /// <summary>
     /// Overriden to account for shield absorbtion effect

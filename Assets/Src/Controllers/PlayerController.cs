@@ -17,11 +17,20 @@ public class PlayerController : MechController {
     [SerializeField]
     public string fireAuxInput = "Fire2";
 
+    [SerializeField]
+    public KeyCode boostInput;
+
     /// <summary>
     /// Input ramp remaps the engine input value to a custom curve for fine tuned movement input acceleration
     /// </summary>
     [SerializeField]
     public AnimationCurve inputRamp;
+
+    [SerializeField]
+    public float boostEnergy;
+
+    [SerializeField]
+    public float boostMoveForce;
     
     /// <summary>
     /// Main camera that is tracking player / the scene camera depending on what we decide (rooms or open level)
@@ -90,8 +99,12 @@ public class PlayerController : MechController {
         }
 
         // TEMP: a simple boost thingy TODO: how should boost actually be implemented
-        if(Input.GetKeyDown(KeyCode.Space)) {
-            mechComponent.AddForce(inputVector.normalized, 50.0f);
+        if(Input.GetKeyDown(boostInput)) {
+            float energyUsed = mechComponent.ConsumeEnergy(boostEnergy);
+
+            // If there was not enough energy to do a boost, it does a weakened version
+            float boostForce = energyUsed / boostEnergy;
+            mechComponent.AddForce(inputVector.normalized, boostForce * boostMoveForce);
         }
     }
     
