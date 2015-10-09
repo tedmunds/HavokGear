@@ -13,6 +13,15 @@ public class MechActor : Actor {
         Left, Right
     }
 
+    [SerializeField]
+    public float maxShield;
+
+    [SerializeField]
+    public float shieldRechargeDelay;
+
+    [SerializeField]
+    public float shieldRechargeRate;
+    
     /// <summary>
     /// Attachment points for guns or whatever
     /// </summary>
@@ -22,6 +31,9 @@ public class MechActor : Actor {
     [SerializeField]
     public Transform rightAttachPoint;
 
+    [SerializeField]
+    public ParticleSystem brokenWeaponEffectPrototype;
+
     /// <summary>
     /// Cached weapon reference for the item attached to each side
     /// </summary>
@@ -30,12 +42,15 @@ public class MechActor : Actor {
 
     [HideInInspector]
     public Weapon rightWeapon;
-
+    
     private MechController controller;
 
+    private float currentShield;
 
-	protected override void Start() {
+    protected override void Start() {
         base.Start();
+
+        currentShield = maxShield;
     }
     
 
@@ -50,7 +65,38 @@ public class MechActor : Actor {
     protected override void Update() {
         base.Update();
 
+        // Can start recharging shield
+        if(Time.time - lastReceivedDamage > shieldRechargeDelay) {
+            if(currentShield < maxShield) {
+                currentShield += shieldRechargeRate * Time.deltaTime;
+
+                if(currentShield > maxShield) {
+                    currentShield = maxShield;
+                }
+            }
+        }
 	}
+
+    /// <summary>
+    /// Overriden to account for shield absorbtion effect
+    /// </summary>
+    public override void TakeDamage(float damageAmount, MechController instigator, Weapon weaponUsed) {
+        if(IsDead) {
+            return;
+        }
+
+        float reducedDamage = damageAmount;
+
+        // Take the damage out of the shield first
+        float shieldAbsorbtion = Mathf.Min(currentShield, damageAmount);
+        currentShield -= shieldAbsorbtion;
+
+        // And reduce the damage that is done to health
+        reducedDamage -= shieldAbsorbtion;
+
+        base.TakeDamage(reducedDamage, instigator, weaponUsed);
+    }
+
 
     /// <summary>
     /// Attaches the input item to the mechs attach point indicated
@@ -94,22 +140,32 @@ public class MechActor : Actor {
     /// <summary>
     /// Attempts to detach the input oobject if it is attached 
     /// </summary>
-    public GameObject Detach(GameObject detachTarget) {
+    public GameObject Detach(GameObject detachTarget, bool isBroken = false) {
         if(detachTarget == null) {
             return null;
         }
-
+        
+        // figure out which weapon was detached
+        GameObject detached = null;
         if(leftWeapon.gameObject == detachTarget) {
-            GameObject detached = leftWeapon.gameObject;
+            detached = leftWeapon.gameObject;
             detached.transform.parent = null;
             leftWeapon = null;
-
-            return detached;
         }
         else if(rightWeapon.gameObject == detachTarget) {
-            GameObject detached = rightWeapon.gameObject;
+            detached = rightWeapon.gameObject;
             detached.transform.parent = null;
             rightWeapon = null;
+        }
+        
+        if(detached != null) {
+            // If it was breoken off, then add the weapon broken effects
+            if(isBroken) {
+                ParticleSystem brokenEffect = Instantiate(brokenWeaponEffectPrototype);
+                brokenEffect.transform.position = detached.transform.position;
+                brokenEffect.transform.parent = controller.headTransform;
+                brokenEffect.Play();
+            }
 
             return detached;
         }

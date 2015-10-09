@@ -72,7 +72,8 @@ public class Whip_PhotonWhip : Weapon {
             // Detach the weapon, so it can fly back!
             if(targetWeapon != null && targetWeapon.owner != null) {
                 MechActor targetActor = targetWeapon.owner.MechComponent;
-                GameObject detached = targetActor.Detach(targetWeapon.gameObject);
+                // Break off the weapon to create particles
+                GameObject detached = targetActor.Detach(targetWeapon.gameObject, true);
             }
         }
 

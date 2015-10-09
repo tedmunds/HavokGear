@@ -11,7 +11,9 @@ public class Actor : MonoBehaviour {
     public float maxhealth;
 
     // Current health
-    private float health;
+    protected float health;
+
+    protected float lastReceivedDamage;
 
     private bool isDead;
     public bool IsDead {
@@ -35,17 +37,19 @@ public class Actor : MonoBehaviour {
     /// <summary>
     /// Applies the damage to the actor
     /// </summary>
-    public void TakeDamage(float damageAmount, MechController instigator, Weapon weaponUsed) {
+    public virtual void TakeDamage(float damageAmount, MechController instigator, Weapon weaponUsed) {
         if(isDead) {
             return;
         }
-
+        
         health -= damageAmount;
         
         if(health <= 0.0f) {
             health = 0.0f;
             Died();
         }
+
+        lastReceivedDamage = Time.time;
     }
 
 
