@@ -50,15 +50,17 @@ public class ProjectileController : MonoBehaviour {
         // Interpolation hit check
         Vector3 moveDisplacement = transform.position - previousPos;
 
-        RaycastHit2D hit;
-        hit = Physics2D.Raycast(transform.position, moveDisplacement, moveDisplacement.magnitude, ignoreLayer);
-        if(hit.collider != null && 
-            (sourceWeapon != null && hit.collider.gameObject != sourceWeapon.gameObject) && 
-            !hit.collider.isTrigger) {
-            // A different thing has been hit, call impact handler
-            OnImpact(hit, hit.collider);
+        RaycastHit2D[] hits = Physics2D.RaycastAll(transform.position, moveDisplacement, moveDisplacement.magnitude, ignoreLayer);
+        for(int i = 0; i < hits.Length; i++) {
+            if(hits[i].collider != null &&
+            (sourceWeapon != null && hits[i].collider.gameObject != sourceWeapon.gameObject) &&
+            !hits[i].collider.isTrigger) {
+                // A different thing has been hit, call impact handler
+                OnImpact(hits[i], hits[i].collider);
+                break;
+            }
         }
-
+        
         previousPos = transform.position;
 
         // destroy atfter lifetime

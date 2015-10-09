@@ -96,7 +96,7 @@ public class WorldManager : MonoBehaviour {
 
         // And now, entirely optional starting weapon
         if(defaultPlayerWeaponPrefab != null) {
-            GameObject spawnedWeapon = (GameObject)Instantiate(defaultPlayerWeaponPrefab);
+            GameObject spawnedWeapon = SpawnWeapon(defaultPlayerWeaponPrefab);
 
             MechActor mechComponent = playerCharacter.GetComponent<MechActor>();
             if(mechComponent != null) {
@@ -131,7 +131,7 @@ public class WorldManager : MonoBehaviour {
         
         // Now spawn and attach either left / right or both weapons
         if(weaponPrefabLeft != null) {
-            GameObject spawnedWeapon = (GameObject)Instantiate(weaponPrefabLeft);
+            GameObject spawnedWeapon = SpawnWeapon(weaponPrefabLeft);
 
             MechActor mechComponent = botCharacter.GetComponent<MechActor>();
             if(mechComponent != null) {
@@ -140,7 +140,7 @@ public class WorldManager : MonoBehaviour {
         }
 
         if(weaponPrefabRight != null) {
-            GameObject spawnedWeapon = (GameObject)Instantiate(weaponPrefabRight);
+            GameObject spawnedWeapon = SpawnWeapon(weaponPrefabRight);
 
             MechActor mechComponent = botCharacter.GetComponent<MechActor>();
             if(mechComponent != null) {
@@ -149,6 +149,21 @@ public class WorldManager : MonoBehaviour {
         }
 
         return botCharacter;
+    }
+
+
+    /// <summary>
+    /// Spawn and init a weapon from tehinput prefab
+    /// </summary>
+    public GameObject SpawnWeapon(GameObject prefab) {
+        GameObject spawnedWeapon = Instantiate(prefab);
+
+        Weapon weaponComponent = spawnedWeapon.GetComponent<Weapon>();
+        if(weaponComponent != null) {
+            weaponComponent.OnSpawn();
+        }
+
+        return spawnedWeapon;
     }
 
 }

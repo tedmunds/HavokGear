@@ -210,21 +210,27 @@ public class Whip_PhotonWhip : Weapon {
 
 
     private void CheckNearbyWeapons(Vector3 originPoint) {
-        //Vector3 ownerAimPoint = owner.GetAimLocation();
-        
+        float closestDist = 99999.9f;
+        Weapon closesetWeapon = null;
+
         RaycastHit2D[] overlaps = Physics2D.CircleCastAll(originPoint, snapRange, Vector2.zero, 0.0f, weaponDetectionLayers);
         for(int i = 0; i < overlaps.Length; i++) {
             // Was overlapping a weapon
             Weapon overlapWeapon = overlaps[i].collider.gameObject.GetComponent<Weapon>();
 
-            // check that the owner doesnt match the whip's, so taht player doesn;t steal their own weapon
+            // check that the owner doesnt match the whip's, so that player doesn;t steal their own weapon
             if(overlapWeapon != null && overlapWeapon.owner != owner) {
-                targetWeapon = overlapWeapon;
-                return;
+                float dist = (overlapWeapon.transform.position - originPoint).magnitude;
+
+                // Take whatever weapon is closest to the check point
+                if(dist < closestDist) {
+                    closesetWeapon = overlapWeapon;
+                    closestDist = dist;
+                }
             }
         }
 
-        targetWeapon = null;
+        targetWeapon = closesetWeapon;
     }
 
 }

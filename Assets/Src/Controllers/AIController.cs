@@ -8,6 +8,9 @@ public class AIController : MechController {
     [SerializeField]
     public float maxDetectRange = 5.0f;
 
+    [SerializeField]
+    public float maxAimError = 2.0f;
+
     /// <summary>
     /// The mech that this Ai is targetting for shooting etc
     /// </summary>
@@ -44,7 +47,6 @@ public class AIController : MechController {
     public void AiStartSensing() {
         // TODO: better way of assigning target
         target = GameObject.FindObjectOfType<PlayerController>();
-        Debug.Log(name + " <AI Entity> Has started sensing! target = " + target.name);
     }
 
 
@@ -150,4 +152,28 @@ public class AIController : MechController {
     public void AbandonMovetoTarget() {
         isMovingToTarget = false;
     }
+
+
+    /// <summary>
+    /// Overriden to aim at target + some randomization
+    /// </summary>
+    /// <returns></returns>
+    public override Vector3 GetAimLocation() {
+        if(target == null) {
+            return transform.position + headTransform.up * 50.0f;
+        }
+
+        Vector2 randAimOffset = Random.insideUnitCircle;
+        float aimError = Random.Range(0.0f, maxAimError);
+
+        return target.transform.position + (Vector3)randAimOffset.normalized * aimError;
+    }
+
+    /// <summary>
+    /// AI doesn't consume ammo when shooting, so that they don't awkwardly run out
+    /// </summary>
+    public override bool UsesAmmo() {
+        return false;
+    }
+
 }

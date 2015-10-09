@@ -93,4 +93,8 @@ public class MechController : MonoBehaviour {
     }
 
 
+    public virtual bool UsesAmmo() {
+        return true;
+    }
+
 }

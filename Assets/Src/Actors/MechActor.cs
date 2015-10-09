@@ -23,6 +23,9 @@ public class MechActor : Actor {
     public float shieldRechargeRate;
 
     [SerializeField]
+    public float shieldEnergyDrainRatio;
+
+    [SerializeField]
     public float maxEnergyLevel;
 
     [SerializeField]
@@ -80,18 +83,6 @@ public class MechActor : Actor {
     protected override void Update() {
         base.Update();
 
-        // Can start recharging shield
-        if(Time.time - lastReceivedDamage > shieldRechargeDelay) {
-            if(currentShield < maxShield) {
-                // recharge the shield by consuming energy
-                float rechargeTick = ConsumeEnergy(shieldRechargeRate * Time.deltaTime);
-                currentShield += rechargeTick;
-
-                if(currentShield > maxShield) {
-                    currentShield = maxShield;
-                }
-            }
-        }
 
         // energy regeneration
         if(currentEnergyLevel < maxEnergyLevel) {
@@ -99,6 +90,19 @@ public class MechActor : Actor {
 
             if(currentEnergyLevel > maxEnergyLevel) {
                 currentEnergyLevel = maxEnergyLevel;
+            }
+        }
+
+        // Can start recharging shield
+        if(Time.time - lastReceivedDamage > shieldRechargeDelay) {
+            if(currentShield < maxShield) {
+                // recharge the shield by consuming energy
+                float rechargeTick = ConsumeEnergy(shieldRechargeRate * Time.deltaTime * shieldEnergyDrainRatio);
+                currentShield += rechargeTick / shieldEnergyDrainRatio;
+
+                if(currentShield > maxShield) {
+                    currentShield = maxShield;
+                }
             }
         }
 	}
@@ -173,9 +177,10 @@ public class MechActor : Actor {
         // if it was a weapon that was attached, then set its owner to this mech
         if(weaponComponent != null) {
             weaponComponent.owner = controller;
+            weaponComponent.OnEquip(controller, controller.UsesAmmo());
         }
     }
-
+    
 
     /// <summary>
     /// Attempts to detach the input oobject if it is attached 

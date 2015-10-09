@@ -55,12 +55,21 @@ public abstract class Weapon : MonoBehaviour {
 
     protected float lastFireTime;
 
+    protected int startingAmmo;
+    protected bool consumesAmmo = true;
+
+    /// <summary>
+    /// Called when a weapon is spawned by World manager, before any system initialization functions
+    /// </summary>
+    public virtual void OnSpawn() {
+        startingAmmo = currentAmmo;
+    }
 
     protected virtual void Start() {
 	    if(firePoint == null) {
             Debug.LogError("Weapon: <" + name + "> does not have a fire point!");
         }
-	}
+    }
 	
 	
 	protected virtual void Update() {
@@ -105,7 +114,7 @@ public abstract class Weapon : MonoBehaviour {
         if(Time.time - lastFireTime > refireDelay) {
 
             // check that the weapon has enough ammo
-            if(currentAmmo >= ammoPerShot) {
+            if(currentAmmo >= ammoPerShot || !consumesAmmo) {
                 return true;
             }
         }
@@ -180,5 +189,12 @@ public abstract class Weapon : MonoBehaviour {
     }
 
 
+    /// <summary>
+    /// Called when this weapon is equipped onto a mech
+    /// </summary>
+    public virtual void OnEquip(MechController controller, bool usesAmmo = true) {
+        currentAmmo = startingAmmo;
+        consumesAmmo = usesAmmo;
+    }
 
 }
