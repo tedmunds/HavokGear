@@ -113,8 +113,14 @@ public class MovementController2D : MonoBehaviour {
 
     [SerializeField]
     private float physicsFriction = 0.3f;
+    public float PhysicsDecel {
+        get { return physicsFriction;  }
+    }
 
     private Vector3 physicsVel;
+    public float PhysicsSpeed {
+        get { return physicsVel.magnitude; }
+    }
 
 
     [HideInInspector]
@@ -251,7 +257,7 @@ public class MovementController2D : MonoBehaviour {
         if(physicsVel.magnitude > 0.0f) {
             Move(physicsVel * Time.deltaTime);
 
-            physicsVel *= physicsFriction;
+            physicsVel = physicsVel * physicsFriction;
         }
     }
 

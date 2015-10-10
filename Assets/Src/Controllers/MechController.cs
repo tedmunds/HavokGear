@@ -39,10 +39,16 @@ public class MechController : MonoBehaviour {
     // Movement states that mechs can do
     protected MoveState_Normal moveState_Normal;
 
+    /// <summary>
+    /// If false the controller will not update
+    /// </summary>
+    protected bool controllerActive;
 
 
     // Use this for initialization
     protected virtual void Start () {
+        controllerActive = true;
+
         // Just some initialization and warnings
         movementComponent = GetComponent<MovementController2D>();
         if(movementComponent == null) {
@@ -72,9 +78,16 @@ public class MechController : MonoBehaviour {
     }
 
 
+    /// <summary>
+    /// Stops all control activity from this controller
+    /// </summary>
+    public void FreezeControl(bool newFrozen = false) {
+        controllerActive = newFrozen;
+    }
+
     // Update is called once per frame
     protected virtual void Update () {
-	    
+        
 	}
 
 

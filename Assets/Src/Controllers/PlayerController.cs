@@ -48,6 +48,15 @@ public class PlayerController : MechController {
     private Vector3 currentAimLoc;
     private Vector3 aimDirection;
 
+    /// <summary>
+    /// Boost control vars
+    /// </summary>
+    private float lastBoostTime;
+    private float boostLength;
+    private bool isBoosting;
+    public bool IsBoosting {
+        get { return isBoosting; }
+    }
     
     protected override void Start () {
         base.Start();
@@ -56,6 +65,9 @@ public class PlayerController : MechController {
 
     protected override void Update () {
         base.Update();
+        if(!controllerActive) {
+            return;
+        }
 
         Vector2 inputVector = GetInputVector();
         
@@ -100,11 +112,13 @@ public class PlayerController : MechController {
 
         // TEMP: a simple boost thingy TODO: how should boost actually be implemented
         if(Input.GetKeyDown(boostInput)) {
-            float energyUsed = mechComponent.ConsumeEnergy(boostEnergy);
+            StartBoosting(inputVector.normalized);
+        }
 
-            // If there was not enough energy to do a boost, it does a weakened version
-            float boostForce = energyUsed / boostEnergy;
-            mechComponent.AddForce(inputVector.normalized, boostForce * boostMoveForce);
+        // Check if a boost has ended
+        if(isBoosting && Time.time - lastBoostTime > boostLength) {
+            isBoosting = false;
+            Debug.Log("Stopped boosting");
         }
     }
     
@@ -128,6 +142,24 @@ public class PlayerController : MechController {
         }
 
         return inputVector;
+    }
+
+
+    private void StartBoosting(Vector3 direction) {
+        float energyUsed = mechComponent.ConsumeEnergy(boostEnergy);
+
+        lastBoostTime = Time.time;
+
+        // If there was not enough energy to do a boost, it does a weakened version
+        float boostForce = energyUsed / boostEnergy;
+        mechComponent.AddForce(direction, boostForce * boostMoveForce);
+        isBoosting = true;
+
+        
+
+        // calc the time it will take to return to normal speed after boosting
+        boostLength = movementComponent.PhysicsSpeed * movementComponent.PhysicsDecel;
+        boostLength = boostLength * Time.deltaTime;
     }
 
 

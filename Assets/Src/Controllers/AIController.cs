@@ -53,6 +53,9 @@ public class AIController : MechController {
     // Update is called once per frame
     protected override void Update() {
         base.Update();
+        if(!controllerActive) {
+            return;
+        }
 
         // Update the state machine, which governs the controlls the current behaviour
         stateMachine.UpdateState();

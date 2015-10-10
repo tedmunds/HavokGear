@@ -39,7 +39,7 @@ public class MechActor : Actor {
 
     [SerializeField]
     public Transform rightAttachPoint;
-
+    
     [SerializeField]
     public ParticleSystem brokenWeaponEffectPrototype;
 
@@ -129,7 +129,7 @@ public class MechActor : Actor {
             return;
         }
 
-        float modifiedDamage = instigator.ModifyBaseDamage(damageAmount, weaponUsed);
+        float modifiedDamage = instigator != null? instigator.ModifyBaseDamage(damageAmount, weaponUsed) : damageAmount;
         float reducedDamage = modifiedDamage;
 
         // Take the damage out of the shield first
@@ -231,4 +231,32 @@ public class MechActor : Actor {
         Destroy(gameObject);
     }
 
+
+    /// <summary>
+    /// Alternate mode of death, causes mech to fall down and die
+    /// </summary>
+    public void FalltoDeath(GameObject instigator) {
+        const float fallLength = 0.3f;
+        controller.FreezeControl();
+
+        StartCoroutine(ScaleToZero(fallLength));
+    }
+
+    /// <summary>
+    /// Coroutine that scales teh mech to zero and then kills it
+    /// </summary>
+    private IEnumerator ScaleToZero(float scaleTime) {
+        Vector3 startScale = transform.localScale;
+
+        for(float t = 0.0f; t < scaleTime; t += Time.deltaTime) {
+            // cubic scaling seems to look good
+            float scaleFactor = 1.0f - ((t / scaleTime) * (t / scaleTime) * (t / scaleTime));
+            transform.localScale = startScale * scaleFactor;
+
+            yield return null;
+        }
+
+        health = 0.0f;
+        Died();
+    }
 }
