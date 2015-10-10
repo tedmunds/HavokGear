@@ -7,6 +7,14 @@ using System.Collections;
 /// </summary>
 public class WorldManager : MonoBehaviour {
 
+    public static WorldManager instance;
+
+    /// <summary>
+    /// Damage scale for enemies that kind of dictates difficulty scale
+    /// </summary>
+    [SerializeField]
+    public float enemyDamageScale = 1.0f;
+
     [SerializeField]
     public GameObject playerCameraPrefab;
 
@@ -31,6 +39,7 @@ public class WorldManager : MonoBehaviour {
 
 
 	private void Start() {
+        instance = this;
         SpawnPlayer();
     }
 	

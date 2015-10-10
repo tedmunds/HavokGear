@@ -129,7 +129,8 @@ public class MechActor : Actor {
             return;
         }
 
-        float reducedDamage = damageAmount;
+        float modifiedDamage = instigator.ModifyBaseDamage(damageAmount, weaponUsed);
+        float reducedDamage = modifiedDamage;
 
         // Take the damage out of the shield first
         float shieldAbsorbtion = Mathf.Min(currentShield, damageAmount);

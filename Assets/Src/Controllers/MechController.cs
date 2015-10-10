@@ -88,8 +88,8 @@ public class MechController : MonoBehaviour {
     /// Calculates a damage bonus for the input weapon
     /// </summary>
     /// <returns></returns>
-    public virtual float GetDamageBonus(Weapon weaponType) {
-        return 0.0f;
+    public virtual float ModifyBaseDamage(float baseDamage, Weapon weaponType) {
+        return baseDamage;
     }
 
 

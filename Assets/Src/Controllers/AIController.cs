@@ -176,4 +176,13 @@ public class AIController : MechController {
         return false;
     }
 
+
+    public override float ModifyBaseDamage(float baseDamage, Weapon weaponType) {
+        float dmg = base.ModifyBaseDamage(baseDamage, weaponType);
+
+        dmg = dmg * WorldManager.instance.enemyDamageScale;
+        return dmg;
+    }
+
+
 }

@@ -150,8 +150,8 @@ public class PlayerController : MechController {
     }
 
 
-    public override float GetDamageBonus(Weapon weaponType) {
-        float baseBonus = base.GetDamageBonus(weaponType);
+    public override float ModifyBaseDamage(float baseDamage, Weapon weaponType) {
+        float baseBonus = base.ModifyBaseDamage(baseDamage, weaponType);
 
         // TODO: Upgrade system will link in here
 

@@ -35,6 +35,7 @@ public class Proj_Grenade : ProjectileController {
 
     protected override void OnImpact(RaycastHit2D hit, Collider2D other) {
         const float hitOffsetDist = 0.5f;
+        const float maxDeflectAngle = 0.2f;
 
         base.OnImpact(hit, other);
 
@@ -46,7 +47,10 @@ public class Proj_Grenade : ProjectileController {
         }
 
         // otherwise do a bounce
-        velocity = hit.normal * (velocity.magnitude * bounceElasticity);
+        Vector3 bounceDir = Random.insideUnitCircle;
+        bounceDir = Vector3.Lerp(hit.normal, bounceDir, Random.Range(0.0f, maxDeflectAngle));
+
+        velocity = bounceDir.normalized * (velocity.magnitude * bounceElasticity);
         transform.position = hit.point;
     }
 
