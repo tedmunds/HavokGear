@@ -60,9 +60,9 @@ public class Proj_Grenade : ProjectileController {
             return true;
         }
 
-        // If the hit is a mech
-        if(other.gameObject.GetComponent<MechController>() != null ||
-            (other.gameObject.transform.parent != null && other.gameObject.transform.parent.GetComponent<MechController>() != null)) {
+        // If the hit is an actor
+        if(other.gameObject.GetComponent<Actor>() != null ||
+            (other.gameObject.transform.parent != null && other.gameObject.transform.parent.GetComponent<Actor>() != null)) {
             return true;
         }
 
@@ -76,9 +76,9 @@ public class Proj_Grenade : ProjectileController {
 
         Collider2D[] overlaps = Physics2D.OverlapCircleAll(transform.position, explosionRadius);
         for(int i = 0; i < overlaps.Length; i++) {
-            MechActor mech = overlaps[i].GetComponent<MechActor>();
+            Actor mech = overlaps[i].GetComponent<Actor>();
             if(mech != null) {
-                mech.TakeDamage(baseDamage, mech.GetComponent<MechController>(), sourceWeapon);
+                mech.TakeDamage(baseDamage, sourceWeapon.owner.GetComponent<MechController>(), sourceWeapon);
             }
         }
 

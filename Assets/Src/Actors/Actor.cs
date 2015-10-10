@@ -1,5 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
+
+public delegate void OnDeathHandler(Actor victim);
 
 /// <summary>
 /// Actor is the base class for all objects in the game that can take damage and stuff.
@@ -24,9 +27,23 @@ public class Actor : MonoBehaviour {
     }
 
 
+    private List<OnDeathHandler> deathListeners;
+
 	protected virtual void Start() {
         health = maxhealth;
         isDead = false;
+    }
+
+
+    /// <summary>
+    /// Register a delegate to listen for this actors death
+    /// </summary>
+    public void RegisterDeathListener(OnDeathHandler listener) {
+        if(deathListeners == null) {
+            deathListeners = new List<OnDeathHandler>();
+        }
+
+        deathListeners.Add(listener);
     }
 
 
@@ -69,6 +86,13 @@ public class Actor : MonoBehaviour {
 
     public virtual void Died() {
         isDead = true;
+
+        // Callback to all lsiteners
+        if(deathListeners != null) {
+            foreach(OnDeathHandler handler in deathListeners) {
+                handler(this);
+            }
+        }
     }
 
 }

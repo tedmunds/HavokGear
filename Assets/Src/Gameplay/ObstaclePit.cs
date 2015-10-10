@@ -9,7 +9,6 @@ public class ObstaclePit : MonoBehaviour {
 	
 	private void Start() {
         colliders = GetComponents<Collider2D>();
-        Debug.Log(colliders.Length);
     }
 	
 	

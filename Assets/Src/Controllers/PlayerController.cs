@@ -118,7 +118,6 @@ public class PlayerController : MechController {
         // Check if a boost has ended
         if(isBoosting && Time.time - lastBoostTime > boostLength) {
             isBoosting = false;
-            Debug.Log("Stopped boosting");
         }
     }
     
@@ -154,9 +153,7 @@ public class PlayerController : MechController {
         float boostForce = energyUsed / boostEnergy;
         mechComponent.AddForce(direction, boostForce * boostMoveForce);
         isBoosting = true;
-
         
-
         // calc the time it will take to return to normal speed after boosting
         boostLength = movementComponent.PhysicsSpeed * movementComponent.PhysicsDecel;
         boostLength = boostLength * Time.deltaTime;
