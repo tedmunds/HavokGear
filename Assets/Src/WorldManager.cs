@@ -60,7 +60,7 @@ public class WorldManager : MonoBehaviour {
         }
 
         // Spawn the player object
-        Vector3 spawnLocation = Vector3.zero;
+        Vector3 spawnLocation = transform.position;
         if(spawnPoint != null) {
             spawnLocation = spawnPoint.position;
         }
@@ -78,7 +78,7 @@ public class WorldManager : MonoBehaviour {
         playerCharacter.OnSpawnInitialization();
 
         // spawn the players camera
-        Vector3 CamSpawnLoc = spawnPoint.position;
+        Vector3 CamSpawnLoc = spawnLocation;
         CamSpawnLoc.z = -10.0f;
         GameObject camera = (GameObject)Instantiate(playerCameraPrefab, CamSpawnLoc, Quaternion.identity);
         CameraController cameraController = camera.GetComponent<CameraController>();
