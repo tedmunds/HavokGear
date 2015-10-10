@@ -18,6 +18,9 @@ public class Weapon_MachineGun : Weapon {
     public ParticleSystem hitEffectPrototype;
 
     [SerializeField]
+    public ParticleSystem shootEffectPrototype;
+
+    [SerializeField]
     private Color trailStartColor;
 
     [SerializeField]
@@ -25,6 +28,7 @@ public class Weapon_MachineGun : Weapon {
 
     private LineRenderer bulletTrailRenderer;
     private ParticleSystem hitEffect;
+    private ParticleSystem shootEffect;
 
     protected override void Start() {
         base.Start();
@@ -36,6 +40,13 @@ public class Weapon_MachineGun : Weapon {
         if(hitEffectPrototype != null) {
             hitEffect = Instantiate(hitEffectPrototype);
             hitEffect.gameObject.SetActive(false);
+            hitEffect.transform.parent = transform;
+        }
+
+        if(shootEffectPrototype != null) {
+            shootEffect = Instantiate(shootEffectPrototype);
+            shootEffect.gameObject.SetActive(false);
+            shootEffect.transform.parent = transform;
         }
     }
 
@@ -107,6 +118,13 @@ public class Weapon_MachineGun : Weapon {
             hitEffect.transform.position = endPoint;
             hitEffect.gameObject.SetActive(true);
             hitEffect.Play();
+        }
+
+        if(shootEffect != null) {
+            shootEffect.transform.position = firePoint.position;
+            shootEffect.transform.up = fireDirection;
+            shootEffect.gameObject.SetActive(true);
+            shootEffect.Play();
         }
     }
 

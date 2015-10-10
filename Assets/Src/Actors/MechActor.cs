@@ -205,6 +205,12 @@ public class MechActor : Actor {
         }
         
         if(detached != null) {
+            // make sure the detached weapon component is not still firing
+            Weapon weaponComponent = detached.GetComponent<Weapon>();
+            if(weaponComponent != null) {
+                weaponComponent.EndFire();
+            }
+
             // If it was breoken off, then add the weapon broken effects
             if(isBroken) {
                 ParticleSystem brokenEffect = Instantiate(brokenWeaponEffectPrototype);

@@ -195,6 +195,7 @@ public abstract class Weapon : MonoBehaviour {
     public virtual void OnEquip(MechController controller, bool usesAmmo = true) {
         currentAmmo = startingAmmo;
         consumesAmmo = usesAmmo;
+        owner = controller;
     }
 
 }
