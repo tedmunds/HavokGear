@@ -143,9 +143,9 @@ public class Whip_PhotonWhip : Weapon {
     public override bool BeginFire() {
         const string intersectLayerName = "Terrain";
 
-        // base check for can fire
+        // base check for can fire: Also do not shoot whip if its already out
         bool beganFire = base.BeginFire();
-        if(!beganFire) {
+        if(!beganFire || whipActive) {
             return false;
         }
         

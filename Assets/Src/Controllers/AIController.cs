@@ -2,7 +2,9 @@
 
 using UnityEngine;
 using System.Collections;
+using Pathfinding;
 
+[RequireComponent(typeof(Seeker))]
 public class AIController : MechController {
 
     [SerializeField]
@@ -23,21 +25,36 @@ public class AIController : MechController {
     /// </summary>
     private BehaviourSM stateMachine;
 
+    /// <summary>
+    /// A* Pathfinding integration point: used by ai to navigate to target positions
+    /// </summary>
+    private Seeker seekerComponent;
 
+    /// <summary>
+    /// The location that the AI wants to move to: generally set by the state machine
+    /// </summary>
     private Vector3 moveToTarget;
-    private bool isMovingToTarget;
 
-    // Use this for initialization
+    /// <summary>
+    /// Pathfinding state
+    /// </summary>
+    private int currentPathWaypoint;
+    private Path currentPath;
+    private bool waitingForPath;
+    
     protected override void Start() {
         base.Start();
-
-        // TODO: move to spawn init when I add ai spawning
-        stateMachine = new BehaviourSM(this);
     }
 
 
+    /// <summary>
+    /// Called when this controller is spawned
+    /// </summary>
     public override void OnSpawnInitialization() {
         base.OnSpawnInitialization();
+
+        stateMachine = new BehaviourSM(this);
+        seekerComponent = GetComponent<Seeker>();
     }
 
 
@@ -49,29 +66,72 @@ public class AIController : MechController {
         target = GameObject.FindObjectOfType<PlayerController>();
     }
 
+    // NEcessary to degerigister our delegate
+    public void OnDisable() {
+        seekerComponent.pathCallback -= OnPathComplete;
+    }
+    
 
-    // Update is called once per frame
     protected override void Update() {
+        const float reachedGoalError = 0.5f;
+
         base.Update();
+
         if(!controllerActive) {
             return;
         }
 
         // Update the state machine, which governs the controlls the current behaviour
         stateMachine.UpdateState();
+        
+        if(waitingForPath) {
+            return;
+        }
 
-        if(isMovingToTarget) {
-            const float reachedGoalError = 0.5f;
+        // Start looking for a path
+        if(currentPath == null && !waitingForPath) {
+            FindNewPath();
+            return;
+        }
+        
+        // Check if its reached the end of the path
+        if(currentPathWaypoint >= currentPath.vectorPath.Count) {
+            // Reached end of current path
+            currentPath = null;
+        }
+        else {
+            // Move towards next waypoint
+            Vector3 toWaypoint = (currentPath.vectorPath[currentPathWaypoint] - transform.position).normalized;
+            movementComponent.Move(toWaypoint * baseMoveSpeed * Time.deltaTime);
 
-            // Move at the current target
-            Vector3 moveDirection = (moveToTarget - transform.position).normalized;
-            movementComponent.Move(moveDirection * baseMoveSpeed * Time.deltaTime);
-
-            // if its withint he error range, consider it at the goal target
-            float remainingDist = (transform.position - moveToTarget).sqrMagnitude;
-            if(remainingDist < reachedGoalError) {
-                isMovingToTarget = false;
+            if(Vector3.Distance(transform.position, currentPath.vectorPath[currentPathWaypoint]) < reachedGoalError) {
+                currentPathWaypoint++;
+                return;
             }
+        }
+    }
+
+
+    /// <summary>
+    /// Causes this ai to start looking for a new path
+    /// </summary>
+    private void FindNewPath() {
+        waitingForPath = true;
+        seekerComponent.StartPath(transform.position, moveToTarget, OnPathComplete);
+    }
+
+
+    /// <summary>
+    /// Called when a path to the target destination has been created
+    /// </summary>
+    public void OnPathComplete(Path p) {
+        if(!p.error) {
+            currentPath = p;
+            currentPathWaypoint = 0;
+            waitingForPath = false;
+        }
+        else {
+            Debug.LogError(name + " - PATHING ERROR: " + p.error);
         }
     }
 
@@ -80,7 +140,7 @@ public class AIController : MechController {
     public void WeaponWasStolen() {
         // It has no weapons left!
         if(MechComponent.leftWeapon == null && MechComponent.rightWeapon == null) {
-            // TODO: flee behaviour
+            // TODO: flee or suicide behaviour
         }
     }
 
@@ -145,7 +205,7 @@ public class AIController : MechController {
         // Only try to move there if it is actually in a different location to avoid little jerky start-stop movements
         if((moveTo - transform.position).magnitude > 0.5f) {
             moveToTarget = moveTo;
-            isMovingToTarget = true;
+            //isMovingToTarget = true;
         }
     }
 
@@ -153,7 +213,7 @@ public class AIController : MechController {
     /// Stopos the AI trying to move to its current goal position
     /// </summary>
     public void AbandonMovetoTarget() {
-        isMovingToTarget = false;
+        //isMovingToTarget = false;
     }
 
 
