@@ -30,11 +30,11 @@ public class Proj_Grenade : ProjectileController {
     public override void LaunchProjectile(Vector3 direction, Weapon instigator) {
         base.LaunchProjectile(direction, instigator);
         numBounces = 0;
+        transform.up = direction;
     }
 
 
     protected override void OnImpact(RaycastHit2D hit, Collider2D other) {
-        const float hitOffsetDist = 0.5f;
         const float maxDeflectAngle = 0.2f;
 
         base.OnImpact(hit, other);
@@ -47,11 +47,15 @@ public class Proj_Grenade : ProjectileController {
         }
 
         // otherwise do a bounce
-        Vector3 bounceDir = Random.insideUnitCircle;
-        bounceDir = Vector3.Lerp(hit.normal, bounceDir, Random.Range(0.0f, maxDeflectAngle));
+        Vector3 randOffset = Random.insideUnitCircle;
+        float randOffsetLerp = Random.Range(0.0f, maxDeflectAngle);
+        
+        Vector3 bounceDir = velocity - (2.0f * Vector3.Dot(velocity, hit.normal)) * (Vector3)hit.normal;
+        bounceDir = Vector3.Lerp(bounceDir, randOffset, randOffsetLerp);
 
         velocity = bounceDir.normalized * (velocity.magnitude * bounceElasticity);
-        transform.position = hit.point;
+        transform.position = hit.point + hit.normal * 0.1f;
+        transform.up = velocity.normalized;
     }
 
 
