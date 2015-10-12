@@ -21,7 +21,7 @@ public class Actor : MonoBehaviour {
 
     protected float lastReceivedDamage;
 
-    private bool isDead;
+    protected bool isDead;
     public bool IsDead {
         get { return isDead; }
     }

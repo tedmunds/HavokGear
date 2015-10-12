@@ -234,8 +234,44 @@ public class MechActor : Actor {
         base.Died();
 
         // TODO: death effects and stuff
-        Destroy(gameObject);
+        //Destroy(gameObject);
+        gameObject.SetActive(false);
     }
+
+
+
+
+    /// <summary>
+    /// Resets the state to a default
+    /// </summary>
+    public void ResetState(bool removeLeftWeapon = true, bool removeRightWeapon = true) {
+        GameObject detached;
+
+        if(removeLeftWeapon) {
+            detached = Detach(leftWeapon != null ? leftWeapon.gameObject : null);
+            if(detached != null) {
+                Destroy(detached);
+            }
+        }
+        
+        if(removeRightWeapon) {
+            detached = Detach(rightWeapon != null ? rightWeapon.gameObject : null);
+            if(detached != null) {
+                Destroy(detached);
+            }
+        }
+
+        health = maxhealth;
+        currentShield = maxShield;
+        currentEnergyLevel = maxEnergyLevel;
+
+        isDead = false;
+        controller.SetControllerActive(true);
+    }
+
+
+
+
 
 
     /// <summary>
@@ -243,13 +279,13 @@ public class MechActor : Actor {
     /// </summary>
     public void FalltoDeath(GameObject instigator) {
         const float fallLength = 0.3f;
-        controller.FreezeControl();
+        controller.SetControllerActive(false);
 
         StartCoroutine(ScaleToZero(fallLength));
     }
 
     /// <summary>
-    /// Coroutine that scales teh mech to zero and then kills it
+    /// Coroutine that scales the mech to zero and then kills it
     /// </summary>
     private IEnumerator ScaleToZero(float scaleTime) {
         Vector3 startScale = transform.localScale;

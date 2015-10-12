@@ -7,6 +7,8 @@ using System.Collections;
 /// </summary>
 public class WorldManager : MonoBehaviour {
 
+    public delegate void TimedFunction();
+
     public static WorldManager instance;
 
     /// <summary>
@@ -28,7 +30,7 @@ public class WorldManager : MonoBehaviour {
     public GameObject playerPhotonWhipPrefab;
 
     [SerializeField]
-    public Transform spawnPoint;
+    public Transform initialSpawnPoint;
 
 
     /// <summary>
@@ -37,10 +39,15 @@ public class WorldManager : MonoBehaviour {
     [HideInInspector]
     public PlayerController playerCharacter;
 
+    /// <summary>
+    /// The checkpoint that the player has set and will be spawned at if they die
+    /// </summary>
+    private Checkpoint activeCheckpoint;
+
 
 	private void Start() {
         instance = this;
-        SpawnPlayer();
+        SpawnInitialPlayer();
     }
 	
 
@@ -53,7 +60,7 @@ public class WorldManager : MonoBehaviour {
     /// <summary>
     /// Instantiates the player and camera prefab and initializes it with starting weapons, including photon whip
     /// </summary>
-    public void SpawnPlayer() {
+    public void SpawnInitialPlayer() {
         if(playerPrefab == null) {
             Debug.LogError("WorldManager does not have a player prefab set! Cannot spawn player!");
             return;
@@ -61,8 +68,8 @@ public class WorldManager : MonoBehaviour {
 
         // Spawn the player object
         Vector3 spawnLocation = transform.position;
-        if(spawnPoint != null) {
-            spawnLocation = spawnPoint.position;
+        if(initialSpawnPoint != null) {
+            spawnLocation = initialSpawnPoint.position;
         }
         else {
             Debug.LogWarning("WorldManager::SpawnPlayer() - No Spawn Point set, using default location!");
@@ -76,6 +83,8 @@ public class WorldManager : MonoBehaviour {
 
         // Call controller initialization, which progagates to the actor and grabs vital component references
         playerCharacter.OnSpawnInitialization();
+
+        playerCharacter.MechComponent.RegisterDeathListener(OnPlayerDeath);
 
         // spawn the players camera
         Vector3 CamSpawnLoc = spawnLocation;
@@ -174,5 +183,66 @@ public class WorldManager : MonoBehaviour {
 
         return spawnedWeapon;
     }
+
+
+    /// <summary>
+    /// Sets the checkpoint that the player will spawn at
+    /// </summary>
+    public void SetActiveCheckpoint(Checkpoint newActive) {
+        if(activeCheckpoint != null) {
+            activeCheckpoint.isCurrentCheckpoint = false;
+        }
+        
+        activeCheckpoint = newActive;
+        activeCheckpoint.isCurrentCheckpoint = true;
+    }
+
+
+    /// <summary>
+    /// Called whent he player dies, respawns them at a checkpoint
+    /// </summary>
+    public void OnPlayerDeath(Actor died) {
+        const float playerRespawnDelay = 1.0f;
+        SetTimer(playerRespawnDelay, RespawnPlayer);
+    }
+
+
+    public void RespawnPlayer() {
+        Vector3 spawnLocation;
+
+        // decide what spawn location to use
+        if(activeCheckpoint == null) {
+            spawnLocation = initialSpawnPoint != null ? initialSpawnPoint.position : transform.position;
+        }
+        else {
+            spawnLocation = activeCheckpoint.transform.position;
+        }
+
+        // reset the players state
+        playerCharacter.transform.position = spawnLocation;
+        playerCharacter.MechComponent.ResetState(true, false);
+
+        playerCharacter.gameObject.SetActive(true);
+    }
+
+
+    /// <summary>
+    /// Sets a function to be called after some delay
+    /// </summary>
+    public void SetTimer(float delay, TimedFunction function) {
+        StartCoroutine(TimerRoutine(delay, function));
+    }
+
+
+
+    
+    private IEnumerator TimerRoutine(float delay, TimedFunction function) {
+        for(float t = 0.0f; t < delay; t += Time.deltaTime) {
+            yield return null;
+        }
+
+        function();
+    }
+
 
 }

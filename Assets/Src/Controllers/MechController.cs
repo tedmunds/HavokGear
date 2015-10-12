@@ -81,7 +81,7 @@ public class MechController : MonoBehaviour {
     /// <summary>
     /// Stops all control activity from this controller
     /// </summary>
-    public void FreezeControl(bool newFrozen = false) {
+    public void SetControllerActive(bool newFrozen) {
         controllerActive = newFrozen;
     }
 
