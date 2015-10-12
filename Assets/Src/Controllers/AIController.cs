@@ -47,6 +47,13 @@ public class AIController : MechController {
     }
 
 
+    // When created from an object pool
+    protected override void OnEnable() {
+        base.OnEnable();
+        MechComponent.ResetState(true, true);
+    }
+
+
     /// <summary>
     /// Called when this controller is spawned
     /// </summary>
@@ -68,7 +75,9 @@ public class AIController : MechController {
 
     // NEcessary to degerigister our delegate
     public void OnDisable() {
-        seekerComponent.pathCallback -= OnPathComplete;
+        if(seekerComponent != null) {
+            seekerComponent.pathCallback -= OnPathComplete;
+        }
     }
     
 

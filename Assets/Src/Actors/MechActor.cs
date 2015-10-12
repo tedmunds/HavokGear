@@ -42,6 +42,7 @@ public class MechActor : Actor {
     
     [SerializeField]
     public ParticleSystem brokenWeaponEffectPrototype;
+    public ParticleSystem brokenEffect;
 
     /// <summary>
     /// Cached weapon reference for the item attached to each side
@@ -71,7 +72,7 @@ public class MechActor : Actor {
         currentEnergyLevel = maxEnergyLevel;
     }
     
-
+    
     /// <summary>
     /// Called from controller component when this mech is spawned by world manager
     /// </summary>
@@ -213,7 +214,13 @@ public class MechActor : Actor {
 
             // If it was breoken off, then add the weapon broken effects
             if(isBroken) {
-                ParticleSystem brokenEffect = Instantiate(brokenWeaponEffectPrototype);
+                if(brokenEffect == null) {
+                    brokenEffect = Instantiate(brokenWeaponEffectPrototype);
+                }
+                else {
+                    brokenEffect.gameObject.SetActive(true);
+                }
+                
                 brokenEffect.transform.position = detached.transform.position;
                 brokenEffect.transform.parent = controller.headTransform;
                 brokenEffect.Play();
@@ -233,9 +240,12 @@ public class MechActor : Actor {
     public override void Died() {
         base.Died();
 
-        // TODO: death effects and stuff
-        //Destroy(gameObject);
         gameObject.SetActive(false);
+        if(brokenEffect != null) {
+            brokenEffect.gameObject.SetActive(false);
+        }
+        
+        // TODO: death effects and stuff
     }
 
 
@@ -250,14 +260,14 @@ public class MechActor : Actor {
         if(removeLeftWeapon) {
             detached = Detach(leftWeapon != null ? leftWeapon.gameObject : null);
             if(detached != null) {
-                Destroy(detached);
+                detached.SetActive(false);
             }
         }
         
         if(removeRightWeapon) {
             detached = Detach(rightWeapon != null ? rightWeapon.gameObject : null);
             if(detached != null) {
-                Destroy(detached);
+                detached.SetActive(false);
             }
         }
 
@@ -266,7 +276,9 @@ public class MechActor : Actor {
         currentEnergyLevel = maxEnergyLevel;
 
         isDead = false;
-        controller.SetControllerActive(true);
+        if(controller != null) {
+            controller.SetControllerActive(true);
+        }
     }
 
 
@@ -300,5 +312,8 @@ public class MechActor : Actor {
 
         health = 0.0f;
         Died();
+
+        // reset the scale once it's dead
+        transform.localScale = startScale;
     }
 }

@@ -37,19 +37,35 @@ public class Weapon_MachineGun : Weapon {
         bulletTrailRenderer = GetComponent<LineRenderer>();
         bulletTrailRenderer.enabled = false;
 
-        if(hitEffectPrototype != null) {
+        if(hitEffectPrototype != null && hitEffect == null) {
             hitEffect = Instantiate(hitEffectPrototype);
             hitEffect.gameObject.SetActive(false);
             hitEffect.transform.parent = transform;
         }
 
-        if(shootEffectPrototype != null) {
+        if(shootEffectPrototype != null && shootEffect == null) {
             shootEffect = Instantiate(shootEffectPrototype);
             shootEffect.gameObject.SetActive(false);
             shootEffect.transform.parent = transform;
         }
     }
 
+
+    protected override void OnDisable() {
+        base.OnDisable();
+
+        if(hitEffect != null) {
+            hitEffect.gameObject.SetActive(false);
+        }
+        
+        if(shootEffect != null) {
+            shootEffect.gameObject.SetActive(false);
+        }
+
+        if(bulletTrailRenderer != null) {
+            bulletTrailRenderer.enabled = false;
+        }
+    }
 
     protected override void Update() {
         base.Update();

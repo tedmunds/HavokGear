@@ -44,7 +44,7 @@ public class MechController : MonoBehaviour {
     /// </summary>
     protected bool controllerActive;
 
-
+    
     // Use this for initialization
     protected virtual void Start () {
         controllerActive = true;
@@ -66,13 +66,15 @@ public class MechController : MonoBehaviour {
         currentMoveState = moveState_Normal;
     }
 
+    protected virtual void OnEnable() {
+        mechComponent = GetComponent<MechActor>();
+    }
+
 
     /// <summary>
     /// Called by world manager when a mech is spawned
     /// </summary>
     public virtual void OnSpawnInitialization() {
-        mechComponent = GetComponent<MechActor>();
-
         // proagate initialization to the actor component
         mechComponent.OnSpawnInitialization();
     }

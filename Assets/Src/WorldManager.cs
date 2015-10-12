@@ -44,9 +44,18 @@ public class WorldManager : MonoBehaviour {
     /// </summary>
     private Checkpoint activeCheckpoint;
 
+    /// <summary>
+    /// Object pool used for enemies and weapons to save instantiating them constantly as they tend to have lots of components and 
+    /// get re-used very often
+    /// </summary>
+    private ObjectPool objectPool;
+    
+
 
 	private void Start() {
         instance = this;
+        objectPool = new ObjectPool();
+
         SpawnInitialPlayer();
     }
 	
@@ -136,7 +145,11 @@ public class WorldManager : MonoBehaviour {
         }
 
         // spawn the bot
-        GameObject spawned = (GameObject)Instantiate(botPrefab, spawnLocation, Quaternion.identity);
+        //GameObject spawned = (GameObject)Instantiate(botPrefab, spawnLocation, Quaternion.identity);
+        GameObject spawned = objectPool.GetInactiveGameObjectInstance(botPrefab.gameObject);//, spawnLocation, Quaternion.identity);
+        spawned.transform.position = spawnLocation;
+        spawned.SetActive(true);
+
         AIController botCharacter = spawned.GetComponent<AIController>();
         if(botCharacter != null) {
             // Call controller initialization, which progagates to the actor and grabs vital component references
@@ -174,7 +187,8 @@ public class WorldManager : MonoBehaviour {
     /// Spawn and init a weapon from tehinput prefab
     /// </summary>
     public GameObject SpawnWeapon(GameObject prefab) {
-        GameObject spawnedWeapon = Instantiate(prefab);
+        GameObject spawnedWeapon = objectPool.GetInactiveGameObjectInstance(prefab);
+        spawnedWeapon.SetActive(true);
 
         Weapon weaponComponent = spawnedWeapon.GetComponent<Weapon>();
         if(weaponComponent != null) {
@@ -242,6 +256,17 @@ public class WorldManager : MonoBehaviour {
         }
 
         function();
+    }
+
+
+    /// <summary>
+    /// Spawns an arbitrary game object using the object pool, good for commonly re-used objects like projectiles etc
+    /// </summary>
+    public GameObject SpawnObject(GameObject prototype, Vector3 position) {
+        GameObject obj = objectPool.GetInactiveGameObjectInstance(prototype);
+        obj.transform.position = position;
+        obj.SetActive(true);
+        return obj;
     }
 
 

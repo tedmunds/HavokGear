@@ -224,7 +224,7 @@ public class Whip_PhotonWhip : Weapon {
             owner.MechComponent.DoAttachment(MechActor.EAttachSide.Left, targetWeapon.gameObject, Vector3.zero);
 
             if(destroyOldWeapon && oldWeapon != null) {
-                Destroy(oldWeapon);
+                oldWeapon.SetActive(false);
             }
 
             // Also, if it was an AI controller, tell it that its weapon was stolen

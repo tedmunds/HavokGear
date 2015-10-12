@@ -17,8 +17,7 @@ public class Proj_Grenade : ProjectileController {
 
     [SerializeField]
     private Animator explosionEffectPrefab;
-
-
+    
     private int numBounces;
 
 
@@ -26,6 +25,11 @@ public class Proj_Grenade : ProjectileController {
         base.Update();
     }
 
+
+    protected override void OnEnable() {
+        base.OnEnable();
+        numBounces = 0;
+    }
 
     public override void LaunchProjectile(Vector3 direction, Weapon instigator) {
         base.LaunchProjectile(direction, instigator);
@@ -76,7 +80,7 @@ public class Proj_Grenade : ProjectileController {
 
 
     private void Explode() {
-        Destroy(gameObject);
+        gameObject.SetActive(false);
 
         Collider2D[] overlaps = Physics2D.OverlapCircleAll(transform.position, explosionRadius);
         for(int i = 0; i < overlaps.Length; i++) {
@@ -90,5 +94,5 @@ public class Proj_Grenade : ProjectileController {
         Animator explosionAnimator = (Animator)Instantiate(explosionEffectPrefab, transform.position, Quaternion.identity);
         Destroy(explosionAnimator.gameObject, 0.3f);
     }
-
+   
 }
