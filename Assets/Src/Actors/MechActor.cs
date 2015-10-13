@@ -134,7 +134,7 @@ public class MechActor : Actor {
         float reducedDamage = modifiedDamage;
 
         // Take the damage out of the shield first
-        float shieldAbsorbtion = Mathf.Min(currentShield, damageAmount);
+        float shieldAbsorbtion = Mathf.Min(currentShield, reducedDamage);
         currentShield -= shieldAbsorbtion;
 
         // And reduce the damage that is done to health
@@ -316,4 +316,22 @@ public class MechActor : Actor {
         // reset the scale once it's dead
         transform.localScale = startScale;
     }
+
+
+    protected override float DoDeathSequence(MechController instigator, Weapon weaponUsed) {
+        if(instigator.GetType() != typeof(PlayerController)) {
+            return 0.0f;
+        }
+
+        const float delayLength = 0.3f;
+        const float knowckbackForce = 100.0f;
+
+        // So it was killed by the player, do a fancy death sequence where it shoots away from the palyer
+        AddForce((transform.position - instigator.transform.position).normalized, knowckbackForce);
+        controller.SetControllerActive(false);
+
+        return delayLength;
+    }
+
+
 }
