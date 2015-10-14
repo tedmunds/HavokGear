@@ -17,6 +17,9 @@ public class MechController : MonoBehaviour {
 
     [SerializeField]
     public Transform legTransform;
+
+    [SerializeField]
+    public Animator legAnimator;
     
     [SerializeField]
     public float baseMoveSpeed = 5.0f;

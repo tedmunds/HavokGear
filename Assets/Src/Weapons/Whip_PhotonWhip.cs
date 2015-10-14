@@ -35,6 +35,12 @@ public class Whip_PhotonWhip : Weapon {
     [SerializeField]
     private ParticleSystem whipEndPointPrototype;
 
+    [SerializeField]
+    private AudioClip fireSound;
+
+    [SerializeField]
+    private AudioClip stealSound;
+
     // the location selected for where the whip will shoot to
     private Vector3 targetLocation;
     private Vector3 lerpedEndPoint;
@@ -83,6 +89,8 @@ public class Whip_PhotonWhip : Weapon {
         else if(isExpanding) {
             // Switch to retracting
             isExpanding = false;
+
+            PlaySound(stealSound, 1.0f, Random.Range(0.9f, 1.0f));
 
             // Detach the weapon, so it can fly back!
             if(targetWeapon != null && targetWeapon.owner != null) {
@@ -180,6 +188,8 @@ public class Whip_PhotonWhip : Weapon {
             endPointEffect.gameObject.SetActive(true);
             endPointEffect.Play();
         }
+
+        PlaySound(fireSound, 1.0f, Random.Range(0.9f, 1.0f));
         
         return beganFire;
     }

@@ -5,7 +5,10 @@ public class Weapon_GrenadeLauncher : Weapon {
 
     [SerializeField]
     public GameObject projectilePrototype;
-    
+
+    [SerializeField]
+    private AudioClip shootSound;
+
 
     protected override void Start() {
         base.Start();
@@ -22,8 +25,10 @@ public class Weapon_GrenadeLauncher : Weapon {
 
         Vector3 fireDirection = GetAimDirection();
 
+        PlaySound(shootSound);
+
         // Spawn and launch the projectile
-        GameObject spawnedProjectile = WorldManager.instance.SpawnObject(projectilePrototype, firePoint.position);// (GameObject)Instantiate(projectilePrototype, firePoint.position, Quaternion.identity);
+        GameObject spawnedProjectile = WorldManager.instance.SpawnObject(projectilePrototype, firePoint.position);
         ProjectileController projController = spawnedProjectile.GetComponent<ProjectileController>();
         if(projController != null) {
             projController.LaunchProjectile(fireDirection, this);

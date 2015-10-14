@@ -26,6 +26,9 @@ public class Weapon_MachineGun : Weapon {
     [SerializeField]
     private Color trailEndColor;
 
+    [SerializeField]
+    private AudioClip fireSound;
+
     private LineRenderer bulletTrailRenderer;
     private ParticleSystem hitEffect;
     private ParticleSystem shootEffect;
@@ -118,7 +121,9 @@ public class Weapon_MachineGun : Weapon {
                 }
             }
         }
-        
+
+        PlaySound(fireSound, 1.0f, Random.Range(0.85f, 1.0f));
+
 #if debug_fire
         Debug.DrawLine(firePoint.position, endPoint, Color.yellow, 1.0f);
 #endif

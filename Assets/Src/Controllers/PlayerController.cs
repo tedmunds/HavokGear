@@ -85,6 +85,16 @@ public class PlayerController : MechController {
             headTransform.up = Vector3.RotateTowards(currentFacing, aimDirection, baseAimRotSpeed * Time.deltaTime, 0.0f);
         }
 
+        // Set leg direction
+        if(legTransform != null && inputVector.magnitude > 0.1f) {
+            legTransform.transform.up = inputVector.normalized;
+        }
+
+        // update leg animation
+        if(legAnimator != null) {
+            legAnimator.SetFloat("MoveSpeed", inputVector.magnitude);
+        }
+
         // Do the fireing input checks
         if(Input.GetButtonDown(fireMainInput)) {
             if(mechComponent.leftWeapon != null) {

@@ -52,6 +52,11 @@ public abstract class Weapon : MonoBehaviour {
     public int currentAmmo;
 
     /// <summary>
+    /// Audio player component to play sounds on this weapon
+    /// </summary>
+    protected AudioSource audioPlayer;
+
+    /// <summary>
     /// The weapon is currently firing
     /// </summary>
     protected bool isFiring;
@@ -72,6 +77,8 @@ public abstract class Weapon : MonoBehaviour {
 	    if(firePoint == null) {
             Debug.LogError("Weapon: <" + name + "> does not have a fire point!");
         }
+
+        audioPlayer = GetComponent<AudioSource>();
     }
 	
 	protected virtual void OnDisable() {
@@ -203,6 +210,20 @@ public abstract class Weapon : MonoBehaviour {
         currentAmmo = baseAmmo;
         consumesAmmo = usesAmmo;
         owner = controller;
+    }
+
+
+    /// <summary>
+    /// Tries to play the sound ont he weapons audio source component
+    /// </summary>
+    public void PlaySound(AudioClip soundClip, float volumeScale = 1.0f, float pitch = 1.0f) {
+        if(audioPlayer == null || soundClip == null) {
+            return;
+        }
+
+        audioPlayer.pitch = pitch;
+
+        audioPlayer.PlayOneShot(soundClip, volumeScale);
     }
 
 }
