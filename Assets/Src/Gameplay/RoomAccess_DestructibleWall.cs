@@ -16,8 +16,10 @@ public class RoomAccess_DestructibleWall : RoomAccess {
 
 
     public void WasDestroyed(Actor destroyed) {
-        targetFog.ClearFog();
-
+        if(targetFog != null) {
+            targetFog.ClearFog();
+        }
+        
         // TODO: Broken wall sprite or something
         Destroy(gameObject);
     }
