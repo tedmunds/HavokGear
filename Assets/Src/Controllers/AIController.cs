@@ -41,6 +41,9 @@ public class AIController : MechController {
     private int currentPathWaypoint;
     private Path currentPath;
     private bool waitingForPath;
+
+    // Pathing interrupt: forces a new path calculation
+    private bool wantsNewPath;
     
     protected override void Start() {
         base.Start();
@@ -98,7 +101,7 @@ public class AIController : MechController {
         }
 
         // Start looking for a path
-        if(currentPath == null && !waitingForPath) {
+        if(currentPath == null && !waitingForPath || wantsNewPath) {
             FindNewPath();
             return;
         }
@@ -112,6 +115,8 @@ public class AIController : MechController {
             // Move towards next waypoint
             Vector3 toWaypoint = (currentPath.vectorPath[currentPathWaypoint] - transform.position).normalized;
             movementComponent.Move(toWaypoint * baseMoveSpeed * Time.deltaTime);
+
+            Debug.DrawLine(transform.position, currentPath.vectorPath[currentPathWaypoint], Color.blue);
 
             if(Vector3.Distance(transform.position, currentPath.vectorPath[currentPathWaypoint]) < reachedGoalError) {
                 currentPathWaypoint++;
@@ -129,6 +134,10 @@ public class AIController : MechController {
         seekerComponent.StartPath(transform.position, moveToTarget, OnPathComplete);
     }
 
+
+    public void InterruptPath() {
+        wantsNewPath = true;
+    }
 
     /// <summary>
     /// Called when a path to the target destination has been created
@@ -212,10 +221,10 @@ public class AIController : MechController {
         moveTo.z = 0;
 
         // Only try to move there if it is actually in a different location to avoid little jerky start-stop movements
-        if((moveTo - transform.position).magnitude > 0.5f) {
+        //if((moveTo - transform.position).magnitude > 0.5f) {
             moveToTarget = moveTo;
             //isMovingToTarget = true;
-        }
+        //}
     }
 
     /// <summary>
