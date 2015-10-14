@@ -27,7 +27,9 @@ public class Behaviour_Idle : BehaviourSM.BehaviourState {
             thisLookInterval = Random.Range(minWaitInterval, maxWaitInterval);
             lastLooktime = Time.time;
         }
-        
+
+        controller.SetMovetoTarget(controller.transform.position);
+
         // lerp towards teh current look direction
         Vector3 currentFacing = controller.headTransform.up;
         controller.headTransform.up = Vector3.RotateTowards(currentFacing, lookDirection, lookSpeed * Time.deltaTime, 0.0f);

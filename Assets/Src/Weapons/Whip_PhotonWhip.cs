@@ -32,6 +32,9 @@ public class Whip_PhotonWhip : Weapon {
     [SerializeField]
     private LayerMask weaponDetectionLayers;
 
+    [SerializeField]
+    private ParticleSystem whipEndPointPrototype;
+
     // the location selected for where the whip will shoot to
     private Vector3 targetLocation;
     private Vector3 lerpedEndPoint;
@@ -47,12 +50,21 @@ public class Whip_PhotonWhip : Weapon {
 
     private bool whipActive;
 
-
+    private ParticleSystem endPointEffect;
 
     protected override void Start() {
         base.Start();
         whipEffect = firePoint.GetComponent<LineRenderer>();
         whipEffect.enabled = false;
+
+
+        if(whipEndPointPrototype) {
+            endPointEffect = Instantiate(whipEndPointPrototype);
+            endPointEffect.transform.parent = transform;
+            endPointEffect.Stop();
+            endPointEffect.gameObject.SetActive(false);
+        }
+        
     }
 
 
@@ -119,6 +131,11 @@ public class Whip_PhotonWhip : Weapon {
 
         Vector3 endPoint = lerpedEndPoint;
         whipEffect.SetPosition(whipSegments - 1, endPoint);
+
+        // Finally position the particle system end point
+        if(endPointEffect != null) {
+            endPointEffect.transform.position = lerpedEndPoint;
+        }
     }
 
 
@@ -126,9 +143,9 @@ public class Whip_PhotonWhip : Weapon {
     public override bool BeginFire() {
         const string intersectLayerName = "Terrain";
 
-        // base check for can fire
+        // base check for can fire: Also do not shoot whip if its already out
         bool beganFire = base.BeginFire();
-        if(!beganFire) {
+        if(!beganFire || whipActive) {
             return false;
         }
         
@@ -158,6 +175,12 @@ public class Whip_PhotonWhip : Weapon {
         lerpedEndPoint = firePoint.position;
         
         whipEffect.enabled = true;
+
+        if(endPointEffect != null) {
+            endPointEffect.gameObject.SetActive(true);
+            endPointEffect.Play();
+        }
+        
         return beganFire;
     }
 
@@ -188,6 +211,10 @@ public class Whip_PhotonWhip : Weapon {
     private void EndWhipSequence() {
         whipEffect.enabled = false;
         whipActive = false;
+        if(endPointEffect != null) {
+            endPointEffect.gameObject.SetActive(false);
+        }
+        
 
         if(targetWeapon != null) {
             // Cache the old weapon
@@ -197,7 +224,7 @@ public class Whip_PhotonWhip : Weapon {
             owner.MechComponent.DoAttachment(MechActor.EAttachSide.Left, targetWeapon.gameObject, Vector3.zero);
 
             if(destroyOldWeapon && oldWeapon != null) {
-                Destroy(oldWeapon);
+                oldWeapon.SetActive(false);
             }
 
             // Also, if it was an AI controller, tell it that its weapon was stolen

@@ -23,7 +23,7 @@ public class Weapon_GrenadeLauncher : Weapon {
         Vector3 fireDirection = GetAimDirection();
 
         // Spawn and launch the projectile
-        GameObject spawnedProjectile = (GameObject)Instantiate(projectilePrototype, firePoint.position, Quaternion.identity);
+        GameObject spawnedProjectile = WorldManager.instance.SpawnObject(projectilePrototype, firePoint.position);// (GameObject)Instantiate(projectilePrototype, firePoint.position, Quaternion.identity);
         ProjectileController projController = spawnedProjectile.GetComponent<ProjectileController>();
         if(projController != null) {
             projController.LaunchProjectile(fireDirection, this);

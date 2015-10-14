@@ -24,6 +24,12 @@ public class ProjectileController : MonoBehaviour {
 	}
 
 
+    protected virtual void OnEnable() {
+        velocity = Vector3.zero;
+        sourceWeapon = null;
+        launchTime = 0.0f;
+    }
+
     protected virtual void Update() {
         Move();
     }
@@ -65,7 +71,7 @@ public class ProjectileController : MonoBehaviour {
 
         // destroy atfter lifetime
         if(Time.time - launchTime > maxLifeTime && maxLifeTime != 0.0f) {
-            Destroy(gameObject);
+            gameObject.SetActive(false);
         }
     }
 

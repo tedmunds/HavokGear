@@ -34,7 +34,7 @@ public class EnemySpawner : MonoBehaviour {
     private List<AIController> activeEnemies;
 
 	private void Start() {
-        world = GameObject.FindObjectOfType<WorldManager>();
+        world = FindObjectOfType<WorldManager>();
 
         activeEnemies = new List<AIController>();
 
@@ -46,7 +46,7 @@ public class EnemySpawner : MonoBehaviour {
 	
 	private void Update() {
         for(int i = activeEnemies.Count - 1; i >= 0; i--) {
-            if(activeEnemies[i] == null) {
+            if(activeEnemies[i] == null || !activeEnemies[i].gameObject.activeSelf) {
                 activeEnemies.RemoveAt(i);
             }
         }

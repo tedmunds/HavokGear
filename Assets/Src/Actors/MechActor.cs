@@ -42,6 +42,7 @@ public class MechActor : Actor {
     
     [SerializeField]
     public ParticleSystem brokenWeaponEffectPrototype;
+    public ParticleSystem brokenEffect;
 
     /// <summary>
     /// Cached weapon reference for the item attached to each side
@@ -71,7 +72,7 @@ public class MechActor : Actor {
         currentEnergyLevel = maxEnergyLevel;
     }
     
-
+    
     /// <summary>
     /// Called from controller component when this mech is spawned by world manager
     /// </summary>
@@ -133,7 +134,7 @@ public class MechActor : Actor {
         float reducedDamage = modifiedDamage;
 
         // Take the damage out of the shield first
-        float shieldAbsorbtion = Mathf.Min(currentShield, damageAmount);
+        float shieldAbsorbtion = Mathf.Min(currentShield, reducedDamage);
         currentShield -= shieldAbsorbtion;
 
         // And reduce the damage that is done to health
@@ -213,7 +214,13 @@ public class MechActor : Actor {
 
             // If it was breoken off, then add the weapon broken effects
             if(isBroken) {
-                ParticleSystem brokenEffect = Instantiate(brokenWeaponEffectPrototype);
+                if(brokenEffect == null) {
+                    brokenEffect = Instantiate(brokenWeaponEffectPrototype);
+                }
+                else {
+                    brokenEffect.gameObject.SetActive(true);
+                }
+                
                 brokenEffect.transform.position = detached.transform.position;
                 brokenEffect.transform.parent = controller.headTransform;
                 brokenEffect.Play();
@@ -233,9 +240,50 @@ public class MechActor : Actor {
     public override void Died() {
         base.Died();
 
+        gameObject.SetActive(false);
+        if(brokenEffect != null) {
+            brokenEffect.gameObject.SetActive(false);
+        }
+        
         // TODO: death effects and stuff
-        Destroy(gameObject);
     }
+
+
+
+
+    /// <summary>
+    /// Resets the state to a default
+    /// </summary>
+    public void ResetState(bool removeLeftWeapon = true, bool removeRightWeapon = true) {
+        GameObject detached;
+
+        if(removeLeftWeapon) {
+            detached = Detach(leftWeapon != null ? leftWeapon.gameObject : null);
+            if(detached != null) {
+                detached.SetActive(false);
+            }
+        }
+        
+        if(removeRightWeapon) {
+            detached = Detach(rightWeapon != null ? rightWeapon.gameObject : null);
+            if(detached != null) {
+                detached.SetActive(false);
+            }
+        }
+
+        health = maxhealth;
+        currentShield = maxShield;
+        currentEnergyLevel = maxEnergyLevel;
+
+        isDead = false;
+        if(controller != null) {
+            controller.SetControllerActive(true);
+        }
+    }
+
+
+
+
 
 
     /// <summary>
@@ -243,13 +291,13 @@ public class MechActor : Actor {
     /// </summary>
     public void FalltoDeath(GameObject instigator) {
         const float fallLength = 0.3f;
-        controller.FreezeControl();
+        controller.SetControllerActive(false);
 
         StartCoroutine(ScaleToZero(fallLength));
     }
 
     /// <summary>
-    /// Coroutine that scales teh mech to zero and then kills it
+    /// Coroutine that scales the mech to zero and then kills it
     /// </summary>
     private IEnumerator ScaleToZero(float scaleTime) {
         Vector3 startScale = transform.localScale;
@@ -264,5 +312,26 @@ public class MechActor : Actor {
 
         health = 0.0f;
         Died();
+
+        // reset the scale once it's dead
+        transform.localScale = startScale;
     }
+
+
+    protected override float DoDeathSequence(MechController instigator, Weapon weaponUsed) {
+        if(instigator.GetType() != typeof(PlayerController)) {
+            return 0.0f;
+        }
+
+        const float delayLength = 0.3f;
+        const float knowckbackForce = 100.0f;
+
+        // So it was killed by the player, do a fancy death sequence where it shoots away from the palyer
+        AddForce((transform.position - instigator.transform.position).normalized, knowckbackForce);
+        controller.SetControllerActive(false);
+
+        return delayLength;
+    }
+
+
 }

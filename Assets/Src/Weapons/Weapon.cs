@@ -19,7 +19,7 @@ public abstract class Weapon : MonoBehaviour {
     public float cameraRecoil = 0.1f;
 
     [SerializeField]
-    public int currentAmmo;
+    public int baseAmmo;
 
     [SerializeField]
     public int ammoPerShot = 1;
@@ -47,22 +47,25 @@ public abstract class Weapon : MonoBehaviour {
     /// </summary>
     [HideInInspector]
     public MechController owner;
-    
+
+    [HideInInspector]
+    public int currentAmmo;
+
     /// <summary>
     /// The weapon is currently firing
     /// </summary>
     protected bool isFiring;
 
     protected float lastFireTime;
-
-    protected int startingAmmo;
+    
+    //protected int startingAmmo;
     protected bool consumesAmmo = true;
 
     /// <summary>
     /// Called when a weapon is spawned by World manager, before any system initialization functions
     /// </summary>
     public virtual void OnSpawn() {
-        startingAmmo = currentAmmo;
+        //startingAmmo = currentAmmo;
     }
 
     protected virtual void Start() {
@@ -71,7 +74,11 @@ public abstract class Weapon : MonoBehaviour {
         }
     }
 	
-	
+	protected virtual void OnDisable() {
+        
+    }
+
+
 	protected virtual void Update() {
 	    // Update and check for refire on automatic weapons
         if(isFiring && isAutomatic) {
@@ -193,7 +200,7 @@ public abstract class Weapon : MonoBehaviour {
     /// Called when this weapon is equipped onto a mech
     /// </summary>
     public virtual void OnEquip(MechController controller, bool usesAmmo = true) {
-        currentAmmo = startingAmmo;
+        currentAmmo = baseAmmo;
         consumesAmmo = usesAmmo;
         owner = controller;
     }

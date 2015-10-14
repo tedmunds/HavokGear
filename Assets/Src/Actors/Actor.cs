@@ -21,7 +21,7 @@ public class Actor : MonoBehaviour {
 
     protected float lastReceivedDamage;
 
-    private bool isDead;
+    protected bool isDead;
     public bool IsDead {
         get { return isDead; }
     }
@@ -66,7 +66,14 @@ public class Actor : MonoBehaviour {
         
         if(health <= 0.0f) {
             health = 0.0f;
-            Died();
+
+            float deathSequenceLength = DoDeathSequence(instigator, weaponUsed);
+            if(deathSequenceLength == 0.0f) {
+                Died();
+            }
+            else {
+                StartCoroutine(DelayedDeath(deathSequenceLength));
+            }
         }
 
         lastReceivedDamage = Time.time;
@@ -94,5 +101,25 @@ public class Actor : MonoBehaviour {
             }
         }
     }
+
+
+    /// <summary>
+    /// Does the death sequence, and returns how long the death sequence is
+    /// </summary>
+    protected virtual float DoDeathSequence(MechController instigator, Weapon weaponUsed) {
+        return 0.0f;
+    }
+
+
+
+
+    private IEnumerator DelayedDeath(float delay) {
+        for(float t = 0.0f; t < delay; t += Time.deltaTime) {
+            yield return null;
+        }
+        
+        Died();
+    }
+
 
 }
