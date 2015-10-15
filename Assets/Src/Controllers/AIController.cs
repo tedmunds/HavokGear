@@ -119,7 +119,11 @@ public class AIController : MechController {
             FindNewPath();
             return;
         }
-        
+
+        // for animating
+        Vector3 moveDirection = Vector3.zero;
+        float moveSpeed = 0.0f;
+
         // Check if its reached the end of the path
         if(currentPathWaypoint >= currentPath.vectorPath.Count) {
             // Reached end of current path
@@ -130,12 +134,25 @@ public class AIController : MechController {
             Vector3 toWaypoint = (currentPath.vectorPath[currentPathWaypoint] - transform.position).normalized;
             movementComponent.Move(toWaypoint * baseMoveSpeed * Time.deltaTime);
 
+            moveDirection = toWaypoint.normalized;
+            moveSpeed = 1.0f;
+
             Debug.DrawLine(transform.position, currentPath.vectorPath[currentPathWaypoint], Color.blue);
 
             if(Vector3.Distance(transform.position, currentPath.vectorPath[currentPathWaypoint]) < reachedGoalError) {
                 currentPathWaypoint++;
                 return;
             }
+        }
+
+        // Set legs to walk direction
+        if(legTransform != null && moveDirection.magnitude > 0.0f) {
+            legTransform.up = moveDirection;
+        }
+
+        // Update the animator
+        if(legAnimator != null) {
+            legAnimator.SetFloat("MoveSpeed", moveSpeed);
         }
     }
 
