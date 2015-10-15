@@ -68,6 +68,13 @@ public class BehaviourSM  {
     }
 
 
+    public void ResetDefault() {
+        stateStack.Clear();
+        currentState = baseState;
+    }
+
+
+
     /// <summary>
     /// Main update for state machine: will update the currently active state and do transitions to other states
     /// </summary>

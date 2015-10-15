@@ -55,6 +55,8 @@ public class MechActor : Actor {
     
     private MechController controller;
 
+    private bool isFalling;
+
     private float currentShield;
     public float CurrentShield {
         get { return currentShield; }
@@ -126,7 +128,7 @@ public class MechActor : Actor {
     /// Overriden to account for shield absorbtion effect
     /// </summary>
     public override void TakeDamage(float damageAmount, MechController instigator, Weapon weaponUsed) {
-        if(IsDead) {
+        if(IsDead || isFalling) {
             return;
         }
 
@@ -291,9 +293,16 @@ public class MechActor : Actor {
     /// </summary>
     public void FalltoDeath(GameObject instigator) {
         const float fallLength = 0.3f;
-        controller.SetControllerActive(false);
 
-        StartCoroutine(ScaleToZero(fallLength));
+        if(isDead) {
+            return;
+        }
+
+        controller.SetControllerActive(false);
+        
+        if(!isFalling) {
+            StartCoroutine(ScaleToZero(fallLength));
+        }
     }
 
     /// <summary>
@@ -301,20 +310,22 @@ public class MechActor : Actor {
     /// </summary>
     private IEnumerator ScaleToZero(float scaleTime) {
         Vector3 startScale = transform.localScale;
+        isFalling = true;
 
         for(float t = 0.0f; t < scaleTime; t += Time.deltaTime) {
             // cubic scaling seems to look good
             float scaleFactor = 1.0f - ((t / scaleTime) * (t / scaleTime) * (t / scaleTime));
             transform.localScale = startScale * scaleFactor;
-
+            
             yield return null;
         }
+        
+        // reset the scale once it's dead
+        transform.localScale = startScale;
+        isFalling = false;
 
         health = 0.0f;
         Died();
-
-        // reset the scale once it's dead
-        transform.localScale = startScale;
     }
 
 
@@ -325,6 +336,8 @@ public class MechActor : Actor {
 
         const float delayLength = 0.3f;
         const float knowckbackForce = 100.0f;
+
+        isDead = true;
 
         // So it was killed by the player, do a fancy death sequence where it shoots away from the palyer
         AddForce((transform.position - instigator.transform.position).normalized, knowckbackForce);

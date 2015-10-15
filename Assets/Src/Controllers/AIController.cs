@@ -63,8 +63,22 @@ public class AIController : MechController {
     public override void OnSpawnInitialization() {
         base.OnSpawnInitialization();
 
-        stateMachine = new BehaviourSM(this);
-        seekerComponent = GetComponent<Seeker>();
+        if(stateMachine == null) {
+            stateMachine = new BehaviourSM(this);
+        }
+        else {
+            stateMachine.ResetDefault();
+        }
+
+        if(seekerComponent == null) {
+            seekerComponent = GetComponent<Seeker>();
+        }
+        
+        currentPath = null;
+        waitingForPath = false;
+        wantsNewPath = true;
+        currentPathWaypoint = 0;
+        SetMovetoTarget(transform.position);
     }
 
 
@@ -131,6 +145,7 @@ public class AIController : MechController {
     /// </summary>
     private void FindNewPath() {
         waitingForPath = true;
+        wantsNewPath = false;
         seekerComponent.StartPath(transform.position, moveToTarget, OnPathComplete);
     }
 
