@@ -20,6 +20,9 @@ public class EnemySpawner : MonoBehaviour {
     [SerializeField]
     private int maxEnemeiesAtOnce = 3;
 
+    [SerializeField]
+    private int totalEnemiesToSpawn = 5;
+
     // reference to the woprld maanger used for spawning enemies
     private WorldManager world;
     
@@ -29,6 +32,8 @@ public class EnemySpawner : MonoBehaviour {
     // Spawn timing
     private float lastSpawnTime = 0.0f;
     private float nextSpawnInteral;
+
+    private int numSpawned = 0;
 
     // List of the enemies that are currently spawned and active
     private List<AIController> activeEnemies;
@@ -41,7 +46,9 @@ public class EnemySpawner : MonoBehaviour {
         if(enemyPrototype.GetComponent<AIController>() == null) {
             Debug.LogWarning(name+" is trying to spawn an entity without an AI component!");
         }
-	}
+
+        numSpawned = 0;
+    }
 	
 	
 	private void Update() {
@@ -53,8 +60,11 @@ public class EnemySpawner : MonoBehaviour {
 
 
 	    if(spawnerActive) {
-            // Do a spawn if enough time has passed
-            if(Time.time - lastSpawnTime > nextSpawnInteral && activeEnemies.Count < maxEnemeiesAtOnce) {
+            // Do a spawn if enough time has passed and there isnt too many enemies out already, and it hasnt reached the spawn limit
+            if(Time.time - lastSpawnTime > nextSpawnInteral && 
+                activeEnemies.Count < maxEnemeiesAtOnce && 
+                numSpawned < totalEnemiesToSpawn) {
+
                 nextSpawnInteral = Random.Range(spawnIntervalRange.x, spawnIntervalRange.y);
                 lastSpawnTime = Time.time;
 
@@ -100,5 +110,7 @@ public class EnemySpawner : MonoBehaviour {
         if(spawned != null) {
             activeEnemies.Add(spawned);
         }
+
+        numSpawned += 1;
     }
 }
