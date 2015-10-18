@@ -77,6 +77,7 @@ public class PlayerController : MechController {
         // and rotate the head to face the current aim location
         currentAimLoc = GetAimLocation();
         aimDirection = (currentAimLoc - transform.position).normalized;
+        aimDirection.z = 0;
 
         // Interpolate the rotation for a smooth transition, at a max speed
         if(headTransform != null) {

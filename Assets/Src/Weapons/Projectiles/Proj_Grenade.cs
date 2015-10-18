@@ -29,6 +29,11 @@ public class Proj_Grenade : ProjectileController {
     protected override void OnEnable() {
         base.OnEnable();
         numBounces = 0;
+
+        TrailRenderer trail = GetComponent<TrailRenderer>();
+        if(trail != null) {
+            //trail.time = -1;
+        }
     }
 
     public override void LaunchProjectile(Vector3 direction, Weapon instigator) {
