@@ -14,6 +14,9 @@ public class Whip_PhotonWhip : Weapon {
     private Vector3[] segmentPositions = new Vector3[whipSegments];
 
     [SerializeField]
+    public float stealCoolDown;
+
+    [SerializeField]
     public float energyPerUse;
 
     // Whip movement properties
@@ -50,6 +53,9 @@ public class Whip_PhotonWhip : Weapon {
 
     // Time that the fire was started
     private float fireTime;
+
+    // The time of the last successful weapon steal
+    private float lastStealTime = -10000;
 
     // Is the whiup expanding or retracting
     private bool isExpanding;
@@ -179,6 +185,16 @@ public class Whip_PhotonWhip : Weapon {
         // Check for weapon at the end point to snap to
         CheckNearbyWeapons(endPoint);
 
+        // A weapon is being stolen
+        if(targetWeapon != null) {
+            lastStealTime = Time.time;
+
+            // notify the owner if its the player
+            if(owner.GetType() == typeof(PlayerController)) {
+                ((PlayerController)owner).SuccessfulWeaponSteal(this);
+            }
+        }
+
         targetLocation = targetWeapon != null? targetWeapon.transform.position : endPoint;
         lerpedEndPoint = firePoint.position;
         
@@ -204,6 +220,12 @@ public class Whip_PhotonWhip : Weapon {
             // Check if the owner has the energy
             if(owner.MechComponent.EnergyLevel > energyPerUse) {
                 owner.MechComponent.ConsumeEnergy(energyPerUse);
+
+                // check the cooldown for successful steals
+                if(Time.time - lastStealTime < stealCoolDown) {
+                    return false;
+                }
+                
                 return true;
             }
         }

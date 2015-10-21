@@ -40,13 +40,19 @@ public class PlayerController : MechController {
         get { return playerCamera; }
         set { playerCamera = value; }
     }
-    
+
+    private UI_PlayerHUD playerHUD;
+    public UI_PlayerHUD PlayerHUD {
+        get { return playerHUD; }
+    }
 
     /// <summary>
     /// Where the player was last recorded aiming at & the cached direction to that point
     /// </summary>
     private Vector3 currentAimLoc;
     private Vector3 aimDirection;
+
+    private LineRenderer laserSightRenderer;
 
     /// <summary>
     /// Boost control vars
@@ -60,6 +66,13 @@ public class PlayerController : MechController {
     
     protected override void Start () {
         base.Start();
+
+        playerHUD = GetComponent<UI_PlayerHUD>();
+        if(playerHUD == null) {
+            Debug.LogWarning("Player does not have HUD component!");
+        }
+
+        laserSightRenderer = GetComponent<LineRenderer>();
     }
 
 
@@ -129,6 +142,16 @@ public class PlayerController : MechController {
         // Check if a boost has ended
         if(isBoosting && Time.time - lastBoostTime > boostLength) {
             isBoosting = false;
+        }
+
+        // Update the laser sight renderer
+        if(laserSightRenderer != null && mechComponent.leftWeapon != null) {
+            laserSightRenderer.enabled = true;
+            laserSightRenderer.SetPosition(0, mechComponent.leftWeapon.firePoint.position);
+            laserSightRenderer.SetPosition(1, currentAimLoc);
+        }
+        else if(laserSightRenderer != null) {
+            laserSightRenderer.enabled = false;
         }
     }
     
@@ -208,6 +231,14 @@ public class PlayerController : MechController {
         }
 
         return mechComponent.leftWeapon.currentAmmo;
+    }
+
+
+    /// <summary>
+    /// The player has stolen a weapon with the photon weapon
+    /// </summary>
+    public void SuccessfulWeaponSteal(Whip_PhotonWhip whipUsed) {
+        playerHUD.SetWhipRecharge(whipUsed.stealCoolDown);
     }
 
 }
