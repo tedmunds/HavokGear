@@ -16,13 +16,13 @@
  */
 
 
-//#define DEBUG_CC2D_RAYS
+#define DEBUG_CC2D_RAYS
 using UnityEngine;
 using System;
 using System.Collections.Generic;
 
 
-[RequireComponent(typeof(BoxCollider2D), typeof(Rigidbody2D))]
+[RequireComponent(typeof(Collider2D), typeof(Rigidbody2D))]
 public class MovementController2D : MonoBehaviour {
 
 
@@ -162,12 +162,17 @@ public class MovementController2D : MonoBehaviour {
     // horizontal/vertical movement data
     float _verticalDistanceBetweenRays;
     float _horizontalDistanceBetweenRays;
+
+
+    private CircleCollider2D circleCollider;
     
     void Awake() {
         // cache some components
         transform = GetComponent<Transform>();
         boxCollider = GetComponent<BoxCollider2D>();
         rigidBody2D = GetComponent<Rigidbody2D>();
+
+        circleCollider = GetComponent<CircleCollider2D>();
 
         // here, we trigger our properties that have setters with bodies
         skinWidth = _skinWidth;
@@ -216,15 +221,19 @@ public class MovementController2D : MonoBehaviour {
         _raycastHitsThisFrame.Clear();
 
         primeRaycastOrigins();
-        
+
+        if(deltaMovement.magnitude != 0.0f) {
+            moveRadially(ref deltaMovement);
+        }
+
         // now we check movement in the horizontal dir
         if(deltaMovement.x != 0f)
             moveHorizontally(ref deltaMovement);
-
+        
         // next, check movement in the vertical dir
         if(deltaMovement.y != 0f)
             moveVertically(ref deltaMovement);
-
+        
         // move then update our state
         transform.Translate(deltaMovement, Space.World);
 
@@ -240,7 +249,7 @@ public class MovementController2D : MonoBehaviour {
 
         ignoreOneWayPlatformsThisFrame = false;
     }
-    
+
 
 
     /// <summary>
@@ -296,6 +305,27 @@ public class MovementController2D : MonoBehaviour {
     }
 
 
+
+    void moveRadially(ref Vector3 deltaMovement) {
+        Vector3 initalRayOrigin = transform.position + (deltaMovement.normalized * circleCollider.radius * 2.0f);
+        float rayDistance = Mathf.Abs(deltaMovement.x) + _skinWidth;
+        
+        Vector3 rayOrigin = initalRayOrigin;
+        Vector3 rayDirection = deltaMovement.normalized;
+        
+        _raycastHit = Physics2D.Raycast(rayOrigin, rayDirection, rayDistance, platformMask);
+        
+        if(_raycastHit) {
+            deltaMovement = (Vector3)_raycastHit.point - rayOrigin;
+            deltaMovement = deltaMovement.normalized * (deltaMovement.magnitude - _skinWidth);
+        
+            DrawRay(rayOrigin, deltaMovement, Color.red);
+        
+            _raycastHitsThisFrame.Add(_raycastHit);
+        }
+    }
+
+
     /// <summary>
     /// we have to use a bit of trickery in this one. The rays must be cast from a small distance inside of our
     /// collider (skinWidth) to avoid zero distance rays which will get the wrong normal. Because of this small offset
@@ -306,86 +336,135 @@ public class MovementController2D : MonoBehaviour {
         var isGoingRight = deltaMovement.x > 0;
         var rayDistance = Mathf.Abs(deltaMovement.x) + _skinWidth;
         var rayDirection = isGoingRight ? Vector2.right : -Vector2.right;
-        var initialRayOrigin = isGoingRight ? _raycastOrigins.bottomRight : _raycastOrigins.bottomLeft;
+        //var initialRayOrigin = isGoingRight ? _raycastOrigins.bottomRight : _raycastOrigins.bottomLeft;
+        Vector3 initalRayOrigin = isGoingRight ? transform.position + (transform.right * circleCollider.radius * 2.0f) :
+                                                 transform.position - (transform.right * circleCollider.radius * 2.0f);
 
-        for(var i = 0; i < totalHorizontalRays; i++) {
-            var ray = new Vector2(initialRayOrigin.x, initialRayOrigin.y + i * _verticalDistanceBetweenRays);
 
-            DrawRay(ray, rayDirection * rayDistance, Color.red);
+        var ray = new Vector2(initalRayOrigin.x, initalRayOrigin.y);
 
-            // if we are grounded we will include oneWayPlatforms only on the first ray (the bottom one). this will allow us to
-            // walk up sloped oneWayPlatforms
-            if(i == 0 && collisionState.wasGroundedLastFrame)
-                _raycastHit = Physics2D.Raycast(ray, rayDirection, rayDistance, platformMask);
-            else
-                _raycastHit = Physics2D.Raycast(ray, rayDirection, rayDistance, platformMask);
+        DrawRay(ray, rayDirection * rayDistance, Color.red);
 
-            if(_raycastHit) {
-
-                // set our new deltaMovement and recalculate the rayDistance taking it into account
-                deltaMovement.x = _raycastHit.point.x - ray.x;
-                rayDistance = Mathf.Abs(deltaMovement.x);
-
-                // remember to remove the skinWidth from our deltaMovement
-                if(isGoingRight) {
-                    deltaMovement.x -= _skinWidth;
-                    collisionState.right = true;
-                }
-                else {
-                    deltaMovement.x += _skinWidth;
-                    collisionState.left = true;
-                }
-
-                _raycastHitsThisFrame.Add(_raycastHit);
-
-                // we add a small fudge factor for the float operations here. if our rayDistance is smaller
-                // than the width + fudge bail out because we have a direct impact
-                if(rayDistance < _skinWidth + kSkinWidthFloatFudgeFactor)
-                    break;
+        _raycastHit = Physics2D.Raycast(ray, rayDirection, rayDistance, platformMask);
+        if(_raycastHit) {
+            deltaMovement.x = _raycastHit.point.x - ray.x;
+            rayDistance = Mathf.Abs(deltaMovement.x);
+            // remember to remove the skinWidth from our deltaMovement
+            if(isGoingRight) {
+                deltaMovement.x -= _skinWidth;
+                collisionState.right = true;
             }
+            else {
+                deltaMovement.x += _skinWidth;
+                collisionState.left = true;
+            }
+
+            _raycastHitsThisFrame.Add(_raycastHit);
         }
+
+        //for(var i = 0; i < totalHorizontalRays; i++) {
+        //    var ray = new Vector2(initialRayOrigin.x, initialRayOrigin.y + i * _verticalDistanceBetweenRays);
+
+        //    DrawRay(ray, rayDirection * rayDistance, Color.red);
+
+        //    // if we are grounded we will include oneWayPlatforms only on the first ray (the bottom one). this will allow us to
+        //    // walk up sloped oneWayPlatforms
+        //    if(i == 0 && collisionState.wasGroundedLastFrame)
+        //        _raycastHit = Physics2D.Raycast(ray, rayDirection, rayDistance, platformMask);
+        //    else
+        //        _raycastHit = Physics2D.Raycast(ray, rayDirection, rayDistance, platformMask);
+
+        //    if(_raycastHit) {
+
+        //        // set our new deltaMovement and recalculate the rayDistance taking it into account
+        //        deltaMovement.x = _raycastHit.point.x - ray.x;
+        //        rayDistance = Mathf.Abs(deltaMovement.x);
+
+        //        // remember to remove the skinWidth from our deltaMovement
+        //        if(isGoingRight) {
+        //            deltaMovement.x -= _skinWidth;
+        //            collisionState.right = true;
+        //        }
+        //        else {
+        //            deltaMovement.x += _skinWidth;
+        //            collisionState.left = true;
+        //        }
+
+        //        _raycastHitsThisFrame.Add(_raycastHit);
+
+        //        // we add a small fudge factor for the float operations here. if our rayDistance is smaller
+        //        // than the width + fudge bail out because we have a direct impact
+        //        if(rayDistance < _skinWidth + kSkinWidthFloatFudgeFactor)
+        //            break;
+        //    }
+        //}
     }
     
     void moveVertically(ref Vector3 deltaMovement) {
         var isGoingUp = deltaMovement.y > 0;
         var rayDistance = Mathf.Abs(deltaMovement.y) + _skinWidth;
         var rayDirection = isGoingUp ? Vector2.up : -Vector2.up;
-        var initialRayOrigin = isGoingUp ? _raycastOrigins.topLeft : _raycastOrigins.bottomLeft;
+        //var initialRayOrigin = isGoingUp ? _raycastOrigins.topLeft : _raycastOrigins.bottomLeft;
+
+        Vector3 initalRayOrigin = isGoingUp ? transform.position + (transform.up * circleCollider.radius * 2.0f) :
+                                                 transform.position - (transform.up * circleCollider.radius * 2.0f);
 
         // apply our horizontal deltaMovement here so that we do our raycast from the actual position we would be in if we had moved
-        initialRayOrigin.x += deltaMovement.x;
+        initalRayOrigin.x += deltaMovement.x;
 
         // if we are moving up, we should ignore the layers in oneWayPlatformMask
         var mask = platformMask;
 
-        for(var i = 0; i < totalVerticalRays; i++) {
-            var ray = new Vector2(initialRayOrigin.x + i * _horizontalDistanceBetweenRays, initialRayOrigin.y);
+        var ray = new Vector2(initalRayOrigin.x, initalRayOrigin.y);
 
-            DrawRay(ray, rayDirection * rayDistance, Color.red);
-            _raycastHit = Physics2D.Raycast(ray, rayDirection, rayDistance, mask);
-            if(_raycastHit) {
-                // set our new deltaMovement and recalculate the rayDistance taking it into account
-                deltaMovement.y = _raycastHit.point.y - ray.y;
-                rayDistance = Mathf.Abs(deltaMovement.y);
+        DrawRay(ray, rayDirection * rayDistance, Color.red);
 
-                // remember to remove the skinWidth from our deltaMovement
-                if(isGoingUp) {
-                    deltaMovement.y -= _skinWidth;
-                    collisionState.above = true;
-                }
-                else {
-                    deltaMovement.y += _skinWidth;
-                    collisionState.below = true;
-                }
+        _raycastHit = Physics2D.Raycast(ray, rayDirection, rayDistance, platformMask);
+        if(_raycastHit) {
+            deltaMovement.y = _raycastHit.point.y - ray.y;
+            rayDistance = Mathf.Abs(deltaMovement.y);
 
-                _raycastHitsThisFrame.Add(_raycastHit);
-                
-                // we add a small fudge factor for the float operations here. if our rayDistance is smaller
-                // than the width + fudge bail out because we have a direct impact
-                if(rayDistance < _skinWidth + kSkinWidthFloatFudgeFactor)
-                    break;
+            // remember to remove the skinWidth from our deltaMovement
+            if(isGoingUp) {
+                deltaMovement.y -= _skinWidth;
+                collisionState.above = true;
             }
+            else {
+                deltaMovement.y += _skinWidth;
+                collisionState.below = true;
+            }
+
+            _raycastHitsThisFrame.Add(_raycastHit);
         }
+
+        //for(var i = 0; i < totalVerticalRays; i++) {
+        //    var ray = new Vector2(initialRayOrigin.x + i * _horizontalDistanceBetweenRays, initialRayOrigin.y);
+
+        //    DrawRay(ray, rayDirection * rayDistance, Color.red);
+        //    _raycastHit = Physics2D.Raycast(ray, rayDirection, rayDistance, mask);
+        //    if(_raycastHit) {
+        //        // set our new deltaMovement and recalculate the rayDistance taking it into account
+        //        deltaMovement.y = _raycastHit.point.y - ray.y;
+        //        rayDistance = Mathf.Abs(deltaMovement.y);
+
+        //        // remember to remove the skinWidth from our deltaMovement
+        //        if(isGoingUp) {
+        //            deltaMovement.y -= _skinWidth;
+        //            collisionState.above = true;
+        //        }
+        //        else {
+        //            deltaMovement.y += _skinWidth;
+        //            collisionState.below = true;
+        //        }
+
+        //        _raycastHitsThisFrame.Add(_raycastHit);
+
+        //        // we add a small fudge factor for the float operations here. if our rayDistance is smaller
+        //        // than the width + fudge bail out because we have a direct impact
+        //        if(rayDistance < _skinWidth + kSkinWidthFloatFudgeFactor)
+        //            break;
+        //    }
+        //}
     }
 
 

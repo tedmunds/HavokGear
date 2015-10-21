@@ -138,13 +138,16 @@ public class Behaviour_Attack : BehaviourSM.BehaviourState {
         if(arcToTarget < maxFireArc) {
             return false;
         }
-
+        /*
         RaycastHit2D[] hits = Physics2D.RaycastAll(fireOrigin, toTarget.normalized, toTarget.magnitude);
         for(int i = 0; i < hits.Length; i++) {
             // If there is Anything in the way that blocks shots, cant fire. As long as its not the target...
             if(!hits[i].collider.isTrigger && hits[i].collider.tag != controller.target.tag) {
                 return false;
             }
+        }*/
+        if(!controller.CheckLOSFrom(fireOrigin, controller.target.transform.position, 100.0f)) {
+            return false;
         }
 
         return true;

@@ -244,6 +244,48 @@ public class AIController : MechController {
         return false;
     }
 
+    public bool CheckLOSFrom(Vector3 origin, Vector3 to, float maxRange) {
+        Vector3 toTarget = to - origin;
+        RaycastHit2D[] hits = Physics2D.RaycastAll(origin, toTarget.normalized, maxRange);
+        for(int i = 0; i < hits.Length; i++) {
+            // ignore self
+            if(hits[i].collider != null && hits[i].collider.gameObject == this.gameObject) {
+                continue;
+            }
+
+            // also ignore if its a child of self
+            if(hits[i].collider.transform.parent != null && hits[i].collider.transform.parent.gameObject == this.gameObject) {
+                continue;
+            }
+
+            // ignore trigger obviously
+            if(hits[i].collider.isTrigger) {
+                continue;
+            }
+
+            if(hits[i].collider.gameObject.tag == gameObject.tag) {
+                continue;
+            }
+
+            // the next thing that is hit, must be the target, sinse hits are sorted nearest first
+            if(hits[i].collider.gameObject == target.gameObject ||
+               (hits[i].collider.transform.parent != null && hits[i].collider.transform.parent.gameObject == target.gameObject)) {
+#if debug_los
+                Debug.DrawLine(transform.position, target.transform.position, Color.blue);
+#endif
+                return true;
+            }
+            else {
+                break;
+            }
+        }
+#if debug_los
+        Debug.DrawLine(transform.position, target.transform.position, Color.red);
+#endif
+        return false;
+    }
+
+
 
     /// <summary>
     /// Tells the ai to start moving to the input location. The location will be cached until it is overriden or abandoned.

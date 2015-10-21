@@ -99,28 +99,54 @@ public class Weapon_MachineGun : Weapon {
         
         Vector3 fireDirection = GetAimDirection();
 
-        RaycastHit2D hitResult = Physics2D.Raycast(firePoint.position, fireDirection, maxRange, detectLayers);
+        //RaycastHit2D hitResult = Physics2D.Raycast(firePoint.position, fireDirection, maxRange, detectLayers);
+        RaycastHit2D[] hitResults = Physics2D.RaycastAll(firePoint.position, fireDirection, maxRange, detectLayers);
+        
+        // default end point
+        Vector3 endPoint = firePoint.position + fireDirection * maxRange; ;
 
-        // Decide on the endpoint for effects and stuff
-        Vector3 endPoint;
-        if(hitResult.collider == null) {
-            endPoint = firePoint.position + fireDirection * maxRange;
-        }
-        else {
-            endPoint = hitResult.point;
-        }
+        foreach(RaycastHit2D hit in hitResults) {
+            if(hit.collider != null && hit.collider.gameObject != null) {
+                Actor victim = CheckIsActor(hit.collider.gameObject);
+                    
+                if(victim != null && victim.tag != owner.tag) {
+                    victim.TakeDamage(baseDamage, owner, this);
 
-        // check what was hit, and apply the damage to it if its an Actor
-        if(hitResult.collider != null && hitResult.collider.gameObject != null) {
-            Actor victim = CheckIsActor(hitResult.collider.gameObject);
-            if(victim != null && victim != owner) {
-                victim.TakeDamage(baseDamage, owner, this);
+                    if(applyForce) {
+                        victim.AddForce(fireDirection, 10.0f);
+                    }
 
-                if(applyForce) {
-                    victim.AddForce(fireDirection, 10.0f);
+                    // stop at the first non-owner victim
+                    endPoint = hit.point;
+                    break;
+                }
+                else if(victim == null) {
+                    endPoint = hit.point;
+                    break;
                 }
             }
         }
+        
+        // Decide on the endpoint for effects and stuff
+        //Vector3 endPoint;
+        //if(hitResult.collider == null) {
+        //    endPoint = firePoint.position + fireDirection * maxRange;
+        //}
+        //else {
+        //    endPoint = hitResult.point;
+        //}
+
+        //// check what was hit, and apply the damage to it if its an Actor
+        //if(hitResult.collider != null && hitResult.collider.gameObject != null) {
+        //    Actor victim = CheckIsActor(hitResult.collider.gameObject);
+        //    if(victim != null && victim != owner) {
+        //        victim.TakeDamage(baseDamage, owner, this);
+
+        //        if(applyForce) {
+        //            victim.AddForce(fireDirection, 10.0f);
+        //        }
+        //    }
+        //}
 
         PlaySound(fireSound, 1.0f, Random.Range(0.85f, 1.0f));
 
