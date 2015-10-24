@@ -24,6 +24,9 @@ public abstract class Weapon : MonoBehaviour {
     [SerializeField]
     public int ammoPerShot = 1;
 
+    [SerializeField]
+    public float maxRange;
+
     /// <summary>
     /// Does the weapon automatically fire after refire delay
     /// </summary>
@@ -41,6 +44,9 @@ public abstract class Weapon : MonoBehaviour {
     /// </summary>
     [SerializeField]
     public LayerMask detectLayers;
+
+    [SerializeField]
+    public float aiEngageRange;
 
     /// <summary>
     /// The mech that owns this weapons currently

@@ -23,6 +23,10 @@ public class EnemySpawner : MonoBehaviour {
     [SerializeField]
     private int totalEnemiesToSpawn = 5;
 
+    // Spawn point can have a list of patrol points associated with it
+    [SerializeField]
+    public List<Transform> patrolPoints;
+
     // reference to the woprld maanger used for spawning enemies
     private WorldManager world;
     
@@ -109,6 +113,7 @@ public class EnemySpawner : MonoBehaviour {
         AIController spawned = world.SpawnMechBot(spawnLocation, enemyPrototype, true, weaponPrefab != null? weaponPrefab.gameObject : null);
         if(spawned != null) {
             activeEnemies.Add(spawned);
+            spawned.SpawnedFromPoint(this);
         }
 
         numSpawned += 1;

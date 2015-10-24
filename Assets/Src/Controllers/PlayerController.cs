@@ -55,6 +55,11 @@ public class PlayerController : MechController {
     private LineRenderer laserSightRenderer;
 
     /// <summary>
+    /// The players whip attachment reference
+    /// </summary>
+    private Whip_PhotonWhip whipAttachment;
+
+    /// <summary>
     /// Boost control vars
     /// </summary>
     private float lastBoostTime;
@@ -140,7 +145,8 @@ public class PlayerController : MechController {
         }
 
         // Check if a boost has ended
-        if(isBoosting && Time.time - lastBoostTime > boostLength) {
+        if(isBoosting && Time.time - lastBoostTime > boostLength 
+            && currentMoveState == moveState_Normal) {
             isBoosting = false;
         }
 
@@ -179,20 +185,47 @@ public class PlayerController : MechController {
 
 
     private void StartBoosting(Vector3 direction) {
+        if(isBoosting) {
+            return;
+        }
+
         float energyUsed = mechComponent.ConsumeEnergy(boostEnergy);
 
         lastBoostTime = Time.time;
-
-        // If there was not enough energy to do a boost, it does a weakened version
-        float boostForce = energyUsed / boostEnergy;
-        mechComponent.AddForce(direction, boostForce * boostMoveForce);
         isBoosting = true;
-        
-        // calc the time it will take to return to normal speed after boosting
-        boostLength = movementComponent.PhysicsSpeed * movementComponent.PhysicsDecel;
-        boostLength = boostLength * Time.deltaTime;
+
+        // Check if it should do a latch boost and boost towards the whips attachment point 
+        if(whipAttachment != null && whipAttachment.ValidLatchBoost) {
+            GotoNewMoveState(new MoveState_Boosting(this));
+        }
+        else {
+            // default boost move is just a linear dash 
+            // If there was not enough energy to do a boost, it does a weakened version
+            float boostForce = energyUsed / boostEnergy;
+            mechComponent.AddForce(direction, boostForce * boostMoveForce);
+            
+
+            // calc the time it will take to return to normal speed after boosting
+            boostLength = movementComponent.PhysicsSpeed * movementComponent.PhysicsDecel;
+            boostLength = boostLength * Time.deltaTime;
+        }
     }
 
+
+    public Vector3 GetBoostTarget() {
+        if(whipAttachment == null) {
+            return transform.position;
+        }
+
+        return whipAttachment.LatchLocation;
+    }
+
+    public void EndLatchBoost() {
+        isBoosting = false;
+        if(whipAttachment != null) {
+            whipAttachment.DetachFromSurface();
+        }
+    }
 
     
     /// <summary>
@@ -241,4 +274,15 @@ public class PlayerController : MechController {
         playerHUD.SetWhipRecharge(whipUsed.stealCoolDown);
     }
 
+
+
+    public override void NewWeaponAttached(Weapon attached) {
+        base.NewWeaponAttached(attached);
+
+        // Cache ref to photon whip when it is attached (on spawn usually)
+        if(attached.GetType() == typeof(Whip_PhotonWhip)) {
+            whipAttachment = (Whip_PhotonWhip)attached;
+            Debug.Log("Player has photon whip attachment");
+        }
+    }
 }

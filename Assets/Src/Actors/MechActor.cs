@@ -183,6 +183,8 @@ public class MechActor : Actor {
             weaponComponent.owner = controller;
             weaponComponent.OnEquip(controller, controller.UsesAmmo());
         }
+
+        controller.NewWeaponAttached(weaponComponent);
     }
     
 

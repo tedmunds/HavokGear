@@ -19,4 +19,11 @@ public abstract class MovementState {
     /// </summary>
     public abstract Vector3 GetMovementVector(Vector2 inputVector);
 
+    /// <summary>
+    /// Called by this state when it is done, and whiches to go back to a previous move state
+    /// </summary>
+    protected void EndMoveState() {
+        controller.GotoPreviousMoveState();
+    }
+
 }

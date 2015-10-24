@@ -51,9 +51,11 @@ public class Behaviour_Attack : BehaviourSM.BehaviourState {
                 lastMoveTime = Time.time;
                 currentMoveInterval = Random.Range(minMoveInterval, maxMoveInterval);
 
+                float engagementRange = controller.GetAttackRange();
+
                 // the ideal location is some distance away from target, slightly random direction offset though
                 Vector3 offsetDirection = (lookDirection + (Vector3)Random.insideUnitCircle).normalized;
-                Vector3 shootingPosition = controller.target.transform.position - offsetDirection * attackRange;
+                Vector3 shootingPosition = controller.target.transform.position - offsetDirection * engagementRange;
                 
                 controller.SetMovetoTarget(shootingPosition);
             }

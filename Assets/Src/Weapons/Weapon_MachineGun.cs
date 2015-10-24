@@ -6,9 +6,6 @@ using System.Collections;
 public class Weapon_MachineGun : Weapon {
 
     [SerializeField]
-    public float maxRange;
-
-    [SerializeField]
     public float baseDamage;
 
     [SerializeField]

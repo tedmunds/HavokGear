@@ -70,6 +70,7 @@ public class BehaviourSM  {
 
     public void ResetDefault() {
         stateStack.Clear();
+        baseState = new Behaviour_Idle();
         currentState = baseState;
     }
 

@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 /// <summary>
 /// Base controller class for players and AI entities. Requires a mechActor component, which contains all of the 
@@ -39,6 +40,11 @@ public class MechController : MonoBehaviour {
     /// </summary>
     protected MovementState currentMoveState;
 
+    /// <summary>
+    /// Stack stores previous move states as they get applied
+    /// </summary>
+    protected Stack<MovementState> moveStateStack;
+
     // Movement states that mechs can do
     protected MoveState_Normal moveState_Normal;
 
@@ -51,6 +57,7 @@ public class MechController : MonoBehaviour {
     // Use this for initialization
     protected virtual void Start () {
         controllerActive = true;
+        moveStateStack = new Stack<MovementState>(3);
 
         // Just some initialization and warnings
         movementComponent = GetComponent<MovementController2D>();
@@ -67,6 +74,7 @@ public class MechController : MonoBehaviour {
 
         // Default to the normal move state
         currentMoveState = moveState_Normal;
+        moveStateStack.Push(moveState_Normal);
     }
 
     protected virtual void OnEnable() {
@@ -113,6 +121,45 @@ public class MechController : MonoBehaviour {
 
     public virtual bool UsesAmmo() {
         return true;
+    }
+
+
+    /// <summary>
+    /// Called when a new weapon is attached to the mechComponent this controller is controlling
+    /// </summary>
+    public virtual void NewWeaponAttached(Weapon attached) {
+
+    }
+
+
+    /// <summary>
+    /// Forces the controller into a movement state. If the previous state is overloaded, it will be removed from the stack
+    /// before the new state is applied
+    /// </summary>
+    public void GotoNewMoveState(MovementState newMoveState, bool overloadPrevious = false) {
+        if(newMoveState == null || newMoveState == currentMoveState) {
+            return;
+        }
+
+        if(!overloadPrevious) {
+            // save the previous state
+            moveStateStack.Push(currentMoveState);
+        }
+
+        currentMoveState = newMoveState;
+    }
+
+    /// <summary>
+    /// Goes to previous move state
+    /// </summary>
+    public void GotoPreviousMoveState() {
+        if(moveStateStack.Count > 0) {
+            currentMoveState = moveStateStack.Pop();
+        }
+        else {
+            // Default fallback behaviour in case the stack is empty is to just return to the normal state
+            currentMoveState = moveState_Normal;
+        }
     }
 
 }

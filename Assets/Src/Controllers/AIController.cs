@@ -44,6 +44,15 @@ public class AIController : MechController {
 
     // Pathing interrupt: forces a new path calculation
     private bool wantsNewPath;
+
+    /// <summary>
+    /// the spawn point this AI was spawned from
+    /// </summary>
+    private EnemySpawner spawnPoint;
+    public EnemySpawner SourceSpawn {
+        get { return spawnPoint; }
+    }
+
     
     protected override void Start() {
         base.Start();
@@ -82,6 +91,11 @@ public class AIController : MechController {
     }
 
 
+    public void SpawnedFromPoint(EnemySpawner source) {
+        spawnPoint = source;
+    }
+
+
     /// <summary>
     /// Instructs the ai to start sensing for a target (does not mean it will actually start chasing and shooting)
     /// </summary>
@@ -99,7 +113,7 @@ public class AIController : MechController {
     
 
     protected override void Update() {
-        const float reachedGoalError = 0.5f;
+        const float reachedGoalError = 2.0f;
 
         base.Update();
 
@@ -166,16 +180,20 @@ public class AIController : MechController {
         seekerComponent.StartPath(transform.position, moveToTarget, OnPathComplete);
     }
 
-
+    /// <summary>
+    /// Force the Ai to stop pathing 
+    /// </summary>
     public void InterruptPath() {
         wantsNewPath = true;
+        waitingForPath = false;
+        currentPath = null;
     }
 
     /// <summary>
     /// Called when a path to the target destination has been created
     /// </summary>
     public void OnPathComplete(Path p) {
-        if(!p.error) {
+        if(!p.error && waitingForPath) {
             currentPath = p;
             currentPathWaypoint = 0;
             waitingForPath = false;
@@ -339,5 +357,15 @@ public class AIController : MechController {
         return dmg;
     }
 
+
+
+    public float GetAttackRange() {
+        if(mechComponent.leftWeapon != null) {
+            return mechComponent.leftWeapon.maxRange;
+        }
+        
+        // If there is no weapon, try to get up close and personal
+        return 0.0f;
+    }
 
 }
