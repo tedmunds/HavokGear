@@ -14,14 +14,12 @@ public class RoomAccess_Door : RoomAccess {
 
         PlayerController playerController = other.GetComponent<PlayerController>();
         if(playerController != null) {
-            DoorOpen();
-
-            Activate(playerController);
+            DoorOpen(playerController);
         }
     }
 
 
-    private void DoorOpen() {
+    public void DoorOpen(PlayerController playerController) {
         // TODO: door animation
         SpriteRenderer renderer = GetComponent<SpriteRenderer>();
         if(renderer != null) {
@@ -32,6 +30,8 @@ public class RoomAccess_Door : RoomAccess {
         if(doorCollisionObject != null) {
             doorCollisionObject.SetActive(false);
         }
+
+        Activate(playerController);
     }
 
 }
