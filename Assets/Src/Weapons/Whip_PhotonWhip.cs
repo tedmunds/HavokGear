@@ -295,6 +295,11 @@ public class Whip_PhotonWhip : Weapon {
         
 
         if(targetWeapon != null) {
+            // if it was an AI controller previously, tell it that its weapon was stolen
+            if(targetWeapon.owner.GetType() == typeof(AIController)) {
+                ((AIController)targetWeapon.owner).WeaponWasStolen();
+            }
+
             // Cache the old weapon
             GameObject oldWeapon = owner.MechComponent.leftWeapon != null ? owner.MechComponent.leftWeapon.gameObject : null;
 
@@ -303,11 +308,6 @@ public class Whip_PhotonWhip : Weapon {
 
             if(destroyOldWeapon && oldWeapon != null) {
                 oldWeapon.SetActive(false);
-            }
-
-            // Also, if it was an AI controller, tell it that its weapon was stolen
-            if(targetWeapon.owner.GetType() == typeof(AIController)) {
-                ((AIController)targetWeapon.owner).WeaponWasStolen();
             }
         }
     }

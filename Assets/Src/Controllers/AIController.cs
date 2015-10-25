@@ -208,7 +208,9 @@ public class AIController : MechController {
     public void WeaponWasStolen() {
         // It has no weapons left!
         if(MechComponent.leftWeapon == null && MechComponent.rightWeapon == null) {
-            // TODO: flee or suicide behaviour
+            Debug.Log("[" + name + "] Weapon stolen - Going beserk!");
+            InterruptPath();
+            stateMachine.GotoNewState(new Behaviour_Beserk(), BehaviourSM.TransitionMode.AbandonCurrent);
         }
     }
 
@@ -320,14 +322,6 @@ public class AIController : MechController {
     }
 
     /// <summary>
-    /// Stopos the AI trying to move to its current goal position
-    /// </summary>
-    public void AbandonMovetoTarget() {
-        //isMovingToTarget = false;
-    }
-
-
-    /// <summary>
     /// Overriden to aim at target + some randomization
     /// </summary>
     /// <returns></returns>
@@ -366,6 +360,14 @@ public class AIController : MechController {
         
         // If there is no weapon, try to get up close and personal
         return 0.0f;
+    }
+
+
+    /// <summary>
+    /// Causes this mech to explode, damaging neaby mechs
+    /// </summary>
+    public void CommitSuicide() {
+        mechComponent.Died();
     }
 
 }

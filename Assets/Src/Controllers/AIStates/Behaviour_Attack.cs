@@ -73,7 +73,7 @@ public class Behaviour_Attack : BehaviourSM.BehaviourState {
         // TRANSITIONS:
         // give up looking for target, go to previous state
         if(!hasLos && Time.time - lastSawTargetTime > attentionSpan ||controller.target == null) {
-            controller.AbandonMovetoTarget();
+            controller.InterruptPath();
             return new BehaviourSM.StateResponse(BehaviourSM.TransitionMode.PopPrevious);
         }
         
