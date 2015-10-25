@@ -135,9 +135,10 @@ public class MechActor : Actor {
         float modifiedDamage = instigator != null? instigator.ModifyBaseDamage(damageAmount, weaponUsed) : damageAmount;
         float reducedDamage = modifiedDamage;
 
-        // Take the damage out of the shield first
-        float shieldAbsorbtion = Mathf.Min(currentShield, reducedDamage);
-        currentShield -= shieldAbsorbtion;
+        // Take the damage out of the shield first: changed system to only use energy bar
+        //float shieldAbsorbtion = Mathf.Min(currentShield, reducedDamage);
+        //currentShield -= shieldAbsorbtion;
+        float shieldAbsorbtion = ConsumeEnergy(reducedDamage);
 
         // And reduce the damage that is done to health
         reducedDamage -= shieldAbsorbtion;

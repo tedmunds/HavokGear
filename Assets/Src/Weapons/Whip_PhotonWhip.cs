@@ -264,7 +264,7 @@ public class Whip_PhotonWhip : Weapon {
         bool canRefire = base.CanRefire();
         if(canRefire) {
             // Check if the owner has the energy
-            if(owner.MechComponent.EnergyLevel > energyPerUse) {
+            if(owner.MechComponent.EnergyLevel >= energyPerUse) {
                 owner.MechComponent.ConsumeEnergy(energyPerUse);
 
                 // check the cooldown for successful steals
