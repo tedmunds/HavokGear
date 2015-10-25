@@ -43,8 +43,8 @@
                     float4 color: COLOR;
                 };
                
-                uniform sampler2D _MainTex;
-				uniform float _Scale;
+                sampler2D _MainTex;
+				float _Scale;
 
                 v2f vert (appdata v)  
                 {
