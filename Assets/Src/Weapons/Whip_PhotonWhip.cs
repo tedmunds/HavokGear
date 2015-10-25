@@ -39,6 +39,9 @@ public class Whip_PhotonWhip : Weapon {
     private LayerMask weaponDetectionLayers;
 
     [SerializeField]
+    private LayerMask pickupDetectionLayers;
+
+    [SerializeField]
     private LayerMask latchDetectionLayers;
 
     [SerializeField]
@@ -55,7 +58,8 @@ public class Whip_PhotonWhip : Weapon {
     private Vector3 lerpedEndPoint;
 
     // Weapon that the whip is currently targeting: Can be null
-    private Weapon targetWeapon;
+    //private Weapon targetWeapon;
+    private GameObject grabbedObject;
     // Time that the fire was started
     private float fireTime;
     // The time of the last successful weapon steal
@@ -102,10 +106,13 @@ public class Whip_PhotonWhip : Weapon {
         
         float timeSinceFire = Time.time - fireTime;
         float fireDistance = (targetLocation - firePoint.position).magnitude;
-        
+
+        // Cahce the weapon component of the grabbed object (if there is one)
+        Weapon targetWeapon = grabbedObject != null ? grabbedObject.GetComponent<Weapon>() : null;
+
         // Whip is moving towards the target location
         if(timeSinceFire < travelTime) {
-            Vector3 lerpTarget = targetWeapon != null? targetWeapon.transform.position : targetLocation;
+            Vector3 lerpTarget = grabbedObject != null ? grabbedObject.transform.position : targetLocation;
 
             lerpedEndPoint = Vector3.Lerp(lerpedEndPoint, lerpTarget, (1.0f / fireDistance) / travelTime);
         }
@@ -113,7 +120,7 @@ public class Whip_PhotonWhip : Weapon {
             // Switch to retracting
             isExpanding = false;
 
-            // Not atteched means its stealing a weapon
+            // Not atteched means its stealing a weapon or a pickup
             if(!isAttached) {
                 fullExtendTime = Time.time;
                 PlaySound(stealSound, 1.0f, Random.Range(0.9f, 1.0f));
@@ -132,11 +139,11 @@ public class Whip_PhotonWhip : Weapon {
         // Is in the retract phase
         if(!isExpanding && timeSinceExtend < (travelTime) && !isAttached) {
             // The end point is either this weapons fire point or the left weapon, if a weapon was stolen
-            Vector3 endLocation = targetWeapon != null? owner.MechComponent.leftAttachPoint.position : firePoint.position;
+            Vector3 endLocation = grabbedObject != null ? owner.MechComponent.leftAttachPoint.position : firePoint.position;
 
             lerpedEndPoint = Vector3.Lerp(lerpedEndPoint, endLocation, (1.0f / fireDistance) / travelTime);
-            if(targetWeapon != null) {
-                targetWeapon.transform.position = lerpedEndPoint;
+            if(grabbedObject != null) {
+                grabbedObject.transform.position = lerpedEndPoint;
             }
         }
         
@@ -209,22 +216,26 @@ public class Whip_PhotonWhip : Weapon {
 
         // Check for weapon at the end point to snap to:
         // This will govern what sort of behaviour the whip takes
-        CheckNearbyWeapons(endPoint);
+        CheckNearbyGrabTargets(endPoint);
 
         // check if there is anything obstructing the path to the attach point, clear weapon steal if so
         RaycastHit2D hit = Physics2D.Raycast(firePoint.position, toAimPoint.normalized, toAimPoint.magnitude, blockWhipLayers);
         if(hit.collider != null) {
             endPoint = hit.point;
-            targetWeapon = null;
+            grabbedObject = null;
         }
 
         // A weapon is successfully being stolen
-        if(targetWeapon != null) {
-            lastStealTime = Time.time;
+        if(grabbedObject != null) {
 
-            // notify the owner if its the player
-            if(owner.GetType() == typeof(PlayerController)) {
-                ((PlayerController)owner).SuccessfulWeaponSteal(this);
+            // Only if its a weapon does it record the steal
+            if(grabbedObject.GetComponent<Weapon>() != null) {
+                lastStealTime = Time.time;
+
+                // notify the owner if its the player
+                if(owner.GetType() == typeof(PlayerController)) {
+                    ((PlayerController)owner).SuccessfulWeaponSteal(this);
+                }
             }
         }
         else {
@@ -241,7 +252,7 @@ public class Whip_PhotonWhip : Weapon {
             }
         }
 
-        targetLocation = targetWeapon != null? targetWeapon.transform.position : endPoint;
+        targetLocation = grabbedObject != null ? grabbedObject.transform.position : endPoint;
         lerpedEndPoint = firePoint.position;
         
         whipEffect.enabled = true;
@@ -292,51 +303,127 @@ public class Whip_PhotonWhip : Weapon {
         if(endPointEffect != null) {
             endPointEffect.gameObject.SetActive(false);
         }
-        
 
-        if(targetWeapon != null) {
+
+        if(grabbedObject != null) {
             // if it was an AI controller previously, tell it that its weapon was stolen
-            if(targetWeapon.owner.GetType() == typeof(AIController)) {
-                ((AIController)targetWeapon.owner).WeaponWasStolen();
+            //if(targetWeapon.owner.GetType() == typeof(AIController)) {
+            //    ((AIController)targetWeapon.owner).WeaponWasStolen();
+            //}
+            //
+            //// Cache the old weapon
+            //GameObject oldWeapon = owner.MechComponent.leftWeapon != null ? owner.MechComponent.leftWeapon.gameObject : null;
+            //
+            //// and attach it to the owner on the left side
+            //owner.MechComponent.DoAttachment(MechActor.EAttachSide.Left, targetWeapon.gameObject, Vector3.zero);
+            //
+            //if(destroyOldWeapon && oldWeapon != null) {
+            //    oldWeapon.SetActive(false);
+            //}
+            Weapon targetWeapon = grabbedObject.GetComponent<Weapon>();
+            if(targetWeapon != null) {
+                AttachGrabbedWeapon(targetWeapon);
             }
-
-            // Cache the old weapon
-            GameObject oldWeapon = owner.MechComponent.leftWeapon != null ? owner.MechComponent.leftWeapon.gameObject : null;
-
-            // and attach it to the owner on the left side
-            owner.MechComponent.DoAttachment(MechActor.EAttachSide.Left, targetWeapon.gameObject, Vector3.zero);
-
-            if(destroyOldWeapon && oldWeapon != null) {
-                oldWeapon.SetActive(false);
+            else {
+                // If its not weapon, check if its a pickup to activate
+                PickupableItem item = grabbedObject.GetComponent<PickupableItem>();
+                if(item != null) {
+                    item.Activate(owner);
+                }
             }
         }
     }
 
 
 
-    private void CheckNearbyWeapons(Vector3 originPoint) {
-        float closestDist = 99999.9f;
-        Weapon closesetWeapon = null;
+    private void AttachGrabbedWeapon(Weapon targetWeapon) {
+        // if it was an AI controller previously, tell it that its weapon was stolen
+        if(targetWeapon.owner.GetType() == typeof(AIController)) {
+            ((AIController)targetWeapon.owner).WeaponWasStolen();
+        }
 
-        RaycastHit2D[] overlaps = Physics2D.CircleCastAll(originPoint, snapRange, Vector2.zero, 0.0f, weaponDetectionLayers);
+        // Cache the old weapon
+        GameObject oldWeapon = owner.MechComponent.leftWeapon != null ? owner.MechComponent.leftWeapon.gameObject : null;
+
+        // and attach it to the owner on the left side
+        owner.MechComponent.DoAttachment(MechActor.EAttachSide.Left, targetWeapon.gameObject, Vector3.zero);
+
+        if(destroyOldWeapon && oldWeapon != null) {
+            oldWeapon.SetActive(false);
+        }
+    }
+
+
+
+    private void CheckNearbyGrabTargets(Vector3 originPoint) {
+        float closestDist = 99999.9f;
+        GameObject closesetObject = null;
+
+        RaycastHit2D[] overlaps = Physics2D.CircleCastAll(originPoint, snapRange, Vector2.zero, 0.0f, weaponDetectionLayers | pickupDetectionLayers);
         for(int i = 0; i < overlaps.Length; i++) {
             // Was overlapping a weapon
-            Weapon overlapWeapon = overlaps[i].collider.gameObject.GetComponent<Weapon>();
+            //Weapon overlapWeapon = overlaps[i].collider.gameObject.GetComponent<Weapon>();
+            //PickupableItem overlapItem = overlaps[i].collider.gameObject.GetComponent<PickupableItem>();
 
             // check that the owner doesnt match the whip's, so that player doesn;t steal their own weapon
-            if(overlapWeapon != null && overlapWeapon.owner != owner) {
-                float dist = (overlapWeapon.transform.position - originPoint).magnitude;
+            //if(overlapWeapon != null && overlapWeapon.owner != owner) {
+            if(CanGrabObject(overlaps[i].collider.gameObject)) {
+                float dist = (overlaps[i].collider.gameObject.transform.position - originPoint).magnitude;
 
                 // Take whatever weapon is closest to the check point
                 if(dist < closestDist) {
-                    closesetWeapon = overlapWeapon;
+                    closesetObject = overlaps[i].collider.gameObject;
                     closestDist = dist;
                 }
             }
         }
 
-        targetWeapon = closesetWeapon;
+        grabbedObject = closesetObject;
     }
+
+
+    private bool CanGrabObject(GameObject obj) {
+        if(obj == null) {
+            return false;
+        }
+
+        Weapon overlapWeapon = obj.GetComponent<Weapon>();
+        PickupableItem overlapItem = obj.GetComponent<PickupableItem>();
+
+        if(overlapWeapon != null && overlapWeapon.owner != owner) {
+            return true;
+        }
+
+        if(overlapItem != null && overlapItem.gameObject.activeInHierarchy) {
+            return true;
+        }
+
+        return false;
+    }
+
+    //private void CheckNearbyPickups(Vector3 originPoint) {
+    //    float closestDist = 99999.9f;
+    //    PickupableItem clostestItem = null;
+    //
+    //    RaycastHit2D[] overlaps = Physics2D.CircleCastAll(originPoint, snapRange, Vector2.zero, 0.0f, pickupDetectionLayers);
+    //    for(int i = 0; i < overlaps.Length; i++) {
+    //        // Was overlapping a weapon
+    //        PickupableItem overlapItem = overlaps[i].collider.gameObject.GetComponent<PickupableItem>();
+    //
+    //        // check that the owner doesnt match the whip's, so that player doesn;t steal their own weapon
+    //        if(overlapItem != null && overlapItem.gameObject.activeInHierarchy) {
+    //            float dist = (overlapItem.transform.position - originPoint).magnitude;
+    //
+    //            // Take whatever weapon is closest to the check point
+    //            if(dist < closestDist) {
+    //                clostestItem = overlapItem;
+    //                closestDist = dist;
+    //            }
+    //        }
+    //    }
+    //
+    //    grabbedObject = clostestItem != null? clostestItem.gameObject : null;
+    //}
 
 
     /// <summary>

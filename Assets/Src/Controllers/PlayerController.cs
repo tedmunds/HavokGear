@@ -154,7 +154,14 @@ public class PlayerController : MechController {
         if(laserSightRenderer != null && mechComponent.leftWeapon != null) {
             laserSightRenderer.enabled = true;
             laserSightRenderer.SetPosition(0, mechComponent.leftWeapon.firePoint.position);
-            laserSightRenderer.SetPosition(1, currentAimLoc);
+
+            Vector3 toAimPoint = currentAimLoc - mechComponent.leftWeapon.firePoint.position;
+
+            // Get the endpoint for the laser sight
+            RaycastHit2D hit = Physics2D.Raycast(mechComponent.leftWeapon.firePoint.position, toAimPoint.normalized, toAimPoint.magnitude, 
+                                                 movementComponent.platformMask); // just use the platform mask as an approx. for los blockers
+
+            laserSightRenderer.SetPosition(1, hit? (Vector3)hit.point : currentAimLoc);
         }
         else if(laserSightRenderer != null) {
             laserSightRenderer.enabled = false;

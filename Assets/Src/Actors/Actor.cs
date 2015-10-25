@@ -53,6 +53,10 @@ public class Actor : MonoBehaviour {
 
 
 
+    public virtual void AddHealth(float healthAmount, GameObject instigator) {
+        health = Mathf.Min(health + healthAmount, maxhealth);
+    }
+
 
     /// <summary>
     /// Applies the damage to the actor
