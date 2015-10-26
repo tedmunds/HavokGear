@@ -44,6 +44,9 @@ public class MechActor : Actor {
     public ParticleSystem brokenWeaponEffectPrototype;
     public ParticleSystem brokenEffect;
 
+    [SerializeField]
+    public Explosion deathExplosion;
+
     /// <summary>
     /// Cached weapon reference for the item attached to each side
     /// </summary>
@@ -333,14 +336,21 @@ public class MechActor : Actor {
 
 
     protected override float DoDeathSequence(MechController instigator, Weapon weaponUsed) {
-        if(instigator.GetType() != typeof(PlayerController)) {
-            return 0.0f;
-        }
+        //if(instigator.GetType() != typeof(PlayerController)) {
+        //    return 0.0f;
+        //}
 
-        const float delayLength = 0.3f;
-        const float knowckbackForce = 25.0f;
+        const float delayLength = 0.0f;
+        const float knowckbackForce = 0.0f;
 
         isDead = true;
+
+        if(deathExplosion != null) {
+            Explosion deathExplosionInstance = (Explosion)Instantiate(deathExplosion, transform.position, Quaternion.identity);
+            if(deathExplosionInstance != null) {
+                deathExplosionInstance.Explode(weaponUsed);
+            }
+        }
 
         // So it was killed by the player, do a fancy death sequence where it shoots away from the palyer
         AddForce((transform.position - instigator.transform.position).normalized, knowckbackForce);

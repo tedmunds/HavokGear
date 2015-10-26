@@ -16,6 +16,9 @@ public class Explosion : MonoBehaviour {
     private Animator explosionEffectPrefab;
 
     [SerializeField]
+    private ParticleSystem explosionParticlePrefab;
+
+    [SerializeField]
     private AudioClip explodeSound;
 
 
@@ -34,7 +37,7 @@ public class Explosion : MonoBehaviour {
 
 
     public void Explode(Weapon sourceWeapon) {
-        if(hasExploded || sourceWeapon == null) {
+        if(hasExploded) {
             return;
         }
 
@@ -43,14 +46,22 @@ public class Explosion : MonoBehaviour {
         Collider2D[] overlaps = Physics2D.OverlapCircleAll(transform.position, explosionRadius);
         for(int i = 0; i < overlaps.Length; i++) {
             Actor mech = overlaps[i].GetComponent<Actor>();
-            if(mech != null) {
+            if(mech != null && sourceWeapon != null) {
                 mech.TakeDamage(baseDamage, sourceWeapon.owner.GetComponent<MechController>(), sourceWeapon);
             }
         }
 
         // Create the effect
-        Animator explosionAnimator = (Animator)Instantiate(explosionEffectPrefab, transform.position, Quaternion.identity);
-        Destroy(explosionAnimator.gameObject, 0.3f);
+        if(explosionEffectPrefab != null) {
+            Animator explosionAnimator = (Animator)Instantiate(explosionEffectPrefab, transform.position, Quaternion.identity);
+            Destroy(explosionAnimator.gameObject, 0.3f);
+        }
+
+        if(explosionParticlePrefab != null) {
+            ParticleSystem explosionEffect = (ParticleSystem)Instantiate(explosionParticlePrefab, transform.position, Quaternion.identity);
+            explosionEffect.Play();
+            Destroy(explosionEffect.gameObject, explosionEffect.startLifetime);
+        }
 
         if(audioPlayer != null && explodeSound != null) {
             audioPlayer.PlayOneShot(explodeSound);

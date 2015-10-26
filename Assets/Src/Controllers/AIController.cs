@@ -165,7 +165,7 @@ public class AIController : MechController {
         }
 
         // Update the animator
-        if(legAnimator != null) {
+        if(legAnimator != null && legAnimator.isInitialized) {
             legAnimator.SetFloat("MoveSpeed", moveSpeed);
         }
     }
@@ -367,7 +367,8 @@ public class AIController : MechController {
     /// Causes this mech to explode, damaging neaby mechs
     /// </summary>
     public void CommitSuicide() {
-        mechComponent.Died();
+        Debug.Log("[" + name + "] Beserk Suicide! Killing self...");
+        mechComponent.TakeDamage(99999.9f, this, null);
     }
 
 }
