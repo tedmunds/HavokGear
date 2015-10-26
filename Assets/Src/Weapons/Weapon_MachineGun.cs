@@ -110,7 +110,7 @@ public class Weapon_MachineGun : Weapon {
                     victim.TakeDamage(baseDamage, owner, this);
 
                     if(applyForce) {
-                        victim.AddForce(fireDirection, 10.0f);
+                        victim.AddForce(fireDirection, 5.0f);
                     }
 
                     // stop at the first non-owner victim

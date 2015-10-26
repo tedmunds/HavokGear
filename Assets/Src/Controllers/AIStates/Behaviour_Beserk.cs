@@ -3,7 +3,7 @@ using System.Collections;
 
 public class Behaviour_Beserk : BehaviourSM.BehaviourState {
 
-    private const float suicideRadius = 4.0f;
+    private const float suicideRadius = 2.0f;
 
     public override BehaviourSM.StateResponse Update(AIController controller) {
         

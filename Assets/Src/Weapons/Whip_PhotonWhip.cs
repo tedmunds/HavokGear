@@ -58,8 +58,14 @@ public class Whip_PhotonWhip : Weapon {
     private Vector3 lerpedEndPoint;
 
     // Weapon that the whip is currently targeting: Can be null
-    //private Weapon targetWeapon;
     private GameObject grabbedObject;
+
+    // The surface that is latched onto
+    private GameObject latchSurface;
+    public GameObject latchedToSurface {
+        get { return latchSurface; }
+    }
+
     // Time that the fire was started
     private float fireTime;
     // The time of the last successful weapon steal
@@ -190,6 +196,7 @@ public class Whip_PhotonWhip : Weapon {
 
         if(isAttached) {
             DetachFromSurface();
+            Debug.Log("Whip detached from surface latch");
             return false;
         }
 
@@ -241,13 +248,13 @@ public class Whip_PhotonWhip : Weapon {
         else {
             // Check if it should at least perform a latch boost:
             // Draw a ray out to the weapons max range, in this case the whip keeps going until it hits a wall
-            RaycastHit2D maxRangeHit = Physics2D.Raycast(firePoint.position, toAimPoint.normalized, maxRange, blockWhipLayers);
-            endPoint = maxRangeHit? (Vector3)maxRangeHit.point : firePoint.position + toAimPoint.normalized * maxRange;
+            RaycastHit2D maxRangeHit = Physics2D.Raycast(firePoint.position, toAimPoint.normalized, maxRange, latchDetectionLayers);
+            endPoint = maxRangeHit.collider != null? (Vector3)maxRangeHit.point : firePoint.position + toAimPoint.normalized * maxRange;
 
-            RaycastHit2D[] overlaps = Physics2D.CircleCastAll(endPoint, snapRange, Vector2.zero, 0.0f, latchDetectionLayers);
-            if(hit.collider != null) {
-                endPoint = hit.point;
+            if(maxRangeHit.collider != null) {
+                latchSurface = maxRangeHit.collider.gameObject;
 
+                Debug.Log("Whip attaching to surface for latch boost");
                 SetUpLatchBoost(endPoint);
             }
         }
@@ -306,21 +313,8 @@ public class Whip_PhotonWhip : Weapon {
 
 
         if(grabbedObject != null) {
-            // if it was an AI controller previously, tell it that its weapon was stolen
-            //if(targetWeapon.owner.GetType() == typeof(AIController)) {
-            //    ((AIController)targetWeapon.owner).WeaponWasStolen();
-            //}
-            //
-            //// Cache the old weapon
-            //GameObject oldWeapon = owner.MechComponent.leftWeapon != null ? owner.MechComponent.leftWeapon.gameObject : null;
-            //
-            //// and attach it to the owner on the left side
-            //owner.MechComponent.DoAttachment(MechActor.EAttachSide.Left, targetWeapon.gameObject, Vector3.zero);
-            //
-            //if(destroyOldWeapon && oldWeapon != null) {
-            //    oldWeapon.SetActive(false);
-            //}
             Weapon targetWeapon = grabbedObject.GetComponent<Weapon>();
+
             if(targetWeapon != null) {
                 AttachGrabbedWeapon(targetWeapon);
             }
@@ -361,12 +355,8 @@ public class Whip_PhotonWhip : Weapon {
 
         RaycastHit2D[] overlaps = Physics2D.CircleCastAll(originPoint, snapRange, Vector2.zero, 0.0f, weaponDetectionLayers | pickupDetectionLayers);
         for(int i = 0; i < overlaps.Length; i++) {
-            // Was overlapping a weapon
-            //Weapon overlapWeapon = overlaps[i].collider.gameObject.GetComponent<Weapon>();
-            //PickupableItem overlapItem = overlaps[i].collider.gameObject.GetComponent<PickupableItem>();
 
             // check that the owner doesnt match the whip's, so that player doesn;t steal their own weapon
-            //if(overlapWeapon != null && overlapWeapon.owner != owner) {
             if(CanGrabObject(overlaps[i].collider.gameObject)) {
                 float dist = (overlaps[i].collider.gameObject.transform.position - originPoint).magnitude;
 
@@ -401,31 +391,6 @@ public class Whip_PhotonWhip : Weapon {
         return false;
     }
 
-    //private void CheckNearbyPickups(Vector3 originPoint) {
-    //    float closestDist = 99999.9f;
-    //    PickupableItem clostestItem = null;
-    //
-    //    RaycastHit2D[] overlaps = Physics2D.CircleCastAll(originPoint, snapRange, Vector2.zero, 0.0f, pickupDetectionLayers);
-    //    for(int i = 0; i < overlaps.Length; i++) {
-    //        // Was overlapping a weapon
-    //        PickupableItem overlapItem = overlaps[i].collider.gameObject.GetComponent<PickupableItem>();
-    //
-    //        // check that the owner doesnt match the whip's, so that player doesn;t steal their own weapon
-    //        if(overlapItem != null && overlapItem.gameObject.activeInHierarchy) {
-    //            float dist = (overlapItem.transform.position - originPoint).magnitude;
-    //
-    //            // Take whatever weapon is closest to the check point
-    //            if(dist < closestDist) {
-    //                clostestItem = overlapItem;
-    //                closestDist = dist;
-    //            }
-    //        }
-    //    }
-    //
-    //    grabbedObject = clostestItem != null? clostestItem.gameObject : null;
-    //}
-
-
     /// <summary>
     /// Whip was shot at a wall and should attach to the wall
     /// </summary>
@@ -441,6 +406,7 @@ public class Whip_PhotonWhip : Weapon {
     public void DetachFromSurface() {
         fullExtendTime = Time.time;
         isAttached = false;
+        latchSurface = null;
     }
 
 

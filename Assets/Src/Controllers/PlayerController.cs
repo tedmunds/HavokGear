@@ -230,6 +230,17 @@ public class PlayerController : MechController {
     public void EndLatchBoost() {
         isBoosting = false;
         if(whipAttachment != null) {
+            // If there is a surface object that the whip is attached to, check if it is damageable
+            if(whipAttachment.latchedToSurface != null) {
+                GameObject surf = whipAttachment.latchedToSurface;
+                Actor damageable = surf.GetComponent<Actor>();
+
+                // There is a damageable object that was atached to, so kill it
+                if(damageable != null) {
+                    damageable.TakeDamage(99999.9f, this, whipAttachment);
+                }
+            }
+
             whipAttachment.DetachFromSurface();
         }
     }

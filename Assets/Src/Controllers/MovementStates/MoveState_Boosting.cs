@@ -23,7 +23,7 @@ public class MoveState_Boosting : MovementState {
 
 
     public override Vector3 GetMovementVector(Vector2 inputVector) {
-        const float minDistance = 2.0f;
+        const float minDistance = 1.0f;
 
         if(playerController == null) {
             return Vector3.zero;
