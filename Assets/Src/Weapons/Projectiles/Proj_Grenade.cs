@@ -10,15 +10,14 @@ public class Proj_Grenade : ProjectileController {
     private float bounceElasticity = 0.5f;
 
     [SerializeField]
-    private float explosionRadius;
+    private Explosion explosionPrefab;
 
     [SerializeField]
-    private float baseDamage;
+    private AudioClip bounceSound;
 
-    [SerializeField]
-    private Animator explosionEffectPrefab;
-    
     private int numBounces;
+
+    private AudioSource audioPlayer;
 
 
     protected override void Update() {
@@ -30,6 +29,7 @@ public class Proj_Grenade : ProjectileController {
         base.OnEnable();
         numBounces = 0;
 
+        audioPlayer = GetComponent<AudioSource>();
         TrailRenderer trail = GetComponent<TrailRenderer>();
         if(trail != null) {
             //trail.time = -1;
@@ -50,8 +50,13 @@ public class Proj_Grenade : ProjectileController {
 
         numBounces += 1;
 
-        if(ShouldExplode(hit, other)) {
-            Explode();
+        if(ShouldExplode(hit, other) && explosionPrefab != null) {
+            Explosion spawnedExplosion = (Explosion)Instantiate(explosionPrefab, transform.position, Quaternion.identity);
+            if(spawnedExplosion != null) {
+                spawnedExplosion.Explode(sourceWeapon);
+            }
+
+            gameObject.SetActive(false);
             return;
         }
 
@@ -65,6 +70,11 @@ public class Proj_Grenade : ProjectileController {
         velocity = bounceDir.normalized * (velocity.magnitude * bounceElasticity);
         transform.position = hit.point + hit.normal * 0.1f;
         transform.up = velocity.normalized;
+
+        // bounced, so play bounce sound
+        if(audioPlayer != null && bounceSound != null) {
+            audioPlayer.PlayOneShot(bounceSound);
+        }
     }
 
 
@@ -83,21 +93,5 @@ public class Proj_Grenade : ProjectileController {
     }
 
 
-
-    private void Explode() {
-        gameObject.SetActive(false);
-
-        Collider2D[] overlaps = Physics2D.OverlapCircleAll(transform.position, explosionRadius);
-        for(int i = 0; i < overlaps.Length; i++) {
-            Actor mech = overlaps[i].GetComponent<Actor>();
-            if(mech != null) {
-                mech.TakeDamage(baseDamage, sourceWeapon.owner.GetComponent<MechController>(), sourceWeapon);
-            }
-        }
-
-        // Create the effect
-        Animator explosionAnimator = (Animator)Instantiate(explosionEffectPrefab, transform.position, Quaternion.identity);
-        Destroy(explosionAnimator.gameObject, 0.3f);
-    }
    
 }

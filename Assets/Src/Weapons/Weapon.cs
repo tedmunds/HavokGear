@@ -48,6 +48,9 @@ public abstract class Weapon : MonoBehaviour {
     [SerializeField]
     public float aiEngageRange;
 
+    [SerializeField]
+    public AudioClip outOfAmmoSound;
+
     /// <summary>
     /// The mech that owns this weapons currently
     /// </summary>
@@ -136,6 +139,11 @@ public abstract class Weapon : MonoBehaviour {
             // check that the weapon has enough ammo
             if(currentAmmo >= ammoPerShot || !consumesAmmo) {
                 return true;
+            }
+            else {
+                // Could not fire because its out of ammo
+                EndFire();
+                PlaySound(outOfAmmoSound);
             }
         }
 

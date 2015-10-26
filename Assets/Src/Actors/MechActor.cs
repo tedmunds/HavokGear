@@ -338,7 +338,7 @@ public class MechActor : Actor {
         }
 
         const float delayLength = 0.3f;
-        const float knowckbackForce = 100.0f;
+        const float knowckbackForce = 25.0f;
 
         isDead = true;
 
