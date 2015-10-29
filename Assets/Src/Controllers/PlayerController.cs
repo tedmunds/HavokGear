@@ -298,7 +298,7 @@ public class PlayerController : MechController {
         base.NewWeaponAttached(attached);
 
         // Cache ref to photon whip when it is attached (on spawn usually)
-        if(attached.GetType() == typeof(Whip_PhotonWhip)) {
+        if(attached != null && attached.GetType() == typeof(Whip_PhotonWhip)) {
             whipAttachment = (Whip_PhotonWhip)attached;
             Debug.Log("Player has photon whip attachment");
         }

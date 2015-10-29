@@ -23,6 +23,9 @@ public class WorldManager : MonoBehaviour {
     [SerializeField]
     public GameObject playerPrefab;
 
+    [SerializeField] // the player state stores the sdata session for the player
+    public GameObject playerStatePrefab;
+
     [SerializeField] // The weapont hat the player will be spawned with
     public GameObject defaultPlayerWeaponPrefab;
 
@@ -38,6 +41,12 @@ public class WorldManager : MonoBehaviour {
     /// </summary>
     [HideInInspector]
     public PlayerController playerCharacter;
+
+    /// <summary>
+    /// The players current state object: stores their session data
+    /// </summary>
+    [HideInInspector]
+    public PlayerState playerState;
 
     /// <summary>
     /// The checkpoint that the player has set and will be spawned at if they die
@@ -57,6 +66,17 @@ public class WorldManager : MonoBehaviour {
         objectPool = new ObjectPool();
 
         SpawnInitialPlayer();
+
+        if(playerStatePrefab != null) {
+            GameObject stateObj = Instantiate(playerStatePrefab);
+            playerState = stateObj.GetComponent<PlayerState>();
+            if(playerState == null) {
+                Debug.LogError("No PlayerState component is on the playerStatePrefab!");
+            }
+        }
+        else {
+            Debug.LogError("No player state prefab assigned to world manager, everything is ruined!");
+        }
     }
 	
 
