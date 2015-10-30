@@ -132,6 +132,14 @@ public class MechController : MonoBehaviour {
     }
 
 
+    public virtual float GetHealthModifier() {
+        return 0.0f;
+    }
+
+    public virtual float GetHealthRegen() {
+        return 0.0f;
+    }
+
     /// <summary>
     /// Forces the controller into a movement state. If the previous state is overloaded, it will be removed from the stack
     /// before the new state is applied

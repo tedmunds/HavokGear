@@ -48,13 +48,13 @@ public class Actor : MonoBehaviour {
 
 
     protected virtual void Update() {
-	    
+        
 	}
 
 
 
     public virtual void AddHealth(float healthAmount, GameObject instigator) {
-        health = Mathf.Min(health + healthAmount, maxhealth);
+        health = Mathf.Min(health + healthAmount, maxhealth + GetBonusHealth());
     }
 
 
@@ -92,9 +92,6 @@ public class Actor : MonoBehaviour {
         }
     }
 
-
-
-
     public virtual void Died() {
         isDead = true;
 
@@ -123,6 +120,15 @@ public class Actor : MonoBehaviour {
         }
         
         Died();
+    }
+
+
+    /// <summary>
+    /// Upgrade Hooks -------------------------
+    /// </summary>
+
+    public virtual float GetBonusHealth() {
+        return 0.0f;
     }
 
 

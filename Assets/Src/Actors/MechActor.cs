@@ -111,6 +111,12 @@ public class MechActor : Actor {
                 }
             }
         }
+
+        // health regen
+        float healthRegen = GetHealthRecharge() * Time.deltaTime;
+        if(healthRegen > 0.0f) {
+            AddHealth(healthRegen, this.gameObject);
+        }
 	}
 
 
@@ -359,5 +365,13 @@ public class MechActor : Actor {
         return delayLength;
     }
 
+
+    public override float GetBonusHealth() {
+        return controller.GetHealthModifier();
+    }
+
+    public float GetHealthRecharge() {
+        return controller.GetHealthRegen();
+    }
 
 }

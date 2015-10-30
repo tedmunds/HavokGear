@@ -59,6 +59,8 @@ public class PlayerController : MechController {
     /// </summary>
     private Whip_PhotonWhip whipAttachment;
 
+    private UpgradeController upgradeController;
+
     /// <summary>
     /// Boost control vars
     /// </summary>
@@ -71,6 +73,9 @@ public class PlayerController : MechController {
     
     protected override void Start () {
         base.Start();
+
+        upgradeController = GetComponent<UpgradeController>();
+        upgradeController.GetState();
 
         playerHUD = GetComponent<UI_PlayerHUD>();
         if(playerHUD == null) {
@@ -302,5 +307,15 @@ public class PlayerController : MechController {
             whipAttachment = (Whip_PhotonWhip)attached;
             Debug.Log("Player has photon whip attachment");
         }
+    }
+
+    
+
+    public override float GetHealthModifier() {
+        return upgradeController.healthUpgrade.GetBonusHealth();
+    }
+
+    public override float GetHealthRegen() {
+        return upgradeController.healthRegenUpgrade.GetRegenPerSecond();
     }
 }
