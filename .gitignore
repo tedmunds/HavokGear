@@ -54,4 +54,4 @@ obj/
 *.suo
 
 # Ignore save files so we arn't constantly remaking them
-Assets/data/
+data/
