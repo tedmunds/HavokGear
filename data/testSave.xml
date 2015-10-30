@@ -1,15 +1,19 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <PlayerSave xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <name>Test Save Data</name>
-  <points>2</points>
+  <points>1</points>
   <upgradeLevels>
     <upgrade>
       <name>Upgrade_Health</name>
-      <level>0</level>
+      <level>2</level>
     </upgrade>
     <upgrade>
       <name>Upgrade_HealthRegen</name>
       <level>0</level>
     </upgrade>
   </upgradeLevels>
+  <equippedUpgrades>
+    <equipped>Upgrade_Health</equipped>
+    <equipped>Upgrade_HealthRegen</equipped>
+  </equippedUpgrades>
 </PlayerSave>

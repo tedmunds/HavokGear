@@ -56,6 +56,8 @@ public class PlayerState : MonoBehaviour {
 
         upgradeTable.Add("Upgrade_Health", saveState.GetSavedLevelForUpgrade("Upgrade_Health"));
         upgradeTable.Add("Upgrade_HealthRegen", saveState.GetSavedLevelForUpgrade("Upgrade_HealthRegen"));
+
+        equippedUpgrades.AddRange(saveState.equippedUpgrades);
     }
 
 
@@ -81,11 +83,25 @@ public class PlayerState : MonoBehaviour {
             upgradeSlotsInUse += 1; // TODO: number of slots this upgrade requires     
 
             Debug.Log(upgradeType + " was equipped on the player state, slots in use [" + upgradeSlotsInUse + " of " + maxUpgradeSlots + "]");
+            return true;
         }
 
         return false;
     }
 
+
+
+    public bool UnequipUpgrade(string upgradeType) {
+        if(equippedUpgrades.Contains(upgradeType)) {
+            equippedUpgrades.Remove(upgradeType);
+            upgradeSlotsInUse -= 1; // TODO: number of slots this upgrade requires     
+
+            Debug.Log(upgradeType + " was unequipped from the player state, slots in use [" + upgradeSlotsInUse + " of " + maxUpgradeSlots + "]");
+            return true;
+        }
+
+        return false;
+    }
 
     /// <summary>
     /// Uses 1 upgradfe point to improve the target upgrade, returns whether or not it was used 
@@ -95,8 +111,11 @@ public class PlayerState : MonoBehaviour {
         if(upgradeTable.TryGetValue(targetUpgrade, out currentLevel) && upgradePoints > 0) {
             // TODO: constrain to the upgrades max level
 
-            upgradeTable.Add(targetUpgrade, currentLevel + 1);
+            //upgradeTable.Add(targetUpgrade, currentLevel + 1);
+            upgradeTable[targetUpgrade] = currentLevel + 1;
             upgradePoints -= 1;
+
+            Debug.Log("Upgrade point used on [" + targetUpgrade + "] :: current level=" + upgradeTable[targetUpgrade]);
         }
 
         return false;

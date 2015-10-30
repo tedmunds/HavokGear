@@ -29,6 +29,10 @@ public class PlayerSave {
     [XmlArrayItem("upgrade")]
     public UpgradePair[] upgradePairs;
 
+    [XmlArray("equippedUpgrades")]
+    [XmlArrayItem("equipped")]
+    public string[] equippedUpgrades;
+
 
 
     public void UpdateFromState(PlayerState state) {
@@ -44,6 +48,7 @@ public class PlayerSave {
 
         //then cache the poitsn
         availablePoints = state.UpgradePoints;
+        equippedUpgrades = state.equippedUpgrades.ToArray();
     }
 
 

@@ -12,7 +12,7 @@ public class UI_UpgradeTile : MonoBehaviour {
 
 	
 	private void Start() {
-	
+	    
 	}
 	
 	
