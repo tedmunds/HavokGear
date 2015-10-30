@@ -53,6 +53,10 @@ public class PlayerSave {
 
 
     public int GetSavedLevelForUpgrade(string upgrade) {
+        if(upgradePairs == null) {
+            upgradePairs = new UpgradePair[0];
+        }
+
         for(int i = 0; i < upgradePairs.Length; i++) {
             if(upgradePairs[i].name == upgrade) {
                 return upgradePairs[i].level;

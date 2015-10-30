@@ -85,6 +85,7 @@ public class UI_UpgradeSlot : MonoBehaviour {
                 upgradeClass = "";
 
                 imageIcon.sprite = null;
+                imageIcon.enabled = false;
             }
         }
     }

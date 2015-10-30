@@ -27,5 +27,8 @@ public abstract class PlayerUpgrade {
     /// </summary>
     public abstract int RequiredSlots(int currentLevel);
 
-
+    /// <summary>
+    /// How many ores does it take to perform this upgrade
+    /// </summary>
+    public abstract int PointsToUpgrade(int currentLevel);
 }

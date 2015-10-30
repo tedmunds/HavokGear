@@ -23,6 +23,10 @@ public class Upgrade_HealthRegen : PlayerUpgrade {
 
 
     public override int RequiredSlots(int currentLevel) {
-        return 1;
+        return 1 + (int)(currentLevel * 0.5f);
+    }
+
+    public override int PointsToUpgrade(int currentLevel) {
+        return 2;
     }
 }

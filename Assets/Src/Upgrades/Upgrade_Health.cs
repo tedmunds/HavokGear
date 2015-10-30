@@ -22,6 +22,10 @@ public class Upgrade_Health : PlayerUpgrade {
     }
 
     public override int RequiredSlots(int currentLevel) {
+        return 2;
+    }
+
+    public override int PointsToUpgrade(int currentLevel) {
         return 1;
     }
 }
