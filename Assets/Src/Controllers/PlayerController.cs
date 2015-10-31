@@ -3,7 +3,9 @@ using System.Collections;
 
 
 public class PlayerController : MechController {
-    
+
+    private const bool ALWAYS_DOES_BOOST = false;
+
     // TODO: control customization?
     [SerializeField]
     public string verticleInput = "Vertical";
@@ -17,14 +19,14 @@ public class PlayerController : MechController {
     [SerializeField]
     public string fireAuxInput = "Fire2";
 
-    [SerializeField]
-    public KeyCode boostInput;
-
     /// <summary>
     /// Input ramp remaps the engine input value to a custom curve for fine tuned movement input acceleration
     /// </summary>
     [SerializeField]
     public AnimationCurve inputRamp;
+
+    [SerializeField]
+    public KeyCode boostInput;
 
     [SerializeField]
     public float boostEnergy;
@@ -210,7 +212,7 @@ public class PlayerController : MechController {
         if(whipAttachment != null && whipAttachment.ValidLatchBoost) {
             GotoNewMoveState(new MoveState_Boosting(this));
         }
-        else {
+        else if(ALWAYS_DOES_BOOST) {
             // default boost move is just a linear dash 
             // If there was not enough energy to do a boost, it does a weakened version
             float boostForce = energyUsed / boostEnergy;

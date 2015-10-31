@@ -13,6 +13,9 @@ public class AIController : MechController {
     [SerializeField]
     public float maxAimError = 2.0f;
 
+    [SerializeField]
+    public bool doesntShootOffScreen = false;
+
     /// <summary>
     /// The mech that this Ai is targetting for shooting etc
     /// </summary>

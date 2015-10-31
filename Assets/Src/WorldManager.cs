@@ -290,4 +290,23 @@ public class WorldManager : MonoBehaviour {
     }
 
 
+    /// <summary>
+    /// Checks if the enemy is visible on the players camera
+    /// </summary>
+    public bool ActorOnScreen(Actor actor) {
+        if(actor == null) {
+            return false;
+        }
+
+        Vector3 viewportLocation = playerCharacter.PlayerCamera.WorldToViewportPoint(actor.transform.position);
+
+        // Use the normalized viewport coords to check if the actor is on screen
+        if(viewportLocation.x > 1.0f || viewportLocation.x < 0.0f || 
+           viewportLocation.y > 1.0f || viewportLocation.y < 0.0f) {
+               return false;
+        }
+
+        return true;
+    }
+
 }

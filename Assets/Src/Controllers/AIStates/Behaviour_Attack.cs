@@ -132,12 +132,17 @@ public class Behaviour_Attack : BehaviourSM.BehaviourState {
         // otherwise, check that there are no other mechs in the way
         Vector3 fireOrigin = GetWeaponOrigin(controller);
 
+        // Some enemies do not shoot when they are not visible on screen
+        if(controller.doesntShootOffScreen && 
+           !WorldManager.instance.ActorOnScreen(controller.MechComponent)) {
+            return false;
+        }
 
         Vector3 toTarget = controller.target.transform.position - fireOrigin;
         float arcToTarget = Vector3.Dot(controller.headTransform.up, toTarget.normalized);
 
         // constrain the shooting to within an arc
-        if(arcToTarget < maxFireArc) {
+        if(arcToTarget < maxFireArc || toTarget.magnitude > controller.GetAttackRange()) {
             return false;
         }
         /*
