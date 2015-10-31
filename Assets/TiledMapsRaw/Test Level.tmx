@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <map version="1.0" orientation="orthogonal" renderorder="right-down" width="150" height="150" tilewidth="32" tileheight="32" nextobjectid="1">
  <properties>
-  <property name="unity:scale" value="0.03"/>
+  <property name="unity:scale" value="0.02"/>
  </properties>
  <tileset firstgid="1" name="Test Level" tilewidth="32" tileheight="32" tilecount="100">
   <image source="../../../Test Level Tileset.png" width="320" height="320"/>
@@ -17,7 +17,7 @@
   </tile>
   <tile id="3">
    <objectgroup draworder="index">
-    <object id="0" x="0.5" y="5.33333" width="31.5" height="21.3333"/>
+    <object id="0" x="0.5" y="3.25" width="31.5" height="25.5"/>
    </objectgroup>
   </tile>
   <tile id="4">
@@ -44,8 +44,8 @@
   </tile>
   <tile id="13">
    <objectgroup draworder="index">
-    <object id="0" x="5.33333" y="-0.25" width="20.6667" height="26.5833"/>
-    <object id="0" x="24.3333" y="5" width="7.33333" height="21"/>
+    <object id="0" x="3.5" y="-0.25" width="25" height="29"/>
+    <object id="0" x="24.3333" y="3.25" width="7.33333" height="25.25"/>
    </objectgroup>
   </tile>
   <tile id="14">
@@ -61,7 +61,7 @@
   </tile>
   <tile id="23">
    <objectgroup draworder="index">
-    <object id="0" x="0" y="5.5" width="31.75" height="21"/>
+    <object id="0" x="0" y="3.5" width="31.75" height="25"/>
    </objectgroup>
   </tile>
   <tile id="24">
@@ -140,7 +140,7 @@
  </tileset>
  <layer name="Tile Layer 1" width="150" height="150">
   <data encoding="base64" compression="zlib">
-   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
+   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
   </data>
  </layer>
 </map>
