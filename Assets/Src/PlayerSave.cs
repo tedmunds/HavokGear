@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Xml.Serialization;
+using System.Linq;
 
 
 /// <summary>
@@ -27,39 +28,56 @@ public class PlayerSave {
 
     [XmlArray("upgradeLevels")]
     [XmlArrayItem("upgrade")]
-    public UpgradePair[] upgradePairs;
+    public UpgradePair[] unlockedLevels;
 
     [XmlArray("equippedUpgrades")]
     [XmlArrayItem("equipped")]
-    public string[] equippedUpgrades;
+    public UpgradePair[] equippedUpgrades;
 
 
 
     public void UpdateFromState(PlayerState state) {
-        // first cache all of the upgrade values
-        for(int i = 0; i < upgradePairs.Length; i++) {
-            string upgradeName = upgradePairs[i].name;
+        // first cache all of the upgrades unlocked levels
+        //for(int i = 0; i < unlockedLevels.Length; i++) {
+        //    string upgradeName = unlockedLevels[i].name;
+        //
+        //    int unlockedLevel;
+        //    if(state.upgradeUnlockTable.TryGetValue(upgradeName, out unlockedLevel)) {
+        //        unlockedLevels[i].level = unlockedLevel;
+        //    }
+        //}
 
-            int newVal;
-            if(state.upgradeTable.TryGetValue(upgradeName, out newVal)) {
-                upgradePairs[i].level = newVal;
-            }
+        string[] keys = state.upgradeUnlockTable.Keys.ToArray();
+        unlockedLevels = new UpgradePair[keys.Length];
+        for(int i = 0; i < keys.Length; i++) {
+            unlockedLevels[i].name = keys[i];
+
+            int level = 0;
+            state.upgradeUnlockTable.TryGetValue(keys[i], out level);
+            unlockedLevels[i].level = level;
         }
 
-        //then cache the poitsn
         availablePoints = state.UpgradePoints;
-        equippedUpgrades = state.equippedUpgrades.ToArray();
+
+        //then cache the equipped upgrades and their levels
+        equippedUpgrades = new UpgradePair[state.equippedUpgrades.Count];
+
+        for(int i = 0; i < state.equippedUpgrades.Count; i++) {
+            equippedUpgrades[i].level = state.equippedUpgrades[i].level;
+            equippedUpgrades[i].name = state.equippedUpgrades[i].name;
+        }
+
     }
 
 
     public int GetSavedLevelForUpgrade(string upgrade) {
-        if(upgradePairs == null) {
-            upgradePairs = new UpgradePair[0];
+        if(unlockedLevels == null) {
+            unlockedLevels = new UpgradePair[0];
         }
 
-        for(int i = 0; i < upgradePairs.Length; i++) {
-            if(upgradePairs[i].name == upgrade) {
-                return upgradePairs[i].level;
+        for(int i = 0; i < unlockedLevels.Length; i++) {
+            if(unlockedLevels[i].name == upgrade) {
+                return unlockedLevels[i].level;
             }
         }
 

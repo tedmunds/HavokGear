@@ -61,7 +61,8 @@ public class PlayerController : MechController {
     /// </summary>
     private Whip_PhotonWhip whipAttachment;
 
-    private UpgradeController upgradeController;
+    private UpgradeManager upgradeManager;
+    private PlayerState myState;
 
     /// <summary>
     /// Boost control vars
@@ -76,8 +77,9 @@ public class PlayerController : MechController {
     protected override void Start () {
         base.Start();
 
-        upgradeController = GetComponent<UpgradeController>();
-        upgradeController.GetState();
+        // Grab some ref to the instances of these global systems
+        upgradeManager = UpgradeManager.instance;
+        myState = PlayerState.instance;
 
         playerHUD = GetComponent<UI_PlayerHUD>();
         if(playerHUD == null) {
@@ -203,16 +205,18 @@ public class PlayerController : MechController {
             return;
         }
 
-        float energyUsed = mechComponent.ConsumeEnergy(boostEnergy);
+        
 
         lastBoostTime = Time.time;
         isBoosting = true;
 
         // Check if it should do a latch boost and boost towards the whips attachment point 
         if(whipAttachment != null && whipAttachment.ValidLatchBoost) {
+            float energyUsed = mechComponent.ConsumeEnergy(boostEnergy);
             GotoNewMoveState(new MoveState_Boosting(this));
         }
         else if(ALWAYS_DOES_BOOST) {
+            float energyUsed = mechComponent.ConsumeEnergy(boostEnergy);
             // default boost move is just a linear dash 
             // If there was not enough energy to do a boost, it does a weakened version
             float boostForce = energyUsed / boostEnergy;
@@ -312,12 +316,28 @@ public class PlayerController : MechController {
     }
 
     
+    /// <summary>
+    /// Upgrade access points -------------------------------------------
+    /// </summary>
 
     public override float GetHealthModifier() {
-        return upgradeController.healthUpgrade.GetBonusHealth();
+        // TODO: cache this level, since it wont change over the game?
+        float bonusHealth = 0.0f;
+        int[] equippedLevels = myState.GetEquippedLevelsFor(typeof(Upgrade_Health).Name);
+        for(int i = 0; i < equippedLevels.Length; i++) {
+            bonusHealth += upgradeManager.upgrade_Health.GetBonusHealth(equippedLevels[i]);
+        }
+
+        return bonusHealth;
     }
 
     public override float GetHealthRegen() {
-        return upgradeController.healthRegenUpgrade.GetRegenPerSecond();
+        float regen = 0.0f;
+        int[] equippedLevels = myState.GetEquippedLevelsFor(typeof(Upgrade_HealthRegen).Name);
+        for(int i = 0; i < equippedLevels.Length; i++) {
+            regen += upgradeManager.upgrade_HealthRegen.GetRegenPerSecond(equippedLevels[i]);
+        }
+
+        return regen;
     }
 }

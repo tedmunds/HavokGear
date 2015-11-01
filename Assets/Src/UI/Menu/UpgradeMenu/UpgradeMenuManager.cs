@@ -1,20 +1,29 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
+using System.Linq;
 
 public class UpgradeMenuManager : MonoBehaviour {
 
     // Instances of the upgrades in order to get per instance info about them
-    public static Upgrade_Health upgrade_Health = new Upgrade_Health(0);
-    public static Upgrade_HealthRegen upgrade_HealthRegen = new Upgrade_HealthRegen(0);
+    //public static Upgrade_Health upgrade_Health = new Upgrade_Health();
+    //public static Upgrade_HealthRegen upgrade_HealthRegen = new Upgrade_HealthRegen();
 
+    public static UpgradeMenuManager instance;
 
     [SerializeField]
     public Text oreCountField;
 
+    [SerializeField]
+    public Text slotsInUseField;
+
     private PlayerState playerState;
 
-    
+    private void OnEnable() {
+        instance = this;
+    }
+
+
 	private void Start() {
 	    playerState = FindObjectOfType<PlayerState>();
 
@@ -27,14 +36,16 @@ public class UpgradeMenuManager : MonoBehaviour {
 
             // check which icon is representing this equipped upgrade
             foreach(UI_UpgradeTile upgradeIcon in allUpgrades) {
-                if(upgradeIcon.playerUpgradeClass == playerState.equippedUpgrades[i]) {
+                if(upgradeIcon.playerUpgradeClass == playerState.equippedUpgrades[i].name &&
+                   upgradeIcon.playerUpgradeLevel == playerState.equippedUpgrades[i].level) {
 
-                    // Put it in the available slot
+                    // Put it in the next available slot
                     foreach(UI_UpgradeSlot slotIcon in allSlotIcons) {
                         if(slotIcon.slotIndex == slotIdx) {
                             slotIcon.SetIcon(upgradeIcon.upgradeImage);
                             slotIcon.hasEquippedUpgrade = true;
                             slotIcon.upgradeClass = upgradeIcon.playerUpgradeClass;
+                            slotIcon.upgradeLevel = upgradeIcon.playerUpgradeLevel;
                         }
                     }
 
@@ -44,6 +55,10 @@ public class UpgradeMenuManager : MonoBehaviour {
             }
         }
 
+        // Set initial slots in use
+        if(slotsInUseField != null) {
+            slotsInUseField.text = "" + playerState.SlotsInUse;
+        }
 	}
 	
 	
@@ -56,15 +71,20 @@ public class UpgradeMenuManager : MonoBehaviour {
 
 
 
-    public void AddPointToUpgrade(string upgradeName) {
-        Debug.Log("Request upgrade for [" + upgradeName + "]");
+    public void UnlockNewUpgradeLevel(string upgradeName) {
+        Debug.Log("Request unlock for [" + upgradeName + "]");
 
         int pointsUsed = 0;
-        bool usedUpgradePoint = playerState.UseUpgradePoint(upgradeName, out pointsUsed);
+        bool wasUnlocked = playerState.UnlockUpgradeLevel(upgradeName, out pointsUsed);
+
+        int newUnlockLevel = 0;
+        playerState.upgradeUnlockTable.TryGetValue(upgradeName, out newUnlockLevel);
 
         UI_UpgradeTile[] allUpgrades = FindObjectsOfType<UI_UpgradeTile>();
         foreach(UI_UpgradeTile tile in allUpgrades) {
-            tile.PointAdded(upgradeName);
+            if(tile.playerUpgradeClass == upgradeName) {
+                tile.PointAdded(upgradeName, newUnlockLevel);
+            }
         }
     }
 
@@ -78,50 +98,17 @@ public class UpgradeMenuManager : MonoBehaviour {
     }
 
 
-    /// <summary>
-    /// Gets the slots required to equip the given level of the given upgrade
-    /// </summary>
-    public static int GetSlotsFromUpgrade(string upgradeName, int currentLevel) {
-        // Its not ideal, but a simple switch case that needs to be updated to include all upgrades
-        switch(upgradeName) {
-            case "Upgrade_Health":
-                return upgrade_Health.RequiredSlots(currentLevel);
-            case "Upgrade_HealthRegen":
-                return upgrade_HealthRegen.RequiredSlots(currentLevel);
+    public void UpgradePlacedInSlot(string upgradeName, UI_UpgradeSlot slot) {
+        if(slotsInUseField != null) {
+            slotsInUseField.text = "" + playerState.SlotsInUse;
         }
-
-        return 0;
     }
 
 
-    /// <summary>
-    /// Gets the number of ore points required to improve the upgrade
-    /// </summary>
-    public static int GetPointsToUpgrade(string upgradeName, int currentLevel) {
-        // Its not ideal, but a simple switch case that needs to be updated to include all upgrades
-        switch(upgradeName) {
-            case "Upgrade_Health":
-                return upgrade_Health.PointsToUpgrade(currentLevel);
-            case "Upgrade_HealthRegen":
-                return upgrade_HealthRegen.PointsToUpgrade(currentLevel);
+    public void UpgradeRemovedFromSlot(string upgradeName, UI_UpgradeSlot slot) {
+        if(slotsInUseField != null) {
+            slotsInUseField.text = "" + playerState.SlotsInUse;
         }
-
-        return 1;
-    }
-
-    /// <summary>
-    /// Gets the max upgrade level of the input upgrade
-    /// </summary>
-    public static int GetMaxLevel(string upgradeName) {
-        // Its not ideal, but a simple switch case that needs to be updated to include all upgrades
-        switch(upgradeName) {
-            case "Upgrade_Health":
-                return upgrade_Health.maxUpgradeLevel;
-            case "Upgrade_HealthRegen":
-                return upgrade_HealthRegen.maxUpgradeLevel;
-        }
-
-        return 1;
     }
 
 }

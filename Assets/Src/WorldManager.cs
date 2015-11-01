@@ -23,8 +23,8 @@ public class WorldManager : MonoBehaviour {
     [SerializeField]
     public GameObject playerPrefab;
 
-    [SerializeField] // the player state stores the sdata session for the player
-    public GameObject playerStatePrefab;
+    //[SerializeField] // the player state stores the sdata session for the player
+    //public GameObject playerStatePrefab;
 
     [SerializeField] // The weapont hat the player will be spawned with
     public GameObject defaultPlayerWeaponPrefab;
@@ -67,16 +67,18 @@ public class WorldManager : MonoBehaviour {
 
         SpawnInitialPlayer();
 
-        if(playerStatePrefab != null) {
-            GameObject stateObj = Instantiate(playerStatePrefab);
-            playerState = stateObj.GetComponent<PlayerState>();
-            if(playerState == null) {
-                Debug.LogError("No PlayerState component is on the playerStatePrefab!");
-            }
-        }
-        else {
-            Debug.LogError("No player state prefab assigned to world manager, everything is ruined!");
-        }
+        //if(playerStatePrefab != null) {
+        //    GameObject stateObj = Instantiate(playerStatePrefab);
+        //    playerState = stateObj.GetComponent<PlayerState>();
+        //    if(playerState == null) {
+        //        Debug.LogError("No PlayerState component is on the playerStatePrefab!");
+        //    }
+        //}
+        //else {
+        //    Debug.LogError("No player state prefab assigned to world manager, everything is ruined!");
+        //}
+
+        playerState = FindObjectOfType<PlayerState>();
     }
 	
 
