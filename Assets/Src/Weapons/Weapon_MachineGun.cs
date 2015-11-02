@@ -124,6 +124,27 @@ public class Weapon_MachineGun : Weapon {
             }
         }
         
+        // Decide on the endpoint for effects and stuff
+        //Vector3 endPoint;
+        //if(hitResult.collider == null) {
+        //    endPoint = firePoint.position + fireDirection * maxRange;
+        //}
+        //else {
+        //    endPoint = hitResult.point;
+        //}
+
+        //// check what was hit, and apply the damage to it if its an Actor
+        //if(hitResult.collider != null && hitResult.collider.gameObject != null) {
+        //    Actor victim = CheckIsActor(hitResult.collider.gameObject);
+        //    if(victim != null && victim != owner) {
+        //        victim.TakeDamage(baseDamage, owner, this);
+
+        //        if(applyForce) {
+        //            victim.AddForce(fireDirection, 10.0f);
+        //        }
+        //    }
+        //}
+
         PlaySound(fireSound, 1.0f, Random.Range(0.85f, 1.0f));
 
 #if debug_fire
