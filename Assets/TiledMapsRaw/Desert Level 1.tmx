@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" renderorder="right-down" width="300" height="151" tilewidth="32" tileheight="32" nextobjectid="1">
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="450" height="151" tilewidth="32" tileheight="32" nextobjectid="1">
  <properties>
   <property name="unity:scale" value="0.02"/>
  </properties>
  <tileset firstgid="1" name="Test Level" tilewidth="32" tileheight="32" tilecount="100">
-  <image source="../../../Level Design/Space Station Tileset.png" width="320" height="320"/>
+  <image source="../../../Level Design/Desert Tileset.png" width="320" height="320"/>
   <tile id="1">
    <objectgroup draworder="index">
     <object id="0" x="-0.25" y="0.5" width="31.75" height="31.25"/>
@@ -138,9 +138,9 @@
    </objectgroup>
   </tile>
  </tileset>
- <layer name="Tile Layer 1" width="300" height="151">
+ <layer name="Tile Layer 1" width="450" height="151">
   <data encoding="base64" compression="zlib">
-   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
+   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
   </data>
  </layer>
 </map>
