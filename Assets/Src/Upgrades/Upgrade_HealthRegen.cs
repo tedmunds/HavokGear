@@ -1,38 +1,32 @@
 ﻿using UnityEngine;
 using System.Collections;
-using System.Xml.Serialization;
 
-[XmlRoot("Upgrade_HealthRegen")]
 public class Upgrade_HealthRegen : PlayerUpgrade {
 
 
-    public struct LevelData {
-        [XmlElement("healthRegen")]
-        public float healthRegen;
 
-        [XmlElement("requiredSlots")]
-        public int requiredSlots;
+    private float healthRegenPerSecondPerLevel = 25;
 
-        [XmlElement("requiredPoints")]
-        public int requiredPoints;
+    public Upgrade_HealthRegen(int currentLevel)
+        : base(currentLevel) {
+        maxUpgradeLevel = 5;
     }
 
-    [XmlArray("statsPerLevel")]
-    [XmlArrayItem("level")]
-    public LevelData[] perLevelData;
 
 
-    public float GetRegenPerSecond(int currentLevel) {
-        return perLevelData[currentLevel].healthRegen;
+
+
+    public float GetRegenPerSecond() {
+        return healthRegenPerSecondPerLevel * (currentUpgradeLevel);
     }
 
 
 
     public override int RequiredSlots(int currentLevel) {
-        return perLevelData[currentLevel].requiredSlots;
+        return 1 + (int)(currentLevel * 0.5f);
     }
 
     public override int PointsToUpgrade(int currentLevel) {
-        return perLevelData[currentLevel].requiredPoints;
+        return 2;
     }
 }

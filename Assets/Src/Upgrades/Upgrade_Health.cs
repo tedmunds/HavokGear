@@ -1,39 +1,31 @@
 ﻿using UnityEngine;
 using System.Collections;
-using System.Xml.Serialization;
 
 /// <summary>
 /// Modifies the players health
 /// </summary>
-[XmlRoot("Upgrade_Health")]
 public class Upgrade_Health : PlayerUpgrade {
 
-    public struct LevelData {
-        [XmlElement("bonusHealth")]
-        public float bonusHealth;
 
-        [XmlElement("requiredSlots")]
-        public int requiredSlots;
+    private float healthPerLevel = 500;
 
-        [XmlElement("requiredPoints")]
-        public int requiredPoints;
+
+    public Upgrade_Health(int currentLevel)
+        : base(currentLevel) {
+        maxUpgradeLevel = 5;
     }
 
-    [XmlArray("statsPerLevel")]
-    [XmlArrayItem("level")]
-    public LevelData[] perLevelData;
 
 
-
-    public float GetBonusHealth(int currentLevel) {
-        return perLevelData[currentLevel].bonusHealth;
+    public float GetBonusHealth() {
+        return healthPerLevel * (currentUpgradeLevel);
     }
 
     public override int RequiredSlots(int currentLevel) {
-        return perLevelData[currentLevel].requiredSlots;
+        return 2;
     }
 
     public override int PointsToUpgrade(int currentLevel) {
-        return perLevelData[currentLevel].requiredPoints;
+        return 1;
     }
 }
