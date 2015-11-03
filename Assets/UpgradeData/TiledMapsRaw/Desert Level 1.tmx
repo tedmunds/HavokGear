@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="450" height="300" tilewidth="32" tileheight="32" nextobjectid="1">
+ <properties>
+  <property name="unity:scale" value="0.02"/>
+ </properties>
+ <tileset firstgid="1" name="Test Level" tilewidth="32" tileheight="32" tilecount="100">
+  <image source="../../../Level Design/Desert Tileset.png" width="320" height="320"/>
+  <tile id="1">
+   <objectgroup draworder="index">
+    <object id="0" x="-0.25" y="0.5" width="31.75" height="31.25"/>
+   </objectgroup>
+  </tile>
+  <tile id="2">
+   <objectgroup draworder="index">
+    <object id="0" x="23.3333" y="23" width="8.41667" height="8.5"/>
+   </objectgroup>
+  </tile>
+  <tile id="3">
+   <objectgroup draworder="index">
+    <object id="0" x="0" y="7.33333" width="32" height="16"/>
+   </objectgroup>
+  </tile>
+  <tile id="4">
+   <objectgroup draworder="index">
+    <object id="0" x="-0.25" y="0" width="32.25" height="31.6667"/>
+   </objectgroup>
+  </tile>
+  <tile id="5">
+   <objectgroup draworder="index">
+    <object id="0" x="23.25" y="23" width="8.75" height="8.75"/>
+   </objectgroup>
+  </tile>
+  <tile id="11">
+   <objectgroup draworder="index">
+    <object id="0" x="-0.333333" y="0" width="32" height="32"/>
+   </objectgroup>
+  </tile>
+  <tile id="12">
+   <objectgroup draworder="index">
+    <object id="0" x="5.66667" y="6.33333" width="26.3333" height="25.3333"/>
+   </objectgroup>
+  </tile>
+  <tile id="13">
+   <objectgroup draworder="index">
+    <object id="0" x="-0.333333" y="7.66667" width="28.8333" height="16"/>
+   </objectgroup>
+  </tile>
+  <tile id="14">
+   <objectgroup draworder="index">
+    <object id="0" x="0.75" y="0.5" width="31.25" height="31"/>
+   </objectgroup>
+  </tile>
+  <tile id="22">
+   <objectgroup draworder="index">
+    <object id="0" x="0" y="-0.333333" width="31.75" height="32"/>
+   </objectgroup>
+  </tile>
+  <tile id="23">
+   <objectgroup draworder="index">
+    <object id="0" x="0" y="0" width="31.75" height="32.3333"/>
+   </objectgroup>
+  </tile>
+  <tile id="24">
+   <objectgroup draworder="index">
+    <object id="0" x="-0.25" y="22.6667" width="9.91667" height="9.58333"/>
+   </objectgroup>
+  </tile>
+  <tile id="30">
+   <objectgroup draworder="index">
+    <object id="0" x="-0.666667" y="-0.666667" width="33" height="32.3333"/>
+   </objectgroup>
+  </tile>
+  <tile id="32">
+   <objectgroup draworder="index"/>
+  </tile>
+  <tile id="33">
+   <objectgroup draworder="index">
+    <object id="0" x="-0.181818" y="5.45455">
+     <polygon points="0,0 21.4545,0 27.2727,5.27273 27.2727,26.3636 0.181818,26.5455"/>
+    </object>
+   </objectgroup>
+  </tile>
+  <tile id="34">
+   <objectgroup draworder="index">
+    <object id="0" x="5.25" y="0" width="21" height="31.5"/>
+   </objectgroup>
+  </tile>
+  <tile id="42">
+   <objectgroup draworder="index">
+    <object id="0" x="0" y="5.25" width="31.5" height="26.75"/>
+   </objectgroup>
+  </tile>
+  <tile id="43">
+   <objectgroup draworder="index">
+    <object id="0" x="0" y="-0.25" width="26.5" height="32"/>
+   </objectgroup>
+  </tile>
+  <tile id="44">
+   <objectgroup draworder="index">
+    <object id="0" x="5.75" y="0" width="20.75" height="31.5"/>
+   </objectgroup>
+  </tile>
+  <tile id="52">
+   <objectgroup draworder="index">
+    <object id="0" x="5.25" y="31.25">
+     <polygon points="0,0 0,-18.75 7.5,-25.75 26.5,-25.75 26.5,0.5 -0.25,0.5"/>
+    </object>
+   </objectgroup>
+  </tile>
+  <tile id="53">
+   <objectgroup draworder="index">
+    <object id="0" x="0" y="5.25">
+     <polygon points="0,0 19,0 26.75,7.5 26.75,27 -0.5,27 -0.25,0.25"/>
+    </object>
+   </objectgroup>
+  </tile>
+  <tile id="54">
+   <objectgroup draworder="index">
+    <object id="0" x="5.5" y="-1" width="21" height="32.25"/>
+   </objectgroup>
+  </tile>
+  <tile id="62">
+   <objectgroup draworder="index">
+    <object id="0" x="5.5" y="-0.5">
+     <polygon points="0,0 -0.25,19.75 6.75,26.5 26,26.5 26.5,-0.5"/>
+    </object>
+   </objectgroup>
+  </tile>
+  <tile id="63">
+   <objectgroup draworder="index">
+    <object id="0" x="-0.25" y="0.25">
+     <polygon points="0,0 26.75,-0.25 26.5,19.5 19.5,26.25 0,26 0,0"/>
+    </object>
+   </objectgroup>
+  </tile>
+ </tileset>
+ <layer name="Tile Layer 1" width="450" height="300">
+  <data encoding="base64" compression="zlib">
+   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
+  </data>
+ </layer>
+</map>
