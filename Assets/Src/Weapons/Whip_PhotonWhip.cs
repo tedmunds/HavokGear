@@ -217,16 +217,18 @@ public class Whip_PhotonWhip : Weapon {
             whipEffect.SetPosition(i, segmentPositions[i]);
         }
 
+        Vector3 fireStartPoint = GetFireOrigin();
+
         // Check there there is nothing inthe way of the whip (only check for terrain though)
         Vector3 endPoint = owner.GetAimLocation();
-        Vector3 toAimPoint = owner.GetAimLocation() - firePoint.position;
+        Vector3 toAimPoint = owner.GetAimLocation() - fireStartPoint;
 
         // Check for weapon at the end point to snap to:
         // This will govern what sort of behaviour the whip takes
         CheckNearbyGrabTargets(endPoint);
 
         // check if there is anything obstructing the path to the attach point, clear weapon steal if so
-        RaycastHit2D hit = Physics2D.Raycast(firePoint.position, toAimPoint.normalized, toAimPoint.magnitude, blockWhipLayers);
+        RaycastHit2D hit = Physics2D.Raycast(fireStartPoint, toAimPoint.normalized, toAimPoint.magnitude, blockWhipLayers);
         if(hit.collider != null) {
             endPoint = hit.point;
             grabbedObject = null;
@@ -248,8 +250,8 @@ public class Whip_PhotonWhip : Weapon {
         else {
             // Check if it should at least perform a latch boost:
             // Draw a ray out to the weapons max range, in this case the whip keeps going until it hits a wall
-            RaycastHit2D maxRangeHit = Physics2D.Raycast(firePoint.position, toAimPoint.normalized, maxRange, latchDetectionLayers);
-            endPoint = maxRangeHit.collider != null? (Vector3)maxRangeHit.point : firePoint.position + toAimPoint.normalized * maxRange;
+            RaycastHit2D maxRangeHit = Physics2D.Raycast(fireStartPoint, toAimPoint.normalized, maxRange, latchDetectionLayers);
+            endPoint = maxRangeHit.collider != null ? (Vector3)maxRangeHit.point : fireStartPoint + toAimPoint.normalized * maxRange;
 
             if(maxRangeHit.collider != null) {
                 latchSurface = maxRangeHit.collider.gameObject;

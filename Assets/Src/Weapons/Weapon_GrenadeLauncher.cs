@@ -28,7 +28,7 @@ public class Weapon_GrenadeLauncher : Weapon {
         PlaySound(shootSound);
 
         // Spawn and launch the projectile
-        GameObject spawnedProjectile = WorldManager.instance.SpawnObject(projectilePrototype, firePoint.position);
+        GameObject spawnedProjectile = WorldManager.instance.SpawnObject(projectilePrototype, GetFireOrigin());
         ProjectileController projController = spawnedProjectile.GetComponent<ProjectileController>();
         if(projController != null) {
             projController.LaunchProjectile(fireDirection, this);

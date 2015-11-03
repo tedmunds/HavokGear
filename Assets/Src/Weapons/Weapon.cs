@@ -51,6 +51,9 @@ public abstract class Weapon : MonoBehaviour {
     [SerializeField]
     public AudioClip outOfAmmoSound;
 
+    [SerializeField]
+    public bool hasLaserSight;
+
     /// <summary>
     /// The mech that owns this weapons currently
     /// </summary>
@@ -215,6 +218,23 @@ public abstract class Weapon : MonoBehaviour {
 
         return fireDirection;
     }
+
+
+    /// <summary>
+    /// Finds the best suitable location to start the weapon fire from
+    /// </summary>
+    public Vector3 GetFireOrigin(float errorRadius = 0.1f) {
+        const float maxOffsetDist = 0.5f;
+        Vector3 toAimLoc = owner.GetAimLocation() - firePoint.transform.position;
+
+        Collider2D blocking = Physics2D.OverlapCircle(firePoint.position, errorRadius);
+        if(blocking != null) {
+            return firePoint.position + toAimLoc.normalized * (maxOffsetDist + errorRadius);
+        }
+
+        return firePoint.position;
+    }
+
 
 
     /// <summary>

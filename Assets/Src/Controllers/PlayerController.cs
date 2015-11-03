@@ -87,6 +87,7 @@ public class PlayerController : MechController {
         }
 
         laserSightRenderer = GetComponent<LineRenderer>();
+        laserSightRenderer.enabled = false;
     }
 
 
@@ -160,8 +161,7 @@ public class PlayerController : MechController {
         }
 
         // Update the laser sight renderer
-        if(laserSightRenderer != null && mechComponent.leftWeapon != null) {
-            laserSightRenderer.enabled = true;
+        if(laserSightRenderer != null && laserSightRenderer.enabled) {
             laserSightRenderer.SetPosition(0, mechComponent.leftWeapon.firePoint.position);
 
             Vector3 toAimPoint = currentAimLoc - mechComponent.leftWeapon.firePoint.position;
@@ -172,9 +172,9 @@ public class PlayerController : MechController {
 
             laserSightRenderer.SetPosition(1, hit? (Vector3)hit.point : currentAimLoc);
         }
-        else if(laserSightRenderer != null) {
-            laserSightRenderer.enabled = false;
-        }
+        //else if(laserSightRenderer != null) {
+        //    laserSightRenderer.enabled = false;
+        //}
     }
     
 
@@ -312,6 +312,16 @@ public class PlayerController : MechController {
         if(attached != null && attached.GetType() == typeof(Whip_PhotonWhip)) {
             whipAttachment = (Whip_PhotonWhip)attached;
             Debug.Log("Player has photon whip attachment");
+        }
+
+        // check if the weapon wants a laser sight or not
+        if(attached != null && attached.GetType() != typeof(Whip_PhotonWhip)) {
+            if(attached.hasLaserSight && laserSightRenderer != null) {
+                laserSightRenderer.enabled = true;
+            }
+            else if(laserSightRenderer != null) {
+                laserSightRenderer.enabled = false;
+            }
         }
     }
 
