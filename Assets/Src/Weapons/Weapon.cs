@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public abstract class Weapon : MonoBehaviour {
 
@@ -120,7 +121,7 @@ public abstract class Weapon : MonoBehaviour {
         Fire();
         
         // Do some camera shake, if its the player shooting. TOTO: more generalized way to do camera shake
-        if(owner.GetType() == typeof(PlayerController)) {
+        if(owner.GetType() == typeof(PlayerController) && cameraRecoil > 0.0f) {
             CameraController.CameraShake shakeData = new CameraController.CameraShake(0.1f, cameraRecoil, 5.0f, 1.0f, false);
 
             PlayerController playerOwner = (PlayerController)owner;
@@ -258,6 +259,45 @@ public abstract class Weapon : MonoBehaviour {
         audioPlayer.pitch = pitch;
 
         audioPlayer.PlayOneShot(soundClip, volumeScale);
+    }
+
+
+    /// <summary>
+    /// Performs a raycast, ignoring the input set of objects and returns the list of objects hit by the raycast
+    /// </summary>
+    public RaycastHit2D[] WeaponRayCast(Vector3 origin, Vector3 direction, float distance, LayerMask layers, GameObject[] ignoreObjects = null) {
+
+        RaycastHit2D[] raycastResults = Physics2D.RaycastAll(origin, direction, distance, layers);
+        List<RaycastHit2D> validObjects = new List<RaycastHit2D>(raycastResults.Length);
+
+        foreach(RaycastHit2D hit in raycastResults) {
+            // it is a valid object as long as its not this weapon or its owner
+            if(hit.collider.gameObject == this.gameObject ||
+               hit.collider.gameObject == owner.gameObject) {
+                continue;
+            }
+            
+            // check if it should be ignored
+            if(ignoreObjects != null) {
+                bool ignoreThisObject = false;
+
+                foreach(GameObject ignore in ignoreObjects) {
+                    if(ignore == hit.collider.gameObject) {
+                        ignoreThisObject = true;
+                        break;
+                    }
+                }
+
+                if(ignoreThisObject) {
+                    continue;
+                }
+            }
+
+            // must be a good hit
+            validObjects.Add(hit);
+        }
+
+        return validObjects.ToArray();
     }
 
 }
