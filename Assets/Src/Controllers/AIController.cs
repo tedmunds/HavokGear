@@ -16,6 +16,9 @@ public class AIController : MechController {
     [SerializeField]
     public bool doesntShootOffScreen = false;
 
+    [SerializeField]
+    public LayerMask blockLOSLayers;
+
     /// <summary>
     /// The mech that this Ai is targetting for shooting etc
     /// </summary>
@@ -228,7 +231,7 @@ public class AIController : MechController {
         }
 
         Vector3 toTarget = target.transform.position - transform.position;
-        RaycastHit2D[] hits = Physics2D.RaycastAll(transform.position, toTarget.normalized, maxDetectRange);
+        RaycastHit2D[] hits = Physics2D.RaycastAll(transform.position, toTarget.normalized, maxDetectRange, blockLOSLayers);
         for(int i = 0; i < hits.Length; i++) {
             // ignore self
             if(hits[i].collider != null && hits[i].collider.gameObject == this.gameObject) {
@@ -269,7 +272,7 @@ public class AIController : MechController {
 
     public bool CheckLOSFrom(Vector3 origin, Vector3 to, float maxRange) {
         Vector3 toTarget = to - origin;
-        RaycastHit2D[] hits = Physics2D.RaycastAll(origin, toTarget.normalized, maxRange);
+        RaycastHit2D[] hits = Physics2D.RaycastAll(origin, toTarget.normalized, maxRange, blockLOSLayers);
         for(int i = 0; i < hits.Length; i++) {
             // ignore self
             if(hits[i].collider != null && hits[i].collider.gameObject == this.gameObject) {
@@ -373,5 +376,24 @@ public class AIController : MechController {
         Debug.Log("[" + name + "] Beserk Suicide! Killing self...");
         mechComponent.TakeDamage(99999.9f, this, null);
     }
+
+
+    /// <summary>
+    /// Decides how long the enemy wants to shoot their gun for, in a single burst
+    /// </summary>
+    public float GetFireBurstLength() {
+        int numShotsInBurst = 1;
+
+        if(mechComponent.leftWeapon != null) {
+            if(mechComponent.leftWeapon.isAutomatic) {
+                numShotsInBurst = Random.Range(5, 10);
+            }
+            //Debug.Log("[" + name + "] started burst fire with [" + numShotsInBurst + "] shots!");
+            return mechComponent.leftWeapon.refireDelay * numShotsInBurst + 0.1f;
+        }
+
+        return 0.2f;
+    }
+
 
 }

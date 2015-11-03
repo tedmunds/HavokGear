@@ -100,7 +100,7 @@ public class Behaviour_Attack : BehaviourSM.BehaviourState {
                 lastBurstTime = Time.time;
                 isBursting = true;
 
-                currentBurstLength = Random.Range(0.1f, 1.0f);
+                currentBurstLength = controller.GetFireBurstLength();//Random.Range(0.1f, 1.0f);
                 currentBurstDelay = currentBurstLength + Random.Range(minBurstInterval, maxBurstInterval);
 
                 StartShooting(controller);
@@ -125,10 +125,6 @@ public class Behaviour_Attack : BehaviourSM.BehaviourState {
 
 
     private bool CanShootTarget(AIController controller) {
-        if(!controller.HasLOSTarget()) {
-            return false;
-        }
-
         // otherwise, check that there are no other mechs in the way
         Vector3 fireOrigin = GetWeaponOrigin(controller);
 
@@ -145,14 +141,7 @@ public class Behaviour_Attack : BehaviourSM.BehaviourState {
         if(arcToTarget < maxFireArc || toTarget.magnitude > controller.GetAttackRange()) {
             return false;
         }
-        /*
-        RaycastHit2D[] hits = Physics2D.RaycastAll(fireOrigin, toTarget.normalized, toTarget.magnitude);
-        for(int i = 0; i < hits.Length; i++) {
-            // If there is Anything in the way that blocks shots, cant fire. As long as its not the target...
-            if(!hits[i].collider.isTrigger && hits[i].collider.tag != controller.target.tag) {
-                return false;
-            }
-        }*/
+
         if(!controller.CheckLOSFrom(fireOrigin, controller.target.transform.position, 100.0f)) {
             return false;
         }

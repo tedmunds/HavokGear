@@ -5,8 +5,10 @@ using System.Collections;
 
 public class Weapon_MachineGun : Weapon {
 
+    //[SerializeField]
+    //public float baseDamage;
     [SerializeField]
-    public float baseDamage;
+    public ProjectileController bulletPrefab;
 
     [SerializeField]
     public bool applyForce;
@@ -97,33 +99,41 @@ public class Weapon_MachineGun : Weapon {
         Vector3 fireDirection = GetAimDirection();
 
         //RaycastHit2D hitResult = Physics2D.Raycast(firePoint.position, fireDirection, maxRange, detectLayers);
-        RaycastHit2D[] hitResults = Physics2D.RaycastAll(firePoint.position, fireDirection, maxRange, detectLayers);
-        
-        // default end point
-        Vector3 endPoint = firePoint.position + fireDirection * maxRange; ;
+        //RaycastHit2D[] hitResults = Physics2D.RaycastAll(firePoint.position, fireDirection, maxRange, detectLayers);
+        //
+        //// default end point
+        //Vector3 endPoint = firePoint.position + fireDirection * maxRange; ;
+        //
+        //foreach(RaycastHit2D hit in hitResults) {
+        //    if(hit.collider != null && hit.collider.gameObject != null) {
+        //        Actor victim = CheckIsActor(hit.collider.gameObject);
+        //            
+        //        if(victim != null && victim.tag != owner.tag) {
+        //            victim.TakeDamage(baseDamage, owner, this);
+        //
+        //            if(applyForce) {
+        //                victim.AddForce(fireDirection, 5.0f);
+        //            }
+        //
+        //            // stop at the first non-owner victim
+        //            endPoint = hit.point;
+        //            break;
+        //        }
+        //        else if(victim == null) {
+        //            endPoint = hit.point;
+        //            break;
+        //        }
+        //    }
+        //}
 
-        foreach(RaycastHit2D hit in hitResults) {
-            if(hit.collider != null && hit.collider.gameObject != null) {
-                Actor victim = CheckIsActor(hit.collider.gameObject);
-                    
-                if(victim != null && victim.tag != owner.tag) {
-                    victim.TakeDamage(baseDamage, owner, this);
-
-                    if(applyForce) {
-                        victim.AddForce(fireDirection, 5.0f);
-                    }
-
-                    // stop at the first non-owner victim
-                    endPoint = hit.point;
-                    break;
-                }
-                else if(victim == null) {
-                    endPoint = hit.point;
-                    break;
-                }
+        GameObject spawnedBullet = WorldManager.instance.SpawnObject(bulletPrefab.gameObject, firePoint.position);
+        if(spawnedBullet != null) {
+            ProjectileController projController = spawnedBullet.GetComponent<ProjectileController>();
+            if(projController != null) {
+                projController.LaunchProjectile(fireDirection, this);
             }
         }
-        
+
         PlaySound(fireSound, 1.0f, Random.Range(0.85f, 1.0f));
 
 #if debug_fire
@@ -131,18 +141,18 @@ public class Weapon_MachineGun : Weapon {
 #endif
 
         // Do bullet effect
-        if(bulletTrailRenderer != null) {
-            bulletTrailRenderer.SetPosition(0, firePoint.position);
-            bulletTrailRenderer.SetPosition(1, endPoint);
-            bulletTrailRenderer.enabled = true;
-        }
-
-        if(hitEffect != null) {
-            hitEffect.transform.position = endPoint;
-            hitEffect.gameObject.SetActive(true);
-            hitEffect.Play();
-        }
-
+        //if(bulletTrailRenderer != null) {
+        //    bulletTrailRenderer.SetPosition(0, firePoint.position);
+        //    bulletTrailRenderer.SetPosition(1, endPoint);
+        //    bulletTrailRenderer.enabled = true;
+        //}
+        //
+        //if(hitEffect != null) {
+        //    hitEffect.transform.position = endPoint;
+        //    hitEffect.gameObject.SetActive(true);
+        //    hitEffect.Play();
+        //}
+        
         if(shootEffect != null) {
             shootEffect.transform.position = firePoint.position;
             shootEffect.transform.up = fireDirection;

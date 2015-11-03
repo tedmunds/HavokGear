@@ -23,6 +23,9 @@ public class EnemySpawner : MonoBehaviour {
     [SerializeField]
     private int totalEnemiesToSpawn = 5;
 
+    [SerializeField] // A targhet object to open when this spawner is cleared
+    private RoomAccess openTargetOnClear;
+    
     // Spawn point can have a list of patrol points associated with it
     [SerializeField]
     public List<Transform> patrolPoints;
@@ -39,6 +42,8 @@ public class EnemySpawner : MonoBehaviour {
 
     private int numSpawned = 0;
 
+    private bool hasBeenCleared;
+
     // List of the enemies that are currently spawned and active
     private List<AIController> activeEnemies;
 
@@ -52,6 +57,7 @@ public class EnemySpawner : MonoBehaviour {
         }
 
         numSpawned = 0;
+        hasBeenCleared = false;
     }
 	
 	
@@ -73,6 +79,14 @@ public class EnemySpawner : MonoBehaviour {
                 lastSpawnTime = Time.time;
 
                 SpawnNewEnemy();
+            }
+        }
+
+        // check if it has been cleared: it has spawned its max enemies, and they are all dead
+        if(!hasBeenCleared && numSpawned >= totalEnemiesToSpawn && activeEnemies.Count == 0) {
+            hasBeenCleared = true;
+            if(openTargetOnClear != null) {
+                openTargetOnClear.Activate(WorldManager.instance.playerCharacter);
             }
         }
 	}
