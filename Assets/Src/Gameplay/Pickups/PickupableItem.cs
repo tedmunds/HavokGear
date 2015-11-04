@@ -9,6 +9,9 @@ public abstract class PickupableItem : MonoBehaviour {
     [SerializeField]
     public bool pickupOnTrigger;
 
+    [SerializeField]
+    public bool pickupWithWhip;
+
     protected bool hasBeenActivated = false;
 
     public void OnTriggerEnter2D(Collider2D other) {
@@ -18,6 +21,14 @@ public abstract class PickupableItem : MonoBehaviour {
 
         // If the player enters trigger area, then activate 
         PlayerController playerController = other.GetComponent<PlayerController>();
+        if(playerController == null) {
+            playerController = other.GetComponentInChildren<PlayerController>();
+            if(playerController == null) {
+                playerController = other.GetComponentInParent<PlayerController>();
+            }
+        }
+
+
         if(playerController != null) {
             Activate(playerController);
         }

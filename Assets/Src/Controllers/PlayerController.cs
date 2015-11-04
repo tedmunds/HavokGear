@@ -161,7 +161,7 @@ public class PlayerController : MechController {
         }
 
         // Update the laser sight renderer
-        if(laserSightRenderer != null && laserSightRenderer.enabled) {
+        if(laserSightRenderer != null && laserSightRenderer.enabled && mechComponent.leftWeapon != null) {
             laserSightRenderer.SetPosition(0, mechComponent.leftWeapon.firePoint.position);
 
             Vector3 toAimPoint = currentAimLoc - mechComponent.leftWeapon.firePoint.position;

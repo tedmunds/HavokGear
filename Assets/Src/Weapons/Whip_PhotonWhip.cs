@@ -386,7 +386,7 @@ public class Whip_PhotonWhip : Weapon {
             return true;
         }
 
-        if(overlapItem != null && overlapItem.gameObject.activeInHierarchy) {
+        if(overlapItem != null && overlapItem.gameObject.activeInHierarchy && overlapItem.pickupWithWhip) {
             return true;
         }
 

@@ -35,6 +35,9 @@ public class WorldManager : MonoBehaviour {
     [SerializeField]
     public Transform initialSpawnPoint;
 
+    [SerializeField]
+    public bool friendlyFire;
+
 
     /// <summary>
     /// Cached reference to the player object

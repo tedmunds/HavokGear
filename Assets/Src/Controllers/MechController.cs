@@ -10,6 +10,10 @@ using System.Collections.Generic;
 [RequireComponent(typeof(MechActor))]
 public class MechController : MonoBehaviour {
 
+    public enum EMechTeam {
+        Friendly, Neutral, Enemy
+    }
+
     /// <summary>
     /// Transform for the head sprite that rotates towards aim direction
     /// </summary>
@@ -27,6 +31,9 @@ public class MechController : MonoBehaviour {
 
     [SerializeField]
     public float baseAimRotSpeed = 1.0f;
+
+    [SerializeField] // 0 = good guy, 1 = bad
+    public EMechTeam mechTeam;
 
 
     protected MovementController2D movementComponent;

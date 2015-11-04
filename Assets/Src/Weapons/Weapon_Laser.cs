@@ -13,6 +13,7 @@ public class Weapon_Laser : Weapon {
 
     private LineRenderer laserRenderer;
 
+    private int numLaserVerts;
 
 	protected override void Start() {
         base.Start();
@@ -23,7 +24,8 @@ public class Weapon_Laser : Weapon {
         }
 
         laserRenderer.enabled = false;
-        laserRenderer.SetVertexCount(bounces + 2);
+        numLaserVerts = bounces + 2;
+        laserRenderer.SetVertexCount(numLaserVerts);
     }
 
 
@@ -49,6 +51,7 @@ public class Weapon_Laser : Weapon {
         }
 
         EndFire();
+        PlaySound(outOfAmmoSound);
         return false;
     }
 
@@ -64,7 +67,10 @@ public class Weapon_Laser : Weapon {
 
         currentAmmo = (int)Mathf.Ceil(currentEnergy);
 
-        laserRenderer.SetPosition(0, firePoint.position);
+        //laserRenderer.SetPosition(0, firePoint.position);
+        for(int i = 0; i < numLaserVerts; i++) {
+            laserRenderer.SetPosition(i, firePoint.position);
+        }
 
         Vector3 toAimPoint = owner.GetAimLocation() - firePoint.position;
         Vector3 endPoint;
@@ -74,7 +80,7 @@ public class Weapon_Laser : Weapon {
         Vector3 castOrigin = firePoint.position;
         float castDist = maxRange;
 
-        for(int i = 0; i <= bounces; i++) {
+        for(int i = 0; i <= numLaserVerts - 2; i++) {
             RaycastHit2D[] hits = WeaponRayCast(castOrigin, fireDirection, castDist, detectLayers);
 
             if(hits.Length > 0) {
@@ -86,7 +92,7 @@ public class Weapon_Laser : Weapon {
                 if(target != null) {
                     target.TakeDamage(damagePerSecond * Time.deltaTime, owner, this);
 
-                    for(int j = i + 2; j < 2 + bounces; j++) {
+                    for(int j = i + 2; j < numLaserVerts; j++) {
                         laserRenderer.SetPosition(j, endPoint);
                     }
 
@@ -100,7 +106,7 @@ public class Weapon_Laser : Weapon {
 
                 fireDirection = bounceDir.normalized;
                 //castDist -= distUsed;
-                castOrigin = endPoint;
+                castOrigin = endPoint + bounceDir * 0.1f;
             }
             else {
                 endPoint = castOrigin + fireDirection * castDist;
@@ -108,7 +114,7 @@ public class Weapon_Laser : Weapon {
 
                 // place all verts at the end
                 if(bounces > 0) {
-                    for(int j = i + 1; j < 2 + bounces; j++) {
+                    for(int j = i + 1; j < numLaserVerts; j++) {
                         laserRenderer.SetPosition(j, endPoint);
                     }
                 }

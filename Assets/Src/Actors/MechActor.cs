@@ -89,7 +89,6 @@ public class MechActor : Actor {
     protected override void Update() {
         base.Update();
 
-
         // energy regeneration
         if(currentEnergyLevel < maxEnergyLevel) {
             currentEnergyLevel += energyRechargeRate * Time.deltaTime;
@@ -138,6 +137,11 @@ public class MechActor : Actor {
     /// </summary>
     public override void TakeDamage(float damageAmount, MechController instigator, Weapon weaponUsed) {
         if(IsDead || isFalling) {
+            return;
+        }
+
+        // Check if friendly fire is allowed
+        if(instigator.mechTeam == controller.mechTeam && !WorldManager.instance.friendlyFire) {
             return;
         }
 
