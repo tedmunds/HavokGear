@@ -4,6 +4,10 @@ using System.Collections.Generic;
 
 public abstract class Weapon : MonoBehaviour {
 
+    public enum EDamageType {
+        Prierce, Blast, Energy
+    }
+
     /// <summary>
     /// Time inbetween being able to shoot again
     /// </summary>
@@ -54,6 +58,12 @@ public abstract class Weapon : MonoBehaviour {
 
     [SerializeField]
     public bool hasLaserSight;
+
+    /// <summary>
+    /// Set of damage types taht this weapon has
+    /// </summary>
+    [SerializeField]
+    public EDamageType[] damageTypeList;
 
     /// <summary>
     /// The mech that owns this weapons currently

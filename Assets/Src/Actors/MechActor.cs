@@ -31,6 +31,12 @@ public class MechActor : Actor {
     [SerializeField]
     public float energyRechargeRate;
 
+    [SerializeField]
+    public Weapon.EDamageType[] armorWeaknessList;
+
+    [SerializeField]
+    public float armorProtection;
+
     /// <summary>
     /// Attachment points for guns or whatever
     /// </summary>
@@ -147,6 +153,26 @@ public class MechActor : Actor {
 
         float modifiedDamage = instigator != null? instigator.ModifyBaseDamage(damageAmount, weaponUsed) : damageAmount;
         float reducedDamage = modifiedDamage;
+
+        bool armorReducesDamage = true;
+
+        // Account for the armor weaknesses from the weapon type
+        if(armorWeaknessList.Length > 0 && weaponUsed != null) {
+            // this armor has a weakness, check if the weapon has a strength against that weakness
+            for(int i = 0; i < armorWeaknessList.Length; i++) {
+                for(int j = 0; j < weaponUsed.damageTypeList.Length; j++) {
+                    if(armorWeaknessList[i] == weaponUsed.damageTypeList[j]) {
+                        // then the damage is not reduced any more, because this weapon is strong against this weakness
+                        armorReducesDamage = false;
+                    }
+                }
+            }
+        }
+
+        if(armorReducesDamage) {
+            float priorDamage = reducedDamage;
+            reducedDamage = (1.0f - armorProtection) * reducedDamage;
+        }
 
         // Take the damage out of the shield first: changed system to only use energy bar
         //float shieldAbsorbtion = Mathf.Min(currentShield, reducedDamage);
