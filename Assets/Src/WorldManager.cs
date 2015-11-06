@@ -38,6 +38,9 @@ public class WorldManager : MonoBehaviour {
     [SerializeField]
     public bool friendlyFire;
 
+    [SerializeField]
+    public UI_EnemyHealthBar enemyHealthBarPrototype;
+
 
     /// <summary>
     /// Cached reference to the player object
@@ -69,17 +72,6 @@ public class WorldManager : MonoBehaviour {
         objectPool = new ObjectPool();
 
         SpawnInitialPlayer();
-
-        //if(playerStatePrefab != null) {
-        //    GameObject stateObj = Instantiate(playerStatePrefab);
-        //    playerState = stateObj.GetComponent<PlayerState>();
-        //    if(playerState == null) {
-        //        Debug.LogError("No PlayerState component is on the playerStatePrefab!");
-        //    }
-        //}
-        //else {
-        //    Debug.LogError("No player state prefab assigned to world manager, everything is ruined!");
-        //}
 
         playerState = FindObjectOfType<PlayerState>();
     }
@@ -201,6 +193,16 @@ public class WorldManager : MonoBehaviour {
             MechActor mechComponent = botCharacter.GetComponent<MechActor>();
             if(mechComponent != null) {
                 mechComponent.DoAttachment(MechActor.EAttachSide.Right, spawnedWeapon, Vector3.zero);
+            }
+        }
+
+        // add the health bar to it
+        if(enemyHealthBarPrototype != null) {
+            GameObject healthBarObject = objectPool.GetInactiveGameObjectInstance(enemyHealthBarPrototype.gameObject);
+            UI_EnemyHealthBar enemyHpBar = healthBarObject.GetComponent<UI_EnemyHealthBar>();
+            if(enemyHpBar != null) {
+                healthBarObject.SetActive(true);
+                enemyHpBar.AssignToTarget(botCharacter.GetComponent<MechActor>());
             }
         }
 
