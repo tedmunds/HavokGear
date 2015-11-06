@@ -310,4 +310,15 @@ public abstract class Weapon : MonoBehaviour {
         return validObjects.ToArray();
     }
 
+
+    public virtual float AIBurstLength() {
+        if(isAutomatic) {
+            int numShotsInBurst = Random.Range(5, 10);
+            return refireDelay * numShotsInBurst + 0.1f;
+        }
+
+        // otherwise just return the refire delay + a little buffer
+        return refireDelay + 0.1f;
+    }
+
 }

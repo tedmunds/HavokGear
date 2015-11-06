@@ -93,7 +93,7 @@ public class Weapon_Laser : Weapon {
                     target.TakeDamage(damagePerSecond * Time.deltaTime, owner, this);
 
                     for(int j = i + 2; j < numLaserVerts; j++) {
-                        laserRenderer.SetPosition(j, endPoint);
+                        laserRenderer.SetPosition(j, endPoint + fireDirection * (0.1f * j));
                     }
 
                     break;
@@ -159,5 +159,10 @@ public class Weapon_Laser : Weapon {
         base.OnEquip(controller, usesAmmo);
 
         currentEnergy = baseAmmo;
+    }
+
+
+    public override float AIBurstLength() {
+        return Random.Range(0.5f, 2.0f);
     }
 }

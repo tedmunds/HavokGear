@@ -339,6 +339,10 @@ public class AIController : MechController {
         Vector2 randAimOffset = Random.insideUnitCircle;
         float aimError = Random.Range(0.0f, maxAimError);
 
+        if(mechComponent.leftWeapon.GetType() == typeof(Weapon_Laser)) {
+            aimError = 0.0f;
+        }
+
         return target.transform.position + (Vector3)randAimOffset.normalized * aimError;
     }
 
@@ -385,11 +389,7 @@ public class AIController : MechController {
         int numShotsInBurst = 1;
 
         if(mechComponent.leftWeapon != null) {
-            if(mechComponent.leftWeapon.isAutomatic) {
-                numShotsInBurst = Random.Range(5, 10);
-            }
-            //Debug.Log("[" + name + "] started burst fire with [" + numShotsInBurst + "] shots!");
-            return mechComponent.leftWeapon.refireDelay * numShotsInBurst + 0.1f;
+            return mechComponent.leftWeapon.AIBurstLength();
         }
 
         return 0.2f;
