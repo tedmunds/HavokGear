@@ -96,11 +96,13 @@ public class MechActor : Actor {
         base.Update();
 
         // energy regeneration
-        if(currentEnergyLevel < maxEnergyLevel) {
-            currentEnergyLevel += energyRechargeRate * Time.deltaTime;
+        if(Time.time - lastReceivedDamage > shieldRechargeDelay) {
+            if(currentEnergyLevel < maxEnergyLevel) {
+                currentEnergyLevel += energyRechargeRate * Time.deltaTime;
 
-            if(currentEnergyLevel > maxEnergyLevel) {
-                currentEnergyLevel = maxEnergyLevel;
+                if(currentEnergyLevel > maxEnergyLevel) {
+                    currentEnergyLevel = maxEnergyLevel;
+                }
             }
         }
 
