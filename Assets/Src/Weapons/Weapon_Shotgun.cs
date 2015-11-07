@@ -10,6 +10,12 @@ public class Weapon_Shotgun : Weapon {
     public int bulletsInSpread;
 
     [SerializeField]
+    public float chargeUpTime;
+
+    [SerializeField]
+    public float chargedSpreadArc;
+
+    [SerializeField]
     public ProjectileController bulletPrefab;
 
     [SerializeField]
@@ -20,6 +26,10 @@ public class Weapon_Shotgun : Weapon {
 
     private ParticleSystem shootEffect;
 
+    private bool beginCharging;
+
+
+
     protected override void Start() {
         base.Start();
 
@@ -29,20 +39,47 @@ public class Weapon_Shotgun : Weapon {
             shootEffect.transform.parent = transform;
         }
 	}
-	
-	
 
 
-    protected override void Fire() {
-        base.Fire();
+
+
+
+    public override bool BeginFire() {
+        bool beganFire = base.BeginFire();
+
+        beginCharging = beganFire;
+
+        return beganFire;
+    }
+
+
+    /// <summary>
+    /// Call to end weapon fire 
+    /// </summary>
+    public override void EndFire() {
+        base.EndFire();
+        
+        if(!beginCharging) {
+            return;
+        }
 
         Vector3 fireDirection = GetAimDirection();
+
+        // constrain the charged up time
+        float chargedTime = Time.time - lastFireTime;
+        if(chargedTime > chargeUpTime) {
+            chargedTime = chargeUpTime;
+        }
+
+        float chargeRatio = chargedTime / chargeUpTime;
+
+        float maxArc = Mathf.Lerp(chargedSpreadArc, spreadArc, 1.0f - chargeRatio);
 
         // Spawn the bullets out in a general arc
         for(int i = 0; i < bulletsInSpread; i++) {
             Vector3 randDirection = Random.insideUnitCircle;
 
-            Vector3 bulletDirection = Vector3.Slerp(fireDirection, randDirection, spreadArc);
+            Vector3 bulletDirection = Vector3.Slerp(fireDirection, randDirection, maxArc);
 
             GameObject spawnedBullet = WorldManager.instance.SpawnObject(bulletPrefab.gameObject, firePoint.position);
             ProjectileController projController = spawnedBullet.GetComponent<ProjectileController>();
@@ -59,5 +96,24 @@ public class Weapon_Shotgun : Weapon {
             shootEffect.gameObject.SetActive(true);
             shootEffect.Play();
         }
+
+        beginCharging = false;
+    }
+
+
+
+    protected override void Update() {
+        base.Update();
+
+        // its chargin, update charge effects?
+        if(beginCharging) {
+
+        }
+    }
+
+
+    protected override void Fire() {
+        base.Fire();
+
     }
 }

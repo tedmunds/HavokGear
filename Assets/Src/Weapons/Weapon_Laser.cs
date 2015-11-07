@@ -24,7 +24,7 @@ public class Weapon_Laser : Weapon {
         }
 
         laserRenderer.enabled = false;
-        numLaserVerts = bounces + 2;
+        numLaserVerts = (bounces * 2) + 2;
         laserRenderer.SetVertexCount(numLaserVerts);
     }
 
@@ -97,6 +97,12 @@ public class Weapon_Laser : Weapon {
                     }
 
                     break;
+                }
+                else {
+                    if(i + 2 < numLaserVerts) {
+                        laserRenderer.SetPosition(i + 2, endPoint + fireDirection * 0.1f);
+                        i++;
+                    }
                 }
 
                 //float distUsed = (castOrigin - endPoint).magnitude;
