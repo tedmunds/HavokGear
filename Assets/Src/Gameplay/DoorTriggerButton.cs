@@ -22,6 +22,8 @@ public class DoorTriggerButton : MonoBehaviour {
         if(playerController != null && targetDoor != null) {
             targetDoor.DoorOpen(playerController);
             hasBeenPressed = true;
+
+            gameObject.SetActive(false);
         }
     }
 }
