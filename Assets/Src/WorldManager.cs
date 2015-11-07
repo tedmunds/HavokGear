@@ -64,7 +64,8 @@ public class WorldManager : MonoBehaviour {
     /// get re-used very often
     /// </summary>
     private ObjectPool objectPool;
-    
+
+    private AudioSource globalAudioPlayer;
 
 
 	private void Start() {
@@ -74,6 +75,7 @@ public class WorldManager : MonoBehaviour {
         SpawnInitialPlayer();
 
         playerState = FindObjectOfType<PlayerState>();
+        globalAudioPlayer = GetComponent<AudioSource>();
     }
 	
 
@@ -314,6 +316,16 @@ public class WorldManager : MonoBehaviour {
         }
 
         return true;
+    }
+
+
+    /// <summary>
+    /// Player the inout clip through the global player
+    /// </summary>
+    public void PlayGlobalSound(AudioClip clip) {
+        if(globalAudioPlayer != null && clip != null) {
+            globalAudioPlayer.PlayOneShot(clip);
+        }
     }
 
 }

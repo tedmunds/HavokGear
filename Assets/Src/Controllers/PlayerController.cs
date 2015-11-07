@@ -33,6 +33,9 @@ public class PlayerController : MechController {
 
     [SerializeField]
     public float boostMoveForce;
+
+    [SerializeField]
+    public AudioClip boostSound;
     
     /// <summary>
     /// Main camera that is tracking player / the scene camera depending on what we decide (rooms or open level)
@@ -214,6 +217,8 @@ public class PlayerController : MechController {
         if(whipAttachment != null && whipAttachment.ValidLatchBoost) {
             float energyUsed = mechComponent.ConsumeEnergy(boostEnergy);
             GotoNewMoveState(new MoveState_Boosting(this));
+
+            WorldManager.instance.PlayGlobalSound(boostSound);
         }
         else if(ALWAYS_DOES_BOOST) {
             float energyUsed = mechComponent.ConsumeEnergy(boostEnergy);

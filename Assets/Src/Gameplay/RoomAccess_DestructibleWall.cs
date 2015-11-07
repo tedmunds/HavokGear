@@ -19,6 +19,8 @@ public class RoomAccess_DestructibleWall : RoomAccess {
         if(targetFog != null) {
             targetFog.ClearFog();
         }
+
+        WorldManager.instance.PlayGlobalSound(onActivatedSound);
         
         // TODO: Broken wall sprite or something
         Destroy(gameObject);

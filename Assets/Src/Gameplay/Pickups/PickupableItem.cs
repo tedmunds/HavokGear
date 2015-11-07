@@ -12,7 +12,11 @@ public abstract class PickupableItem : MonoBehaviour {
     [SerializeField]
     public bool pickupWithWhip;
 
+    [SerializeField]
+    private AudioClip pickupSound;
+
     protected bool hasBeenActivated = false;
+
 
     public void OnTriggerEnter2D(Collider2D other) {
         if(!pickupOnTrigger || hasBeenActivated) {
@@ -40,7 +44,12 @@ public abstract class PickupableItem : MonoBehaviour {
     /// </summary>
     public virtual void Activate(MechController activator) {
         hasBeenActivated = true;
-        gameObject.SetActive(false);
+        
+
+        if(pickupSound != null) {
+            WorldManager.instance.PlayGlobalSound(pickupSound);
+            gameObject.SetActive(false);
+        }
     }
 
 

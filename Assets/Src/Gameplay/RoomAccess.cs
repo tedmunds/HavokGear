@@ -16,7 +16,8 @@ public abstract class RoomAccess : MonoBehaviour {
     [SerializeField]
     public FogOfWar targetFog;
 
-
+    [SerializeField]
+    public AudioClip onActivatedSound;
 
     /// <summary>
     /// Called to clear the target fog
@@ -30,7 +31,9 @@ public abstract class RoomAccess : MonoBehaviour {
         hasBeenActivated = true;
         if(targetFog != null && !targetFog.HasBeenCleared) {
             targetFog.ClearFog();
-        }   
+        }
+
+        WorldManager.instance.PlayGlobalSound(onActivatedSound);
     }
 
 }
