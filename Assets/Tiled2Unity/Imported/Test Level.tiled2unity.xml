@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <!--Tiled2Unity generated xml data-->
 <!--Do not modify by hand-->
-<!--Last exported: 03/11/2015 12:27:26 AM-->
+<!--Last exported: 06/11/2015 7:06:28 PM-->
 <Tiled2Unity version="0.9.13.0">
   <AssignMaterial mesh="mesh_[00]_[00]" material="Space Station Tileset" sortingLayerName="" sortingOrder="0" />
   <Prefab name="Test Level" numTilesWide="300" numTilesHigh="151" tileWidth="32" tileHeight="32" exportScale="1" mapWidthInPixels="9600" mapHeightInPixels="4832" scale="0.02">
@@ -691,7 +691,6 @@
           <Path>4927,-4163 4707,-4163 4707,-4191 4732,-4191 4732,-4188 4927,-4188</Path>
           <Path>5467,-4191 5467,-4170 5461,-4165 5439,-4165 5440,-4192</Path>
           <Path>5439,-4165 5418,-4165 5413,-4170 5413,-4191 5439,-4191</Path>
-          <Path>2047,-4165 2016,-4165 2016,-4192 2047,-4192</Path>
           <Path>3753,-4183 3744,-4183 3744,-4191 3753,-4191</Path>
           <Path>5412,-4213 5418,-4218 5461,-4218 5466,-4213 5467,-4192 5412,-4192</Path>
           <Path>4732,-4192 4707,-4192 4707,-4223 4732,-4223</Path>
@@ -700,7 +699,6 @@
           <Path>4732,-4224 4707,-4224 4707,-4255 4732,-4255</Path>
           <Path>4252,-4224 4227,-4224 4227,-4255 4252,-4255</Path>
           <Path>31,-4224 0,-4224 0,-4255 31,-4255</Path>
-          <Path>6111,-4229 6080,-4229 6080,-4256 6111,-4256</Path>
           <Path>5695,-4229 5674,-4229 5669,-4234 5669,-4255 5695,-4255</Path>
           <Path>5723,-4255 5723,-4234 5717,-4229 5695,-4229 5696,-4256</Path>
           <Path>1631,-4831 1631,-4256 1600,-4256 1600,-4831</Path>
