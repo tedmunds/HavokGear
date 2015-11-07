@@ -45,11 +45,11 @@ public abstract class PickupableItem : MonoBehaviour {
     public virtual void Activate(MechController activator) {
         hasBeenActivated = true;
         
-
         if(pickupSound != null) {
             WorldManager.instance.PlayGlobalSound(pickupSound);
-            gameObject.SetActive(false);
         }
+
+        gameObject.SetActive(false);
     }
 
 

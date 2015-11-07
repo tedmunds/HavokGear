@@ -116,11 +116,12 @@ public class MovementController2D : MonoBehaviour {
         radius = circleCollider.radius + skinWidth;
 
         // we want to set our CC2D to ignore all collision layers except what is in our triggerMask
-        for(var i = 0; i < 32; i++) {
-            // see if our triggerMask contains this layer and if not ignore it
-            if((triggerMask.value & 1 << i) == 0)
-                Physics2D.IgnoreLayerCollision(gameObject.layer, i);
-        }
+        //for(var i = 0; i < 32; i++) {
+        //    // see if our triggerMask contains this layer and if not ignore it
+        //    if((triggerMask.value & 1 << i) == 0)
+        //        Physics2D.IgnoreLayerCollision(gameObject.layer, i);
+        //}
+
     }
 
 
