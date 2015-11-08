@@ -9,11 +9,17 @@ public class Weapon_Laser : Weapon {
     [SerializeField] // how many segments are in the line renderer for the laser
     public int bounces = 1;
 
+    [SerializeField]
+    public ParticleSystem endpointEffectPrototype;
+
     private float currentEnergy;
 
     private LineRenderer laserRenderer;
 
     private int numLaserVerts;
+
+    private ParticleSystem endpointEffect;
+
 
 	protected override void Start() {
         base.Start();
@@ -26,6 +32,11 @@ public class Weapon_Laser : Weapon {
         laserRenderer.enabled = false;
         numLaserVerts = (bounces * 2) + 2;
         laserRenderer.SetVertexCount(numLaserVerts);
+
+        if(endpointEffectPrototype != null) {
+            endpointEffect = Instantiate(endpointEffectPrototype);
+            endpointEffect.gameObject.SetActive(false);
+        }
     }
 
 
@@ -80,6 +91,8 @@ public class Weapon_Laser : Weapon {
         Vector3 castOrigin = firePoint.position;
         float castDist = maxRange;
 
+        Vector3 finalEndPoint = Vector3.zero;
+
         for(int i = 0; i <= numLaserVerts - 2; i++) {
             RaycastHit2D[] hits = WeaponRayCast(castOrigin, fireDirection, castDist, detectLayers);
 
@@ -93,8 +106,10 @@ public class Weapon_Laser : Weapon {
                     target.TakeDamage(damagePerSecond * Time.deltaTime, owner, this);
 
                     for(int j = i + 2; j < numLaserVerts; j++) {
-                        laserRenderer.SetPosition(j, endPoint + fireDirection * (0.1f * j));
+                        laserRenderer.SetPosition(j, endPoint + fireDirection * (0.01f * j));
                     }
+
+                    finalEndPoint = endPoint;
 
                     break;
                 }
@@ -118,6 +133,8 @@ public class Weapon_Laser : Weapon {
                 endPoint = castOrigin + fireDirection * castDist;
                 laserRenderer.SetPosition(i + 1, endPoint);
 
+                finalEndPoint = endPoint;
+
                 // place all verts at the end
                 if(bounces > 0) {
                     for(int j = i + 1; j < numLaserVerts; j++) {
@@ -125,6 +142,11 @@ public class Weapon_Laser : Weapon {
                     }
                 }
             }
+        }
+
+        // set location of the effect
+        if(endpointEffect != null) {
+            endpointEffect.transform.position = finalEndPoint;
         }
     }
 
@@ -143,6 +165,10 @@ public class Weapon_Laser : Weapon {
             }
         }
 
+        if(endpointEffect != null) {
+            endpointEffect.gameObject.SetActive(true);
+        }
+
         return beganFire;
     }
 
@@ -156,6 +182,10 @@ public class Weapon_Laser : Weapon {
         if(owner.GetType() == typeof(PlayerController)) {
             PlayerController playerOwner = (PlayerController)owner;
             playerOwner.PlayerCamera.GetComponent<CameraController>().ForceEndShake();
+        }
+
+        if(endpointEffect != null) {
+            endpointEffect.gameObject.SetActive(false);
         }
     }
 
