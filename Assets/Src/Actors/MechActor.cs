@@ -149,10 +149,12 @@ public class MechActor : Actor {
         }
 
         // Check if friendly fire is allowed
-        if(instigator.mechTeam == controller.mechTeam && !WorldManager.instance.friendlyFire) {
-            return;
+        if(weaponUsed != null) {
+            if(instigator.mechTeam == controller.mechTeam && !WorldManager.instance.friendlyFire) {
+                return;
+            }
         }
-
+        
         float modifiedDamage = instigator != null? instigator.ModifyBaseDamage(damageAmount, weaponUsed) : damageAmount;
         float reducedDamage = modifiedDamage;
 
@@ -271,6 +273,9 @@ public class MechActor : Actor {
                 brokenEffect.transform.parent = controller.headTransform;
                 brokenEffect.Play();
             }
+
+            // notifiy controller
+            controller.WeaponDetached(weaponComponent);
 
             return detached;
         }

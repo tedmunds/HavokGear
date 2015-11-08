@@ -23,6 +23,8 @@ public abstract class PickupableItem : MonoBehaviour {
             return;
         }
 
+        Debug.Log("Trigger enter pickup");
+
         // If the player enters trigger area, then activate 
         PlayerController playerController = other.GetComponent<PlayerController>();
         if(playerController == null) {

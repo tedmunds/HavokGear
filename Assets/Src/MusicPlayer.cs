@@ -11,6 +11,9 @@ public class MusicPlayer : MonoBehaviour {
     [SerializeField]
     public float segmentDelayLength;
 
+    [SerializeField]
+    public bool ShouldPlayMusic;
+
     private AudioSource audioPlayer;
 
     private float currentSegmentLength;
@@ -21,7 +24,9 @@ public class MusicPlayer : MonoBehaviour {
 	private void Start() {
 	    audioPlayer = GetComponent<AudioSource>();
 
-        if(musicSegments.Count > 0) {
+        if(musicSegments.Count > 0 
+            && ShouldPlayMusic) {
+
             audioPlayer.clip = musicSegments[0];
             audioPlayer.Play();
             currentSegmentLength = musicSegments[0].length;
@@ -32,7 +37,9 @@ public class MusicPlayer : MonoBehaviour {
 	
 	
 	private void Update() {
-        if(Time.time - lastSegmentStartTime > currentSegmentLength + segmentDelayLength) {
+        if(Time.time - lastSegmentStartTime > currentSegmentLength + segmentDelayLength
+            && ShouldPlayMusic) {
+
             currentSegmentIndex += 1;
             if(currentSegmentIndex >= musicSegments.Count) {
                 currentSegmentIndex = 0;

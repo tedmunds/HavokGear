@@ -339,7 +339,8 @@ public class AIController : MechController {
         Vector2 randAimOffset = Random.insideUnitCircle;
         float aimError = Random.Range(0.0f, maxAimError);
 
-        if(mechComponent.leftWeapon.GetType() == typeof(Weapon_Laser)) {
+        if(mechComponent.leftWeapon != null &&
+           mechComponent.leftWeapon.GetType() == typeof(Weapon_Laser)) {
             aimError = 0.0f;
         }
 

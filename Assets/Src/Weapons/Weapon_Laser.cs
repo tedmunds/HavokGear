@@ -12,6 +12,9 @@ public class Weapon_Laser : Weapon {
     [SerializeField]
     public ParticleSystem endpointEffectPrototype;
 
+    [SerializeField]
+    public AudioClip loopingLaserSound;
+
     private float currentEnergy;
 
     private LineRenderer laserRenderer;
@@ -37,13 +40,6 @@ public class Weapon_Laser : Weapon {
             endpointEffect = Instantiate(endpointEffectPrototype);
             endpointEffect.gameObject.SetActive(false);
         }
-    }
-
-
-
-    protected override void OnDisable() {
-        base.OnDisable();
-
     }
 
 
@@ -169,6 +165,11 @@ public class Weapon_Laser : Weapon {
             endpointEffect.gameObject.SetActive(true);
         }
 
+        if(loopingLaserSound != null && audioPlayer != null) {
+            audioPlayer.clip = loopingLaserSound;
+            audioPlayer.Play();
+        }
+
         return beganFire;
     }
 
@@ -187,6 +188,11 @@ public class Weapon_Laser : Weapon {
         if(endpointEffect != null) {
             endpointEffect.gameObject.SetActive(false);
         }
+
+        if(loopingLaserSound != null && audioPlayer != null) {
+            audioPlayer.Stop();
+            audioPlayer.clip = null;            
+        }
     }
 
 
@@ -200,5 +206,19 @@ public class Weapon_Laser : Weapon {
 
     public override float AIBurstLength() {
         return Random.Range(0.5f, 2.0f);
+    }
+
+
+    protected override void OnDisable() {
+        base.OnDisable();
+
+        if(endpointEffect != null) {
+            endpointEffect.gameObject.SetActive(false);
+        }
+
+        if(loopingLaserSound != null && audioPlayer != null) {
+            audioPlayer.Stop();
+            audioPlayer.clip = null;
+        }
     }
 }

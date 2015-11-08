@@ -138,6 +138,10 @@ public class MechController : MonoBehaviour {
 
     }
 
+    public virtual void WeaponDetached(Weapon detached) {
+
+    }
+
 
     public virtual float GetHealthModifier() {
         return 0.0f;

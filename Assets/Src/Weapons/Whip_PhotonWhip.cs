@@ -409,6 +409,13 @@ public class Whip_PhotonWhip : Weapon {
         fullExtendTime = Time.time;
         isAttached = false;
         latchSurface = null;
+
+        if(owner.GetType() == typeof(PlayerController)) {
+            PlayerController playerController = (PlayerController)owner;
+            if(playerController.IsBoosting) {
+                playerController.GotoPreviousMoveState();
+            }
+        }
     }
 
 

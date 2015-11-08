@@ -6,7 +6,7 @@ using System.Collections;
 public class MoveState_Boosting : MovementState {
 
 
-    private const float boostMoveSpeed = 40.0f;
+    private const float boostMoveSpeed = 26.0f;
 
     private PlayerController playerController;
 

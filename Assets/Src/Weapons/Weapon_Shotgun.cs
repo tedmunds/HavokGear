@@ -22,6 +22,12 @@ public class Weapon_Shotgun : Weapon {
     public ParticleSystem shootEffectPrototype;
 
     [SerializeField]
+    private AudioClip chargeUpSound;
+
+    [SerializeField]
+    private AudioClip fullyChargedSound;
+
+    [SerializeField]
     private AudioClip fireSound;
 
     private ParticleSystem shootEffect;
@@ -49,6 +55,13 @@ public class Weapon_Shotgun : Weapon {
 
         beginCharging = beganFire;
 
+        if(beginCharging) {
+            if(audioPlayer != null && chargeUpSound != null) {
+                audioPlayer.clip = chargeUpSound;
+                audioPlayer.Play();
+            }
+        }
+        
         return beganFire;
     }
 
@@ -88,14 +101,23 @@ public class Weapon_Shotgun : Weapon {
             }
         }
 
-        PlaySound(fireSound, 1.0f, Random.Range(0.85f, 1.0f));
-
         if(shootEffect != null) {
             shootEffect.transform.position = firePoint.position;
             shootEffect.transform.up = fireDirection;
             shootEffect.gameObject.SetActive(true);
             shootEffect.Play();
         }
+
+        // clear looping sound
+        if(audioPlayer != null) {
+            audioPlayer.Stop();
+            audioPlayer.clip = null;
+        }
+
+        // Then play the shot sound
+        PlaySound(fireSound, 1.0f, Random.Range(0.85f, 1.0f));
+
+        DoCameraRecoil(0.3f);
 
         beginCharging = false;
     }
@@ -106,8 +128,15 @@ public class Weapon_Shotgun : Weapon {
         base.Update();
 
         // its chargin, update charge effects?
-        if(beginCharging) {
-
+        if(beginCharging && audioPlayer != null) {
+            float chargeTime = Time.time - lastFireTime;
+            if(chargeTime > chargeUpTime && fullyChargedSound != null) {
+                // Fully charged, change sound to the fully charged sound
+                if(audioPlayer.clip != fullyChargedSound) {
+                    audioPlayer.clip = fullyChargedSound;
+                    audioPlayer.Play();
+                }
+            }
         }
     }
 

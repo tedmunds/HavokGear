@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
+using System.Collections;
 
 /// <summary>
 /// Manages active elements of the player HUD
@@ -8,13 +9,29 @@ using System.Collections;
 [RequireComponent(typeof(PlayerController))]
 public class UI_PlayerHUD : MonoBehaviour {
 
+
+    [SerializeField]
     public string UI_PhotonWhip_Recharge_Tag;
+
+    [SerializeField]
+    public string UI_EquippedWeapon_Tag;
+
+    [SerializeField]
+    public string UI_DamageType_Tag;
+
+    [SerializeField]
+    public Sprite[] damageTypeIcons;
 
 
     /// <summary>
     /// The HUD image element that represents the whip cooldown time
     /// </summary>
     private Image whipCooldownElement;
+
+    [HideInInspector]
+    public Image damageTypeElement;
+    [HideInInspector]
+    public Image equippedWeaponElement;
 
     // The player that this HUD is ownd by
     private PlayerController owner;
@@ -27,13 +44,18 @@ public class UI_PlayerHUD : MonoBehaviour {
 
     private void Start() {
         owner = GetComponent<PlayerController>();
-
-        // Find the recharge tagged image
+        
+        // Find the tagged images
         Image[] hud_images = FindObjectsOfType<Image>();
         foreach(Image i in hud_images) {
             if(i.gameObject.tag == UI_PhotonWhip_Recharge_Tag) {
                 whipCooldownElement = i;
-                break;
+            }
+            if(i.gameObject.tag == UI_EquippedWeapon_Tag) {
+                equippedWeaponElement = i;
+            }
+            if(i.gameObject.tag == UI_DamageType_Tag) {
+                damageTypeElement = i;
             }
         }
 
@@ -70,5 +92,21 @@ public class UI_PlayerHUD : MonoBehaviour {
         whipRechargeStartTime = Time.time;
         showingWhipRecharge = true;
     }
+
+
+    public void SetDamageTypeDisplay(Weapon.EDamageType[] damageTypeList) {
+        if(damageTypeList != null && damageTypeList.Length > 0) {
+            for(int i = 0; i < damageTypeIcons.Length; i++) {
+                if(i == (int)damageTypeList[0]) {
+                    damageTypeElement.enabled = true;
+                    damageTypeElement.sprite = damageTypeIcons[i];
+                }
+            }
+        }
+        else {
+            damageTypeElement.enabled = false;
+        }
+    }
+
 
 }

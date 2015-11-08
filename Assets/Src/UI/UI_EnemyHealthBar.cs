@@ -6,10 +6,16 @@ using System.Collections;
 public class UI_EnemyHealthBar : MonoBehaviour {
 
     [SerializeField]
+    public Sprite[] damageTypeIcons;
+
+    [SerializeField]
     private Image barOverlay;
 
     [SerializeField]
     private Vector2 screenOffset;
+
+    [SerializeField]
+    private Image weaknessIcon;
 
     private Camera mainCamera;
     private Canvas uiCanvas;
@@ -63,6 +69,19 @@ public class UI_EnemyHealthBar : MonoBehaviour {
     /// </summary>
     public void AssignToTarget(Actor newTarget) {
         targetActor = newTarget;
+
+        if(targetActor.GetType() == typeof(MechActor)) {
+            MechActor mech = (MechActor)targetActor;
+            if(mech.armorWeaknessList.Length > 0) {
+                weaknessIcon.enabled = true;
+
+                // TODO: allow for more than one weakness to be displayed in a litte list
+                weaknessIcon.sprite = damageTypeIcons[(int)mech.armorWeaknessList[0]];
+            }
+            else {
+                weaknessIcon.enabled = false;
+            }
+        }
     }
     
 }

@@ -157,7 +157,7 @@ public class PlayerController : MechController {
             StartBoosting(inputVector.normalized);
         }
 
-        // Check if a boost has ended
+        // Check if a boost has ended (only for a conventional non-latch boost, otherwise its left to the movement state)
         if(isBoosting && Time.time - lastBoostTime > boostLength 
             && currentMoveState == moveState_Normal) {
             isBoosting = false;
@@ -175,9 +175,6 @@ public class PlayerController : MechController {
 
             laserSightRenderer.SetPosition(1, hit? (Vector3)hit.point : currentAimLoc);
         }
-        //else if(laserSightRenderer != null) {
-        //    laserSightRenderer.enabled = false;
-        //}
     }
     
 
@@ -207,8 +204,6 @@ public class PlayerController : MechController {
         if(isBoosting) {
             return;
         }
-
-        
 
         lastBoostTime = Time.time;
         isBoosting = true;
@@ -328,9 +323,31 @@ public class PlayerController : MechController {
                 laserSightRenderer.enabled = false;
             }
         }
+
+        // update the hud images
+        if(playerHUD != null && playerHUD.equippedWeaponElement != null) {
+            playerHUD.equippedWeaponElement.sprite = attached.GetWeaponSprite();
+            playerHUD.equippedWeaponElement.enabled = true;
+        }
+        if(playerHUD != null && playerHUD.damageTypeElement != null) {
+            playerHUD.SetDamageTypeDisplay(attached.damageTypeList);
+        }
     }
 
-    
+
+    public override void WeaponDetached(Weapon detached) {
+        base.WeaponDetached(detached);
+
+        // update the hud images
+        if(playerHUD != null && playerHUD.equippedWeaponElement != null) {
+            playerHUD.equippedWeaponElement.enabled = false;
+        }
+        if(playerHUD != null && playerHUD.damageTypeElement != null) {
+            playerHUD.SetDamageTypeDisplay(null);
+        }
+    }
+
+
     /// <summary>
     /// Upgrade access points -------------------------------------------
     /// </summary>

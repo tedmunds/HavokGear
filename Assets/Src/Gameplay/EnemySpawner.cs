@@ -8,8 +8,11 @@ using System.Collections.Generic;
 [RequireComponent(typeof(Collider2D))]
 public class EnemySpawner : MonoBehaviour {
 
+    //[SerializeField]
+    //public GameObject enemyPrototype;
+
     [SerializeField]
-    public GameObject enemyPrototype;
+    public GameObject[] enemyPrototypes;
 
     [SerializeField]
     public List<Weapon> enemyWeaponList;
@@ -52,9 +55,9 @@ public class EnemySpawner : MonoBehaviour {
 
         activeEnemies = new List<AIController>();
 
-        if(enemyPrototype.GetComponent<AIController>() == null) {
-            Debug.LogWarning(name+" is trying to spawn an entity without an AI component!");
-        }
+        //if(enemyPrototype.GetComponent<AIController>() == null) {
+        //    Debug.LogWarning(name+" is trying to spawn an entity without an AI component!");
+        //}
 
         numSpawned = 0;
         hasBeenCleared = false;
@@ -124,7 +127,11 @@ public class EnemySpawner : MonoBehaviour {
         Vector3 spawnLocation = transform.position;
         spawnLocation.z = 0.0f;
 
-        AIController spawned = world.SpawnMechBot(spawnLocation, enemyPrototype, true, weaponPrefab != null? weaponPrefab.gameObject : null);
+        // Dicide what enemy to spawn
+        int randEnemyIdx = Random.Range(0, enemyPrototypes.Length);
+        GameObject prototype = enemyPrototypes[randEnemyIdx];
+
+        AIController spawned = world.SpawnMechBot(spawnLocation, prototype, true, weaponPrefab != null ? weaponPrefab.gameObject : null);
         if(spawned != null) {
             activeEnemies.Add(spawned);
             spawned.SpawnedFromPoint(this);

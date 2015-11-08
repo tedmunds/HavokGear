@@ -185,6 +185,15 @@ public abstract class Weapon : MonoBehaviour {
     }
 
 
+    public void DoCameraRecoil(float recoilAmount) {
+        if(owner.GetType() == typeof(PlayerController) && recoilAmount > 0.0f) {
+            CameraController.CameraShake shakeData = new CameraController.CameraShake(0.1f, recoilAmount, 5.0f, 1.0f, false);
+
+            PlayerController playerOwner = (PlayerController)owner;
+            playerOwner.PlayerCamera.GetComponent<CameraController>().StartCameraShake(ref shakeData, -GetAimDirection());
+        }
+    }
+
 
     /// <summary>
     /// Tries to find a mech actor component attached to this object somehow, either
@@ -319,6 +328,13 @@ public abstract class Weapon : MonoBehaviour {
 
         // otherwise just return the refire delay + a little buffer
         return refireDelay + 0.1f;
+    }
+
+
+
+    public Sprite GetWeaponSprite() {
+        SpriteRenderer renderer = GetComponentInChildren<SpriteRenderer>();
+        return renderer.sprite;
     }
 
 }
