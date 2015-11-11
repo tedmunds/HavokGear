@@ -103,6 +103,10 @@ public class PlayerController : MechController {
                 whipAttachment.DetachFromSurface();
             }
         }
+
+        if(laserSightRenderer != null) {
+            laserSightRenderer.enabled = false;
+        }
     }
 
 
