@@ -24,6 +24,9 @@ public class MechController : MonoBehaviour {
     public Transform legTransform;
 
     [SerializeField]
+    public SpriteRenderer damageFlashScreen;
+
+    [SerializeField]
     public Animator legAnimator;
     
     [SerializeField]
@@ -60,6 +63,8 @@ public class MechController : MonoBehaviour {
     /// </summary>
     protected bool controllerActive;
 
+
+
     
     // Use this for initialization
     protected virtual void Start () {
@@ -82,10 +87,19 @@ public class MechController : MonoBehaviour {
         // Default to the normal move state
         currentMoveState = moveState_Normal;
         moveStateStack.Push(moveState_Normal);
+
+        // register to listen for damage events
+        mechComponent.damageHandlerCallback = OnDamageHandler;
     }
 
     protected virtual void OnEnable() {
         mechComponent = GetComponent<MechActor>();
+
+        if(damageFlashScreen != null) { 
+            Color c = damageFlashScreen.color;
+            c.a = 0.0f;
+            damageFlashScreen.color = c;
+        }
     }
 
 
@@ -107,7 +121,22 @@ public class MechController : MonoBehaviour {
 
     // Update is called once per frame
     protected virtual void Update () {
+        const float damageFlashTime = 0.2f;
         
+        if(damageFlashScreen != null) {
+            float timeSinceDamage = Time.time - mechComponent.LastDamageTime;
+
+            if(timeSinceDamage < damageFlashTime) {
+                Color c = damageFlashScreen.color;
+                c.a = 1.0f - timeSinceDamage / damageFlashTime;
+                damageFlashScreen.color = c;
+            }
+            else {
+                Color c = damageFlashScreen.color;
+                c.a = 0.0f;
+                damageFlashScreen.color = c;
+            }
+        }
 	}
 
 
@@ -178,6 +207,15 @@ public class MechController : MonoBehaviour {
         else {
             // Default fallback behaviour in case the stack is empty is to just return to the normal state
             currentMoveState = moveState_Normal;
+        }
+    }
+
+
+
+    public void OnDamageHandler(float amount) {
+        if(damageFlashScreen != null) {
+            // TODO: flash the damage screen
+
         }
     }
 

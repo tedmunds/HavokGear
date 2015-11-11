@@ -94,6 +94,18 @@ public class PlayerController : MechController {
     }
 
 
+    protected override void OnEnable() {
+        base.OnEnable();
+
+        if(whipAttachment != null) {
+            whipAttachment.ResetWhipEffect();
+            if(whipAttachment.ValidLatchBoost) {
+                whipAttachment.DetachFromSurface();
+            }
+        }
+    }
+
+
     protected override void Update () {
         base.Update();
         if(!controllerActive) {
@@ -157,11 +169,16 @@ public class PlayerController : MechController {
             StartBoosting(inputVector.normalized);
         }
 
-        // Check if a boost has ended (only for a conventional non-latch boost, otherwise its left to the movement state)
-        if(isBoosting && Time.time - lastBoostTime > boostLength 
-            && currentMoveState == moveState_Normal) {
-            isBoosting = false;
+        // On release of boost key
+        if(Input.GetKeyUp(boostInput) && isBoosting) {
+            EndBoosting();
         }
+
+        // Check if a boost has ended (only for a conventional non-latch boost, otherwise its left to the movement state)
+        //if(isBoosting && Time.time - lastBoostTime > boostLength 
+        //    && currentMoveState == moveState_Normal) {
+        //    isBoosting = false;
+        //}
 
         // Update the laser sight renderer
         if(laserSightRenderer != null && laserSightRenderer.enabled && mechComponent.leftWeapon != null) {
@@ -227,6 +244,17 @@ public class PlayerController : MechController {
             boostLength = movementComponent.PhysicsSpeed * movementComponent.PhysicsDecel;
             boostLength = boostLength * Time.deltaTime;
         }
+    }
+
+
+    // Leave boost move state
+    private void EndBoosting() {
+        if(whipAttachment != null && whipAttachment.ValidLatchBoost) {
+            whipAttachment.DetachFromSurface();
+            GotoPreviousMoveState();
+        }
+
+        isBoosting = false;
     }
 
 

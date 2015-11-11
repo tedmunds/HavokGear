@@ -20,6 +20,9 @@ public class Actor : MonoBehaviour {
     }
 
     protected float lastReceivedDamage;
+    public float LastDamageTime {
+        get { return lastReceivedDamage;  }
+    }
 
     protected bool isDead;
     public bool IsDead {

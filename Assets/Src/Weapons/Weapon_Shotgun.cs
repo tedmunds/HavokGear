@@ -114,6 +114,8 @@ public class Weapon_Shotgun : Weapon {
             audioPlayer.clip = null;
         }
 
+        lastFireTime = Time.time;
+
         // Then play the shot sound
         PlaySound(fireSound, 1.0f, Random.Range(0.85f, 1.0f));
 

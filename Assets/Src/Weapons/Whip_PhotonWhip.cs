@@ -410,13 +410,17 @@ public class Whip_PhotonWhip : Weapon {
         isAttached = false;
         latchSurface = null;
 
-        if(owner.GetType() == typeof(PlayerController)) {
-            PlayerController playerController = (PlayerController)owner;
-            if(playerController.IsBoosting) {
-                playerController.GotoPreviousMoveState();
-            }
-        }
+        //if(owner.GetType() == typeof(PlayerController)) {
+        //    PlayerController playerController = (PlayerController)owner;
+        //    if(playerController.IsBoosting) {
+        //        playerController.GotoPreviousMoveState();
+        //    }
+        //}
     }
 
+
+    public void ResetWhipEffect() {
+        EndWhipSequence();
+    }
 
 }

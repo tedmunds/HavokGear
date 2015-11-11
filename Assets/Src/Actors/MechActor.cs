@@ -9,6 +9,8 @@ using System.Collections;
 /// </summary>
 public class MechActor : Actor {
 
+    public delegate void OnDamageHandler(float damageAmount);
+
     public enum EAttachSide {
         Left, Right
     }
@@ -61,7 +63,10 @@ public class MechActor : Actor {
 
     [HideInInspector]
     public Weapon rightWeapon;
-    
+
+    [HideInInspector]
+    public OnDamageHandler damageHandlerCallback;
+
     private MechController controller;
 
     private bool isFalling;
@@ -185,6 +190,10 @@ public class MechActor : Actor {
 
         // And reduce the damage that is done to health
         reducedDamage -= shieldAbsorbtion;
+
+        if(damageHandlerCallback != null) {
+            damageHandlerCallback(reducedDamage);
+        }
 
         base.TakeDamage(reducedDamage, instigator, weaponUsed);
     }

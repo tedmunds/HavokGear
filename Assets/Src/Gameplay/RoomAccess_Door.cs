@@ -14,8 +14,15 @@ public class RoomAccess_Door : RoomAccess {
 
         PlayerController playerController = other.GetComponent<PlayerController>();
         if(playerController != null) {
-            DoorOpen(playerController);
+            Activate(playerController);
         }
+    }
+
+    public override void Activate(MechController activator) {
+        base.Activate(activator);
+
+        PlayerController playerController = (PlayerController)activator;
+        DoorOpen(playerController);
     }
 
 
@@ -31,7 +38,6 @@ public class RoomAccess_Door : RoomAccess {
             doorCollisionObject.SetActive(false);
         }
 
-        Activate(playerController);
     }
 
 }
