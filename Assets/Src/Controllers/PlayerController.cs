@@ -91,6 +91,8 @@ public class PlayerController : MechController {
 
         laserSightRenderer = GetComponent<LineRenderer>();
         laserSightRenderer.enabled = false;
+
+        mechComponent.RegisterDeathListener(OnDied);
     }
 
 
@@ -358,8 +360,9 @@ public class PlayerController : MechController {
 
         // update the hud images
         if(playerHUD != null && playerHUD.equippedWeaponElement != null) {
-            playerHUD.equippedWeaponElement.sprite = attached.GetWeaponSprite();
-            playerHUD.equippedWeaponElement.enabled = true;
+            Sprite weaponSprite = attached.GetWeaponSprite(); ;
+            playerHUD.equippedWeaponElement.sprite = weaponSprite;
+            playerHUD.equippedWeaponElement.enabled = weaponSprite != null? true : false;
         }
         if(playerHUD != null && playerHUD.damageTypeElement != null) {
             playerHUD.SetDamageTypeDisplay(attached.damageTypeList);
@@ -379,6 +382,11 @@ public class PlayerController : MechController {
         }
     }
 
+
+
+    public void OnDied(Actor victim) {
+        playerHUD.equippedWeaponElement.enabled = false;
+    }
 
     /// <summary>
     /// Upgrade access points -------------------------------------------

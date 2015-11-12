@@ -159,16 +159,18 @@ public class Weapon_Laser : Weapon {
                 PlayerController playerOwner = (PlayerController)owner;
                 playerOwner.PlayerCamera.GetComponent<CameraController>().StartCameraShake(ref shakeData, -GetAimDirection().normalized);
             }
+
+            if(loopingLaserSound != null && audioPlayer != null && audioPlayer.enabled) {
+                audioPlayer.clip = loopingLaserSound;
+                audioPlayer.Play();
+            }
         }
 
         if(endpointEffect != null) {
             endpointEffect.gameObject.SetActive(true);
         }
 
-        if(loopingLaserSound != null && audioPlayer != null) {
-            audioPlayer.clip = loopingLaserSound;
-            audioPlayer.Play();
-        }
+       
 
         return beganFire;
     }

@@ -46,8 +46,8 @@ public class Explosion : MonoBehaviour {
         Collider2D[] overlaps = Physics2D.OverlapCircleAll(transform.position, explosionRadius);
         for(int i = 0; i < overlaps.Length; i++) {
             Actor mech = overlaps[i].GetComponent<Actor>();
-            if(mech != null && sourceWeapon != null) {
-                mech.TakeDamage(baseDamage, sourceWeapon.owner.GetComponent<MechController>(), sourceWeapon);
+            if(mech != null) {
+                mech.TakeDamage(baseDamage, sourceWeapon != null? sourceWeapon.owner.GetComponent<MechController>() : null, sourceWeapon);
             }
         }
 

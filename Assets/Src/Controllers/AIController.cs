@@ -19,6 +19,9 @@ public class AIController : MechController {
     [SerializeField]
     public LayerMask blockLOSLayers;
 
+    [SerializeField]
+    public Explosion suicideExplosion;
+
     /// <summary>
     /// The mech that this Ai is targetting for shooting etc
     /// </summary>
@@ -51,6 +54,8 @@ public class AIController : MechController {
     // Pathing interrupt: forces a new path calculation
     private bool wantsNewPath;
 
+    private Explosion normalExplosion;
+
     /// <summary>
     /// the spawn point this AI was spawned from
     /// </summary>
@@ -69,6 +74,10 @@ public class AIController : MechController {
     protected override void OnEnable() {
         base.OnEnable();
         MechComponent.ResetState(true, true);
+
+        if(mechComponent.deathExplosion != normalExplosion && normalExplosion != null) {
+            mechComponent.deathExplosion = normalExplosion;
+        }
     }
 
 
@@ -379,6 +388,10 @@ public class AIController : MechController {
     /// </summary>
     public void CommitSuicide() {
         Debug.Log("[" + name + "] Beserk Suicide! Killing self...");
+        
+        normalExplosion = mechComponent.deathExplosion;
+        mechComponent.deathExplosion = suicideExplosion;
+
         mechComponent.TakeDamage(99999.9f, this, null);
     }
 

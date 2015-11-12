@@ -13,6 +13,8 @@ public class BehaviourSM  {
     /// Each update, the state sends a response which can contain a new state with instructions on how to transition to it
     /// </summary>
     public abstract class BehaviourState {
+        public virtual void EnterState(AIController controller) { }
+        public virtual void ExitState(AIController controller) { }
         public abstract StateResponse Update(AIController controller);
     }
 
@@ -64,13 +66,18 @@ public class BehaviourSM  {
 
         stateStack = new Stack<BehaviourState>();
         baseState = new Behaviour_Idle();
+        baseState.EnterState(owner);
         currentState = baseState;
     }
 
 
     public void ResetDefault() {
         stateStack.Clear();
+        if(currentState != baseState) {
+            currentState.ExitState(owner);
+        }
         baseState = new Behaviour_Idle();
+        baseState.EnterState(owner);
         currentState = baseState;
     }
 
@@ -83,40 +90,15 @@ public class BehaviourSM  {
         if(currentState != null) {
             StateResponse response = currentState.Update(owner);
 
-            //switch(response.transitionMode) {
-            //    case TransitionMode.PopPrevious:
-            //        // Go back to the previous state on the stack
-            //        BehaviourState nextState = stateStack.Pop();
-            //        if(nextState != null) {
-            //            currentState = nextState;
-            //        }
-            //        else {
-            //            // in case there was no state on the stack, go back to base state
-            //            currentState = baseState;
-            //        }
-            //        break;
-            //    case TransitionMode.PushCurrent:
-            //        // Pushes the current state onto the stack and goes to the returned next state
-            //        stateStack.Push(currentState);
-            //        currentState = response.newState;
-            //        if(currentState == null) {
-            //            // If a null state was added, go back tot eh previous one
-            //            currentState = stateStack.Pop();
-            //        }
-            //        break;
-            //    case TransitionMode.AbandonCurrent:
-            //        // Go to the new state, without pushing the current one on the stack
-            //        if(response.newState != null) {
-            //            currentState = response.newState;
-            //        }
-            //        break;
-            //}
             GotoNewState(response.newState, response.transitionMode);
         }
     }
 
 
     public void GotoNewState(BehaviourState newState, TransitionMode transitionMode) {
+        BehaviourState oldState = currentState;
+        oldState.ExitState(owner);
+
         switch(transitionMode) {
             case TransitionMode.PopPrevious:
                 // Go back to the previous state on the stack
@@ -145,6 +127,8 @@ public class BehaviourSM  {
                 }
                 break;
         }
+
+        currentState.EnterState(owner);
     }
 
 }

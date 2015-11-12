@@ -334,7 +334,7 @@ public abstract class Weapon : MonoBehaviour {
 
     public Sprite GetWeaponSprite() {
         SpriteRenderer renderer = GetComponentInChildren<SpriteRenderer>();
-        return renderer.sprite;
+        return renderer != null? renderer.sprite : null;
     }
 
 }

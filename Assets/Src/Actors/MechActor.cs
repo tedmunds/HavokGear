@@ -55,6 +55,12 @@ public class MechActor : Actor {
     [SerializeField]
     public Explosion deathExplosion;
 
+    [SerializeField]
+    public AudioClip shieldDepletedSound;
+
+    [SerializeField]
+    public AudioClip shieldStartRechargeSound;
+
     /// <summary>
     /// Cached weapon reference for the item attached to each side
     /// </summary>
@@ -81,6 +87,12 @@ public class MechActor : Actor {
         get { return currentEnergyLevel;  }
     }
 
+    // tracking some sounds
+    private float lastShieldDepletedTime;
+    private const float minShieldDepletedTime = 5.0f;
+    private float lastShieldRechargeTime;
+
+
     protected override void Start() {
         base.Start();
 
@@ -102,6 +114,13 @@ public class MechActor : Actor {
 
         // energy regeneration
         if(Time.time - lastReceivedDamage > shieldRechargeDelay) {
+            // The shield was empty is now recharging, so play the recharge sound
+            if(currentEnergyLevel <= 0.0f && Time.time - lastShieldRechargeTime > minShieldDepletedTime &&
+                shieldStartRechargeSound != null) {
+                lastShieldRechargeTime = Time.time;
+                WorldManager.instance.PlayGlobalSound(shieldStartRechargeSound);
+            }
+
             if(currentEnergyLevel < maxEnergyLevel) {
                 currentEnergyLevel += energyRechargeRate * Time.deltaTime;
 
@@ -112,17 +131,19 @@ public class MechActor : Actor {
         }
 
         // Can start recharging shield
-        if(Time.time - lastReceivedDamage > shieldRechargeDelay) {
-            if(currentShield < maxShield) {
-                // recharge the shield by consuming energy
-                float rechargeTick = ConsumeEnergy(shieldRechargeRate * Time.deltaTime * shieldEnergyDrainRatio);
-                currentShield += rechargeTick / shieldEnergyDrainRatio;
-
-                if(currentShield > maxShield) {
-                    currentShield = maxShield;
-                }
-            }
-        }
+        //if(Time.time - lastReceivedDamage > shieldRechargeDelay) {
+        //    
+        //    if(currentShield < maxShield) {
+        //        
+        //        // recharge the shield by consuming energy
+        //        float rechargeTick = ConsumeEnergy(shieldRechargeRate * Time.deltaTime * shieldEnergyDrainRatio);
+        //        currentShield += rechargeTick / shieldEnergyDrainRatio;
+        //
+        //        if(currentShield > maxShield) {
+        //            currentShield = maxShield;
+        //        }
+        //    }
+        //}
 
         // health regen
         float healthRegen = GetHealthRecharge() * Time.deltaTime;
@@ -186,6 +207,16 @@ public class MechActor : Actor {
         // Take the damage out of the shield first: changed system to only use energy bar
         //float shieldAbsorbtion = Mathf.Min(currentShield, reducedDamage);
         //currentShield -= shieldAbsorbtion;
+
+        // the damage is going to deplete the shield energy, and there is currently shield energy
+        if(currentEnergyLevel > 0.0f && reducedDamage > currentEnergyLevel && 
+            shieldDepletedSound != null) {
+            if(Time.time - lastShieldDepletedTime > minShieldDepletedTime) {
+                lastShieldDepletedTime = Time.time;
+                WorldManager.instance.PlayGlobalSound(shieldDepletedSound);
+            }
+        }
+
         float shieldAbsorbtion = ConsumeEnergy(reducedDamage);
 
         // And reduce the damage that is done to health
@@ -271,7 +302,7 @@ public class MechActor : Actor {
 
             // If it was breoken off, then add the weapon broken effects
             if(isBroken) {
-                if(brokenEffect == null) {
+                if(brokenEffect == null && brokenWeaponEffectPrototype != null) {
                     brokenEffect = Instantiate(brokenWeaponEffectPrototype);
                 }
                 else {
@@ -404,10 +435,12 @@ public class MechActor : Actor {
             }
         }
 
-        // So it was killed by the player, do a fancy death sequence where it shoots away from the palyer
-        AddForce((transform.position - instigator.transform.position).normalized, knowckbackForce);
-        controller.SetControllerActive(false);
-
+        if(instigator != null) {
+            // So it was killed by the player, do a fancy death sequence where it shoots away from the palyer
+            AddForce((transform.position - instigator.transform.position).normalized, knowckbackForce);
+            controller.SetControllerActive(false);
+        }
+        
         return delayLength;
     }
 
