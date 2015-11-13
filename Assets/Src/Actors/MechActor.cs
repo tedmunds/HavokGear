@@ -305,7 +305,7 @@ public class MechActor : Actor {
                 if(brokenEffect == null && brokenWeaponEffectPrototype != null) {
                     brokenEffect = Instantiate(brokenWeaponEffectPrototype);
                 }
-                else {
+                else if(brokenEffect != null) {
                     brokenEffect.gameObject.SetActive(true);
                 }
                 

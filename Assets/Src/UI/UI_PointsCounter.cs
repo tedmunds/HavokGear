@@ -13,7 +13,7 @@ public class UI_PointsCounter : MonoBehaviour {
 	
 	
 	private void Update() {
-        const string prefixText = "Feridium Ore x";
+        const string prefixText = "";
 
         textField.text = prefixText + GetOreCount();
 	}
