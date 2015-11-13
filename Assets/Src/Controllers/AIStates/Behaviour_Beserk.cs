@@ -5,7 +5,7 @@ public class Behaviour_Beserk : BehaviourSM.BehaviourState {
 
     private const float suicideRadius = 1.5f;
 
-    private const float moveSpeedMultiplier = 1.5f;
+    private const float moveSpeedMultiplier = 2.0f;
     private float baseMoveSpeed;
 
     public override BehaviourSM.StateResponse Update(AIController controller) {
