@@ -14,8 +14,8 @@ public class UI_EnemyHealthBar : MonoBehaviour {
     [SerializeField]
     private Vector2 screenOffset;
 
-    [SerializeField]
-    private Image weaknessIcon;
+    //[SerializeField]
+    //private Image weaknessIcon;
 
     private Camera mainCamera;
     private Canvas uiCanvas;
@@ -73,13 +73,13 @@ public class UI_EnemyHealthBar : MonoBehaviour {
         if(targetActor.GetType() == typeof(MechActor)) {
             MechActor mech = (MechActor)targetActor;
             if(mech.armorWeaknessList.Length > 0) {
-                weaknessIcon.enabled = true;
+                //weaknessIcon.enabled = true;
 
                 // TODO: allow for more than one weakness to be displayed in a litte list
-                weaknessIcon.sprite = damageTypeIcons[(int)mech.armorWeaknessList[0]];
+                //weaknessIcon.sprite = damageTypeIcons[(int)mech.armorWeaknessList[0]];
             }
             else {
-                weaknessIcon.enabled = false;
+                //weaknessIcon.enabled = false;
             }
         }
     }

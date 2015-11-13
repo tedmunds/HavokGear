@@ -227,6 +227,10 @@ public class Whip_PhotonWhip : Weapon {
         // This will govern what sort of behaviour the whip takes
         CheckNearbyGrabTargets(endPoint);
 
+        if(Time.time - lastStealTime < stealCoolDown) {
+            grabbedObject = null;
+        }
+
         // check if there is anything obstructing the path to the attach point, clear weapon steal if so
         RaycastHit2D hit = Physics2D.Raycast(fireStartPoint, toAimPoint.normalized, toAimPoint.magnitude, blockWhipLayers);
         if(hit.collider != null) {
@@ -288,9 +292,9 @@ public class Whip_PhotonWhip : Weapon {
                 owner.MechComponent.ConsumeEnergy(energyPerUse);
 
                 // check the cooldown for successful steals
-                if(Time.time - lastStealTime < stealCoolDown) {
-                    return false;
-                }
+                //if(Time.time - lastStealTime < stealCoolDown) {
+                //    return false;
+                //}
                 
                 return true;
             }
@@ -409,13 +413,6 @@ public class Whip_PhotonWhip : Weapon {
         fullExtendTime = Time.time;
         isAttached = false;
         latchSurface = null;
-
-        //if(owner.GetType() == typeof(PlayerController)) {
-        //    PlayerController playerController = (PlayerController)owner;
-        //    if(playerController.IsBoosting) {
-        //        playerController.GotoPreviousMoveState();
-        //    }
-        //}
     }
 
 
