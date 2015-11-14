@@ -10,6 +10,13 @@ public class LevelExitZone : MonoBehaviour {
     public void OnTriggerEnter2D(Collider2D other) {
         // If the player enters trigger area, then transition to next scene
         PlayerController playerController = other.GetComponent<PlayerController>();
+        if(playerController == null) {
+            playerController = other.GetComponentInChildren<PlayerController>();
+            if(playerController == null) {
+                playerController = other.GetComponentInParent<PlayerController>();
+            }
+        }
+
         if(playerController != null) {
             PlayerState playerState = FindObjectOfType<PlayerState>();
             if(playerState != null) {

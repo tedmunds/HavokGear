@@ -213,7 +213,12 @@ public class PlayerState : MonoBehaviour {
     /// Returns all of the equipped levels of the given upgrade
     /// </summary>
     public int[] GetEquippedLevelsFor(string upgradeName) {
+        if(equippedUpgrades == null) {
+            return new int[0];
+        }
+        
         List<int> levels = new List<int>(5);
+        
         for(int i = 0; i < equippedUpgrades.Count; i++) {
             if(equippedUpgrades[i].name == upgradeName) {
                 levels.Add(equippedUpgrades[i].level);
