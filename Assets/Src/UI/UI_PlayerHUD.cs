@@ -80,7 +80,9 @@ public class UI_PlayerHUD : MonoBehaviour {
 
 
     private void LateUpdate() {
-        whipCooldownElement.rectTransform.position = Input.mousePosition;
+        Vector3 screenPos = owner.PlayerCamera.WorldToScreenPoint(owner.transform.position);
+
+        whipCooldownElement.rectTransform.position = screenPos; //Input.mousePosition;
     }
 
 

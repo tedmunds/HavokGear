@@ -29,10 +29,16 @@ public class PlayerController : MechController {
     public KeyCode boostInput;
 
     [SerializeField]
+    public KeyCode swapWeaponInput;
+
+    [SerializeField]
     public float boostEnergy;
 
     [SerializeField]
     public float boostMoveForce;
+
+    [SerializeField]
+    public float weaponSwapDelay;
 
     [SerializeField]
     public AudioClip boostSound;
@@ -76,6 +82,11 @@ public class PlayerController : MechController {
     public bool IsBoosting {
         get { return isBoosting; }
     }
+
+    // Players secondary weapon 
+    private Weapon backupWeapon;
+    private float lastWeaponSwapTime;
+
     
     protected override void Start () {
         base.Start();
@@ -154,6 +165,7 @@ public class PlayerController : MechController {
 
         if(Input.GetButtonUp(fireMainInput)) {
             if(mechComponent.leftWeapon != null) {
+                Debug.Log(mechComponent.leftWeapon.name + " fired by player");
                 mechComponent.leftWeapon.EndFire();
             }
         }
@@ -168,6 +180,10 @@ public class PlayerController : MechController {
             if(mechComponent.rightWeapon != null) {
                 mechComponent.rightWeapon.EndFire();
             }
+        }
+
+        if(Input.GetKeyDown(swapWeaponInput)) {
+            SwapWeapon();
         }
 
         // TEMP: a simple boost thingy TODO: how should boost actually be implemented
@@ -349,6 +365,8 @@ public class PlayerController : MechController {
     public override void NewWeaponAttached(Weapon attached) {
         base.NewWeaponAttached(attached);
 
+        attached.ResetRefireDelay();
+
         // Cache ref to photon whip when it is attached (on spawn usually)
         if(attached != null && attached.GetType() == typeof(Whip_PhotonWhip)) {
             whipAttachment = (Whip_PhotonWhip)attached;
@@ -393,7 +411,51 @@ public class PlayerController : MechController {
 
     public void OnDied(Actor victim) {
         playerHUD.equippedWeaponElement.enabled = false;
+        
+        GameObject detached = mechComponent.Detach(mechComponent.leftWeapon.gameObject);
+        if(detached != null) {
+            detached.gameObject.SetActive(false);
+        }
+
+        if(backupWeapon != null) {
+            backupWeapon.gameObject.SetActive(false);
+        }
+        backupWeapon = null;
+
+        // reset the whip cooldown as well
+        if(whipAttachment != null) {
+            whipAttachment.ResetRefireDelay();
+        }
+
+        Debug.Log("Player died, resetting weapons");
     }
+
+
+    public void SwapWeapon() {
+        if(Time.time - lastWeaponSwapTime > weaponSwapDelay) {
+            // swap the currentyl equiped (null or not) with the backup
+            Weapon currentMain = mechComponent.leftWeapon;
+            if(currentMain != null) {
+                currentMain.GetRenderer().enabled = false;
+            }
+            
+            if(backupWeapon != null) {
+                backupWeapon.GetRenderer().enabled = true;
+            }
+            
+            mechComponent.leftWeapon = backupWeapon;
+            backupWeapon = currentMain;
+
+            lastWeaponSwapTime = Time.time;
+            Debug.Log("Weapon swapped to " + (mechComponent.leftWeapon != null? mechComponent.leftWeapon.name : "null"));
+        }
+    }
+
+
+
+
+
+
 
     /// <summary>
     /// Upgrade access points -------------------------------------------

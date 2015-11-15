@@ -352,6 +352,7 @@ public class MechActor : Actor {
             detached = Detach(leftWeapon != null ? leftWeapon.gameObject : null);
             if(detached != null) {
                 detached.SetActive(false);
+                Debug.Log("removed player left weapon on respawn");
             }
         }
         

@@ -346,6 +346,7 @@ public class Whip_PhotonWhip : Weapon {
         GameObject oldWeapon = owner.MechComponent.leftWeapon != null ? owner.MechComponent.leftWeapon.gameObject : null;
 
         // and attach it to the owner on the left side
+        Debug.Log("Whip attaching grabbed weapon " + targetWeapon.name + " to owner");
         owner.MechComponent.DoAttachment(MechActor.EAttachSide.Left, targetWeapon.gameObject, Vector3.zero);
 
         if(destroyOldWeapon && oldWeapon != null) {
@@ -417,7 +418,11 @@ public class Whip_PhotonWhip : Weapon {
 
 
     public void ResetWhipEffect() {
-        EndWhipSequence();
+        whipEffect.enabled = false;
+        whipActive = false;
+        if(endPointEffect != null) {
+            endPointEffect.gameObject.SetActive(false);
+        }
     }
 
 }

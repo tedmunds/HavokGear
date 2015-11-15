@@ -89,6 +89,9 @@ public abstract class Weapon : MonoBehaviour {
     //protected int startingAmmo;
     protected bool consumesAmmo = true;
 
+    private SpriteRenderer cachedSpriteRenderer;
+
+
     /// <summary>
     /// Called when a weapon is spawned by World manager, before any system initialization functions
     /// </summary>
@@ -118,6 +121,10 @@ public abstract class Weapon : MonoBehaviour {
         }
 	}
 
+
+    public void ResetRefireDelay() {
+        lastFireTime = 0.0f;
+    }
 
     /// <summary>
     /// Call to start the weapon firing:
@@ -264,6 +271,8 @@ public abstract class Weapon : MonoBehaviour {
         currentAmmo = baseAmmo;
         consumesAmmo = usesAmmo;
         owner = controller;
+
+        GetRenderer().enabled = true;
     }
 
 
@@ -335,6 +344,14 @@ public abstract class Weapon : MonoBehaviour {
     public Sprite GetWeaponSprite() {
         SpriteRenderer renderer = GetComponentInChildren<SpriteRenderer>();
         return renderer != null? renderer.sprite : null;
+    }
+
+    public SpriteRenderer GetRenderer() {
+        if(cachedSpriteRenderer == null) {
+            cachedSpriteRenderer = GetComponentInChildren<SpriteRenderer>();            
+        }
+
+        return cachedSpriteRenderer;
     }
 
 }
