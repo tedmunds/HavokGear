@@ -17,6 +17,9 @@ public class UI_PlayerHUD : MonoBehaviour {
     public string UI_EquippedWeapon_Tag;
 
     [SerializeField]
+    public string UI_SecondaryWeapon_Tag;
+
+    [SerializeField]
     public string UI_DamageType_Tag;
 
     [SerializeField]
@@ -32,6 +35,8 @@ public class UI_PlayerHUD : MonoBehaviour {
     public Image damageTypeElement;
     [HideInInspector]
     public Image equippedWeaponElement;
+    [HideInInspector]
+    public Image secondarydWeaponElement;
 
     // The player that this HUD is ownd by
     private PlayerController owner;
@@ -56,6 +61,9 @@ public class UI_PlayerHUD : MonoBehaviour {
             }
             if(i.gameObject.tag == UI_DamageType_Tag) {
                 damageTypeElement = i;
+            }
+            if(i.gameObject.tag == UI_SecondaryWeapon_Tag) {
+                secondarydWeaponElement = i;
             }
         }
 

@@ -446,6 +446,23 @@ public class PlayerController : MechController {
             mechComponent.leftWeapon = backupWeapon;
             backupWeapon = currentMain;
 
+            // set backup image
+            if(backupWeapon != null && playerHUD != null) {
+                playerHUD.secondarydWeaponElement.enabled = true;
+                playerHUD.secondarydWeaponElement.sprite = backupWeapon.GetWeaponSprite();
+            }
+            else if(playerHUD != null) {
+                playerHUD.secondarydWeaponElement.enabled = false;
+            }
+
+            // set laser sight and main image
+            if(mechComponent.leftWeapon != null) {
+                NewWeaponAttached(mechComponent.leftWeapon);
+            }
+            else {
+                playerHUD.equippedWeaponElement.enabled = false;
+            }
+
             lastWeaponSwapTime = Time.time;
             Debug.Log("Weapon swapped to " + (mechComponent.leftWeapon != null? mechComponent.leftWeapon.name : "null"));
         }
