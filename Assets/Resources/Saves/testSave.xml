@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<PlayerSave xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <points>1</points>
+  <upgradeLevels>
+    <upgrade>
+      <name>Upgrade_Health</name>
+      <level>1</level>
+    </upgrade>
+    <upgrade>
+      <name>Upgrade_HealthRegen</name>
+      <level>0</level>
+    </upgrade>
+  </upgradeLevels>
+  <equippedUpgrades />
+</PlayerSave>

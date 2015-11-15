@@ -180,6 +180,13 @@ public class PlayerController : MechController {
             EndBoosting();
         }
 
+        // exit button
+#if !UNITY_EDITOR
+        if(Input.GetKeyDown(KeyCode.F12)) {
+            Application.Quit();
+        }
+#endif
+
         // Check if a boost has ended (only for a conventional non-latch boost, otherwise its left to the movement state)
         //if(isBoosting && Time.time - lastBoostTime > boostLength 
         //    && currentMoveState == moveState_Normal) {

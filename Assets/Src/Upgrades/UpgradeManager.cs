@@ -14,15 +14,21 @@ public class UpgradeManager : MonoBehaviour {
 
 
     // data path for upgrade folder
-    private const string upgradeDataFolder = "Assets/UpgradeData/";
+    private const string upgradeDataFolder = "UpgradeData/";
 
 
     private void OnEnable() {
         instance = this;
 
+        string pathToResources = Application.dataPath + "/" + upgradeDataFolder;
+
         // Load the upgrade instances
-        upgrade_Health = XMLObjectLoader.LoadXMLObject<Upgrade_Health>(upgradeDataFolder + typeof(Upgrade_Health).Name + ".xml");
-        upgrade_HealthRegen = XMLObjectLoader.LoadXMLObject<Upgrade_HealthRegen>(upgradeDataFolder + typeof(Upgrade_HealthRegen).Name + ".xml");
+        //upgrade_Health = XMLObjectLoader.LoadXMLObject<Upgrade_Health>(pathToResources + typeof(Upgrade_Health).Name + ".xml");
+        //upgrade_HealthRegen = XMLObjectLoader.LoadXMLObject<Upgrade_HealthRegen>(pathToResources + typeof(Upgrade_HealthRegen).Name + ".xml");
+
+        upgrade_Health = XMLObjectLoader.LoadXMLObject<Upgrade_Health>(upgradeDataFolder + typeof(Upgrade_Health).Name);
+        upgrade_HealthRegen = XMLObjectLoader.LoadXMLObject<Upgrade_HealthRegen>(upgradeDataFolder + typeof(Upgrade_HealthRegen).Name);
+
 
         PlayerState playerState = FindObjectOfType<PlayerState>();
         if(playerState != null) {

@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System;
 using System.Collections.Generic;
 using System.Xml;
 using System.Xml.Serialization;
@@ -12,25 +13,37 @@ public abstract class XMLObjectLoader {
     /// <summary>
     /// Loads the xml object found at the path. Has optional callback method whenthe load has been completed
     /// </summary>
-    public static T LoadXMLObject<T>(string file, PostLoadCallback<T> postLoadCallback = null) where T : class {
+    public static T LoadXMLObject<T>(string fileName, PostLoadCallback<T> postLoadCallback = null) where T : class {
         XmlSerializer serializer = new XmlSerializer(typeof(T));
-        string filePath = file;
+        string filePath = fileName;
+
+        // First load the asset as a text file, and read it as a xml doc
+        TextAsset textFile = (TextAsset)Resources.Load(filePath, typeof(TextAsset));
+        if(textFile == null) {
+            Debug.LogWarning("XMLObjectLoader::LoadXMLObject failed to load text asset [" + filePath + "]");
+            return null;
+        }
+
+        // Fromt the text file, create an xml reader for the data stream
+        MemoryStream assetStream = new MemoryStream(textFile.bytes);
+        XmlReader reader = XmlReader.Create(assetStream);
 
         try {
-            FileStream stream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
-            T loader = serializer.Deserialize(stream) as T;
+            //FileStream stream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
+            T loader = serializer.Deserialize(reader) as T;
 
-            Debug.Log("Loaded " + typeof(T).Name + " @ " + file);
+            Debug.Log("Loaded " + typeof(T).Name + " @ " + fileName);
 
             if(postLoadCallback != null) {
                 postLoadCallback(loader);
             }
 
-            stream.Close();
+            //stream.Close();
+            reader.Close();
 
             return loader;
         }
-        catch(IOException e) {
+        catch(Exception e) {
             Debug.LogWarning("XMLObjectLoader::LoadXMLObject could find file [" + filePath + "] :: " + e.Message);
             return null;
         }
@@ -42,20 +55,15 @@ public abstract class XMLObjectLoader {
 
     public static void SaveXMLObject<T>(string file, T instance) {
         XmlSerializer serializer = new XmlSerializer(typeof(T));
-        string filePath = file;
+        string filePath = Application.dataPath + "/Resources/" + file + ".xml";
 
-        try {
-            FileStream stream = new FileStream(filePath, FileMode.OpenOrCreate, FileAccess.Write);
-            serializer.Serialize(stream, instance);
-
-            Debug.Log("Saved " + typeof(T).Name + " @ " + file);
-
-            stream.Close();
+        using(TextWriter sw = new StreamWriter(filePath, false, System.Text.Encoding.UTF8)) //Set encoding
+        {
+            serializer.Serialize(sw, instance);
+            Debug.Log("XMLObjectLoader::LoadXMLObject saved file: " + filePath);
         }
-        catch(IOException e) {
-            Debug.LogWarning("XMLObjectLoader::SaveXMLObjec could save to file [" + filePath + "] :: " + e.Message);
-            return;
-        }
+
     }
+
 }
 

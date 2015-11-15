@@ -10,4 +10,12 @@ public class SceneSelector : MonoBehaviour {
         Application.LoadLevel(sceneName);
     }
 
+
+
+    public void SafeAppQuit() {
+#if !UNITY_EDITOR
+        Application.Quit();
+#endif
+    }
+
 }

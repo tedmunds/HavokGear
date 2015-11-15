@@ -48,7 +48,7 @@ public class PlayerState : MonoBehaviour {
     [HideInInspector]
     public List<UpgradePair> equippedUpgrades;
 
-    private string testSavefile = "data/testSave.xml";
+    private string testSavefile = "Saves/testSave"; //"data/testSave.xml";
     private PlayerSave saveState;
 
     private void OnEnable() {
@@ -70,7 +70,7 @@ public class PlayerState : MonoBehaviour {
 
         saveState = XMLObjectLoader.LoadXMLObject<PlayerSave>(testSavefile);
         if(saveState == null) {
-            Debug.Log("Player State could not load a save file from data/testSave.xml");
+            Debug.Log("Player State could not load a save file from " + testSavefile);
             saveState = new PlayerSave();
         }
 

@@ -94,7 +94,7 @@ public class UpgradeMenuManager : MonoBehaviour {
         // TODO: Goto level selection?
 
         playerState.SaveState();
-        Application.LoadLevel("TestLevel");
+        Application.LoadLevel("Menu_StageSelection");
     }
 
 
