@@ -6,24 +6,16 @@
  <tileset firstgid="1" name="Test Level" tilewidth="32" tileheight="32" tilecount="100">
   <image source="../../../Level Design/Wasteland Tileset.png" width="320" height="320"/>
   <tile id="1">
-   <objectgroup draworder="index">
-    <object id="0" x="-0.25" y="0.5" width="31.75" height="15.25"/>
-   </objectgroup>
+   <objectgroup draworder="index"/>
   </tile>
   <tile id="2">
-   <objectgroup draworder="index">
-    <object id="0" x="0.5" y="17.5" width="31.25" height="14"/>
-   </objectgroup>
+   <objectgroup draworder="index"/>
   </tile>
   <tile id="3">
-   <objectgroup draworder="index">
-    <object id="0" x="0" y="-0.25" width="14.25" height="15.75"/>
-   </objectgroup>
+   <objectgroup draworder="index"/>
   </tile>
   <tile id="4">
-   <objectgroup draworder="index">
-    <object id="0" x="16.75" y="0" width="15.25" height="14.5"/>
-   </objectgroup>
+   <objectgroup draworder="index"/>
   </tile>
   <tile id="5">
    <objectgroup draworder="index">
@@ -31,53 +23,31 @@
    </objectgroup>
   </tile>
   <tile id="10">
-   <objectgroup draworder="index">
-    <object id="0" x="0" y="0" width="31.75" height="32"/>
-   </objectgroup>
+   <objectgroup draworder="index"/>
   </tile>
   <tile id="11">
-   <objectgroup draworder="index">
-    <object id="0" x="-0.333333" y="0" width="14.5833" height="32"/>
-   </objectgroup>
+   <objectgroup draworder="index"/>
   </tile>
   <tile id="12">
-   <objectgroup draworder="index">
-    <object id="0" x="0.25" y="0.5" width="14.5" height="31.1666"/>
-    <object id="0" x="14.75" y="0.5" width="17" height="14.75"/>
-   </objectgroup>
+   <objectgroup draworder="index"/>
   </tile>
   <tile id="13">
-   <objectgroup draworder="index">
-    <object id="0" x="-0.333333" y="0.25" width="14.8333" height="31.75"/>
-    <object id="0" x="13.5" y="17.25" width="18.25" height="14.5"/>
-   </objectgroup>
+   <objectgroup draworder="index"/>
   </tile>
   <tile id="14">
-   <objectgroup draworder="index">
-    <object id="0" x="0.25" y="16.5" width="14.75" height="15"/>
-   </objectgroup>
+   <objectgroup draworder="index"/>
   </tile>
   <tile id="21">
-   <objectgroup draworder="index">
-    <object id="0" x="15.75" y="-0.25" width="16" height="32"/>
-   </objectgroup>
+   <objectgroup draworder="index"/>
   </tile>
   <tile id="22">
-   <objectgroup draworder="index">
-    <object id="0" x="0" y="-0.333333" width="17.25" height="16.3333"/>
-    <object id="0" x="17.25" y="-0.25" width="14.5" height="32"/>
-   </objectgroup>
+   <objectgroup draworder="index"/>
   </tile>
   <tile id="23">
-   <objectgroup draworder="index">
-    <object id="0" x="15.25" y="0" width="16.5" height="32.3333"/>
-    <object id="0" x="-0.25" y="16.25" width="15.5" height="15.75"/>
-   </objectgroup>
+   <objectgroup draworder="index"/>
   </tile>
   <tile id="24">
-   <objectgroup draworder="index">
-    <object id="0" x="15.75" y="17.25" width="16" height="15"/>
-   </objectgroup>
+   <objectgroup draworder="index"/>
   </tile>
   <tile id="30">
    <objectgroup draworder="index"/>
