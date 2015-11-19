@@ -4,12 +4,21 @@
   <upgradeLevels>
     <upgrade>
       <name>Upgrade_Health</name>
-      <level>1</level>
+      <level>2</level>
     </upgrade>
     <upgrade>
       <name>Upgrade_HealthRegen</name>
       <level>0</level>
     </upgrade>
   </upgradeLevels>
-  <equippedUpgrades />
+  <equippedUpgrades>
+    <equipped>
+      <name>Upgrade_Health</name>
+      <level>0</level>
+    </equipped>
+    <equipped>
+      <name>Upgrade_Health</name>
+      <level>1</level>
+    </equipped>
+  </equippedUpgrades>
 </PlayerSave>
