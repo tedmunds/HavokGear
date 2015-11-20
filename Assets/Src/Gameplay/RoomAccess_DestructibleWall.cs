@@ -21,9 +21,13 @@ public class RoomAccess_DestructibleWall : RoomAccess {
         }
 
         WorldManager.instance.PlayGlobalSound(onActivatedSound);
-        
-        // TODO: Broken wall sprite or something
+
+        gameObject.SetActive(false);
         Destroy(gameObject);
+
+        // update the path area
+        Bounds rebuildBounds = new Bounds(transform.position, new Vector3(10.0f, 10.0f, 1.0f));        
+        AstarPath.active.UpdateGraphs(GetComponent<Collider2D>().bounds);
     }
 
 	

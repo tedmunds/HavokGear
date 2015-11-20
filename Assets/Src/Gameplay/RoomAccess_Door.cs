@@ -38,6 +38,9 @@ public class RoomAccess_Door : RoomAccess {
             doorCollisionObject.SetActive(false);
         }
 
+        // update the path area
+        Bounds rebuildBounds = new Bounds(transform.position, new Vector3(10.0f, 10.0f, 1.0f));
+        AstarPath.active.UpdateGraphs(GetComponent<Collider2D>().bounds);
     }
 
 }

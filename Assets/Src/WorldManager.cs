@@ -41,6 +41,9 @@ public class WorldManager : MonoBehaviour {
     [SerializeField]
     public UI_EnemyHealthBar enemyHealthBarPrototype;
 
+    [SerializeField]
+    public GameObject pauseMenuObject;
+
 
     /// <summary>
     /// Cached reference to the player object
@@ -67,6 +70,8 @@ public class WorldManager : MonoBehaviour {
 
     private AudioSource globalAudioPlayer;
 
+    private bool isPaused = false;
+
 
 	private void Start() {
         instance = this;
@@ -76,6 +81,10 @@ public class WorldManager : MonoBehaviour {
 
         playerState = FindObjectOfType<PlayerState>();
         globalAudioPlayer = GetComponent<AudioSource>();
+
+        if(pauseMenuObject == null) {
+            Debug.LogError("Please assign an object to WorldManager::Pause Menu Object");
+        }
     }
 	
 
@@ -326,6 +335,28 @@ public class WorldManager : MonoBehaviour {
         if(globalAudioPlayer != null && clip != null) {
             globalAudioPlayer.PlayOneShot(clip);
         }
+    }
+
+
+
+    public void PauseGame() {
+        Time.timeScale = 0.0f;
+        isPaused = true;
+        pauseMenuObject.SetActive(true);
+    }
+
+
+
+    public void UnpauseGame() {
+        Time.timeScale = 1.0f;
+        isPaused = false;
+        pauseMenuObject.SetActive(false);
+    }
+
+
+    // If the scene changes while paused, make sure to reset the time scale
+    void OnDisable() {
+        Time.timeScale = 1.0f;
     }
 
 }

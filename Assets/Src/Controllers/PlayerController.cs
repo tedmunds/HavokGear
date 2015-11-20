@@ -182,6 +182,12 @@ public class PlayerController : MechController {
             }
         }
 
+        // Pause the game
+        if(Input.GetKeyDown(KeyCode.Escape)) {
+            WorldManager.instance.PauseGame();
+        }
+
+        // check for mouse scroll wheel or the swap button, for now at least
         if(Mathf.Abs(Input.mouseScrollDelta.y) > 0.0f || Input.GetKeyDown(swapWeaponInput)) {
             SwapWeapon();
         }
