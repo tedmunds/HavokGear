@@ -31,7 +31,8 @@ public class Explosion : MonoBehaviour {
 
 	private void Update() {
         if(hasExploded && Time.time - explodedTime > lifeTime) {
-            Destroy(gameObject);
+            Destroy(this.gameObject);            
+            //gameObject.SetActive(false);
         }
 	}
 
@@ -60,7 +61,6 @@ public class Explosion : MonoBehaviour {
         if(explosionParticlePrefab != null) {
             ParticleSystem explosionEffect = (ParticleSystem)Instantiate(explosionParticlePrefab, transform.position, Quaternion.identity);
             explosionEffect.Play();
-            Destroy(explosionEffect.gameObject, explosionEffect.startLifetime);
         }
 
         if(audioPlayer != null && explodeSound != null) {

@@ -13,6 +13,10 @@ public class Weapon_Railgun : Weapon {
     public float damageFalloffPerHit;
 
     [SerializeField]
+    public float ai_targetAquireTime;
+    private float ai_AquireTargetPct;
+
+    [SerializeField]
     public ParticleSystem shootEffectPrototype;
 
     [SerializeField]
@@ -32,7 +36,6 @@ public class Weapon_Railgun : Weapon {
 
 
     private LineRenderer lineRenderer;
-
 	
     protected override void Start() {
         base.Start();
@@ -101,5 +104,47 @@ public class Weapon_Railgun : Weapon {
         lineRenderer.SetPosition(1, endPoint);
 
         PlaySound(fireSound, 1.0f, Random.Range(0.85f, 1.0f));
+    }
+
+
+    public override bool AI_AllowFire(AIController controller) {
+        // If the AI is not even tracking (cant see target), dont even try
+        if(!controller.isTrackingTarget) {
+            return false;
+        }
+        // Railgun must be aimed at the player for some time before it will be shot by the AI
+        float timeInSights = Time.time - controller.lastAquiredTargetTime;
+
+        ai_AquireTargetPct = timeInSights / ai_targetAquireTime;
+        
+        if(timeInSights > ai_targetAquireTime) {
+            return true;
+        }
+
+        return false;
+    }
+
+
+    public override void UpdateAIAttackState(AIController controller) {
+        base.UpdateAIAttackState(controller);
+        if(!controller.isTrackingTarget) {
+            controller.aiLaserSight.enabled = false;
+        }
+        else {
+            controller.aiLaserSight.enabled = true;
+        }
+
+        if(!CanRefire() || !controller.HasLOSTarget()) {
+            controller.aiLaserSight.enabled = false;
+        }
+
+        controller.aiLaserSight.SetPosition(0, firePoint.position);
+        controller.aiLaserSight.SetPosition(1, controller.target.transform.position);
+
+        const float maxSightWidth = 1.0f;
+        const float minSightWidth = 0.1f;
+
+        float sightWidth = Mathf.Lerp(maxSightWidth, minSightWidth, ai_AquireTargetPct);
+        controller.aiLaserSight.SetWidth(sightWidth, sightWidth);
     }
 }

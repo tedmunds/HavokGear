@@ -182,7 +182,8 @@ public class PlayerController : MechController {
             }
         }
 
-        if(Input.GetKeyDown(swapWeaponInput)) {
+        //if(Input.GetKeyDown(swapWeaponInput)) {
+        if(Mathf.Abs(Input.mouseScrollDelta.y) > 0.0f) {
             SwapWeapon();
         }
 

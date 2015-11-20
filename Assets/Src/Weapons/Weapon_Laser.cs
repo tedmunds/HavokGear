@@ -10,6 +10,15 @@ public class Weapon_Laser : Weapon {
     public int bounces = 1;
 
     [SerializeField]
+    public Vector2 laserWidthRange;
+
+    [SerializeField]
+    public float chargeUpTime;
+
+    [SerializeField] // player can take a different ammoutn of time to charge
+    public float playerChargeTimeMultiplier;
+
+    [SerializeField]
     public ParticleSystem endpointEffectPrototype;
 
     [SerializeField]
@@ -23,6 +32,7 @@ public class Weapon_Laser : Weapon {
 
     private ParticleSystem endpointEffect;
 
+    private float startedFireTime;
 
 	protected override void Start() {
         base.Start();
@@ -74,6 +84,32 @@ public class Weapon_Laser : Weapon {
 
         currentAmmo = (int)Mathf.Ceil(currentEnergy);
 
+        bool isFullyCharged = false;
+
+        // figure how much time it has been chargin for, and how long it needs to go
+        float elapsedFire = Time.time - startedFireTime;
+        float chargetimeMult = owner.GetType() == typeof(PlayerController) ? playerChargeTimeMultiplier : 1.0f;
+        float chargePct = elapsedFire / (chargeUpTime * chargetimeMult);
+
+        if(elapsedFire > (chargeUpTime * chargetimeMult)) {
+            isFullyCharged = true;
+            chargePct = 1.0f;
+        }
+
+        // set effects on fully charged
+        if(loopingLaserSound != null && audioPlayer != null && audioPlayer.enabled &&
+            isFullyCharged && !audioPlayer.isPlaying) {
+            audioPlayer.clip = loopingLaserSound;
+            audioPlayer.Play();
+        }
+
+        if(endpointEffect != null && !endpointEffect.gameObject.activeSelf && isFullyCharged) {
+            endpointEffect.gameObject.SetActive(true);
+        }
+
+        float chargeWidth = Mathf.Lerp(laserWidthRange.x, laserWidthRange.y, chargePct);
+        laserRenderer.SetWidth(chargeWidth, chargeWidth);
+
         //laserRenderer.SetPosition(0, firePoint.position);
         for(int i = 0; i < numLaserVerts; i++) {
             laserRenderer.SetPosition(i, firePoint.position);
@@ -81,7 +117,6 @@ public class Weapon_Laser : Weapon {
 
         Vector3 toAimPoint = owner.GetAimLocation() - firePoint.position;
         Vector3 endPoint;
-
 
         Vector3 fireDirection = toAimPoint.normalized;
         Vector3 castOrigin = firePoint.position;
@@ -99,8 +134,11 @@ public class Weapon_Laser : Weapon {
                 // check if any enemy was hit
                 Actor target = hits[0].collider.gameObject.GetComponent<Actor>();
                 if(target != null) {
-                    target.TakeDamage(damagePerSecond * Time.deltaTime, owner, this);
-
+                    // Only do damage if the laser is ful;ly charged
+                    if(isFullyCharged) {
+                        target.TakeDamage(damagePerSecond * Time.deltaTime, owner, this);
+                    }
+                    
                     for(int j = i + 2; j < numLaserVerts; j++) {
                         laserRenderer.SetPosition(j, endPoint + fireDirection * (0.01f * j));
                     }
@@ -147,32 +185,25 @@ public class Weapon_Laser : Weapon {
     }
 
     public override bool BeginFire() {
-        bool beganFire = base.BeginFire();
+        //bool beganFire = base.BeginFire();
+        if(!CanRefire()) {
+            return false;
+        }
+        isFiring = true;
         
-        if(beganFire) {
-            laserRenderer.enabled = true;
+        laserRenderer.enabled = true;
 
-            // Do some camera shake, if its the player shooting. TOTO: more generalized way to do camera shake
-            if(owner.GetType() == typeof(PlayerController)) {
-                CameraController.CameraShake shakeData = new CameraController.CameraShake(0.1f, 0.05f, 5.0f, 1.0f, true);
+        // Do some camera shake, if its the player shooting. TOTO: more generalized way to do camera shake
+        if(owner.GetType() == typeof(PlayerController)) {
+            CameraController.CameraShake shakeData = new CameraController.CameraShake(0.1f, 0.05f, 5.0f, 1.0f, true);
 
-                PlayerController playerOwner = (PlayerController)owner;
-                playerOwner.PlayerCamera.GetComponent<CameraController>().StartCameraShake(ref shakeData, -GetAimDirection().normalized);
-            }
-
-            if(loopingLaserSound != null && audioPlayer != null && audioPlayer.enabled) {
-                audioPlayer.clip = loopingLaserSound;
-                audioPlayer.Play();
-            }
+            PlayerController playerOwner = (PlayerController)owner;
+            playerOwner.PlayerCamera.GetComponent<CameraController>().StartCameraShake(ref shakeData, -GetAimDirection().normalized);
         }
 
-        if(endpointEffect != null) {
-            endpointEffect.gameObject.SetActive(true);
-        }
-
-       
-
-        return beganFire;
+        startedFireTime = Time.time;
+        
+        return true;
     }
 
 
@@ -207,7 +238,7 @@ public class Weapon_Laser : Weapon {
 
 
     public override float AIBurstLength() {
-        return Random.Range(0.5f, 2.0f);
+        return Random.Range(1.5f, 2.0f);
     }
 
 

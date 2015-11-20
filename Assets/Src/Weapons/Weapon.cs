@@ -54,6 +54,9 @@ public abstract class Weapon : MonoBehaviour {
     public float aiEngageRange;
 
     [SerializeField]
+    public float ai_DamageScale = 1.0f;
+
+    [SerializeField]
     public AudioClip outOfAmmoSound;
 
     [SerializeField]
@@ -353,5 +356,21 @@ public abstract class Weapon : MonoBehaviour {
 
         return cachedSpriteRenderer;
     }
+
+
+    /// <summary>
+    /// Checks if an AI weilding this weapon is allowed to shoot it given the current circumstances
+    /// </summary>
+    public virtual bool AI_AllowFire(AIController controller) {
+        return true;
+    }
+
+    /// <summary>
+    /// Called when this weapon is held by an AI, when that AI is in the attack state
+    /// </summary>
+    public virtual void UpdateAIAttackState(AIController controller) {
+
+    }
+
 
 }

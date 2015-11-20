@@ -40,6 +40,10 @@ public class Behaviour_Attack : BehaviourSM.BehaviourState {
         Vector3 currentFacing = controller.headTransform.up;
         controller.headTransform.up = Vector3.RotateTowards(currentFacing, lookDirection, controller.baseAimRotSpeed * Time.deltaTime, 0.0f);
         
+        // Update the current weapon
+        if(controller.MechComponent != null && controller.MechComponent.leftWeapon != null) {
+            controller.MechComponent.leftWeapon.UpdateAIAttackState(controller);
+        }
 
         bool hasLos = controller.HasLOSTarget();
         if(hasLos) {
@@ -143,7 +147,17 @@ public class Behaviour_Attack : BehaviourSM.BehaviourState {
         }
 
         if(!controller.CheckLOSFrom(fireOrigin, controller.target.transform.position, 100.0f)) {
+            controller.OnLostSightOfTarget();
             return false;
+        }
+        else if(!controller.isTrackingTarget) {
+            controller.OnAquireTarget();
+        }
+
+        // allow the weapon to decide if it can shoot yet, or if it is doing something
+        if(controller.MechComponent != null && controller.MechComponent.leftWeapon != null &&
+           !controller.MechComponent.leftWeapon.AI_AllowFire(controller)) {
+               return false;
         }
 
         return true;

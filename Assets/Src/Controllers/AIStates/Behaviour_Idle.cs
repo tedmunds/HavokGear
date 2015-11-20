@@ -54,6 +54,7 @@ public class Behaviour_Idle : BehaviourSM.BehaviourState {
 
         // TRANSITIONS:
         if(controller.HasLOSTarget()) {
+            controller.OnAquireTarget();
             return new BehaviourSM.StateResponse(BehaviourSM.TransitionMode.PushCurrent, new Behaviour_Attack());
         }
 

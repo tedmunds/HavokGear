@@ -69,6 +69,10 @@ public class Actor : MonoBehaviour {
             return;
         }
         
+        if(weaponUsed != null) {
+            damageAmount = damageAmount * weaponUsed.ai_DamageScale;
+        }
+
         health -= damageAmount;
         
         if(health <= 0.0f) {

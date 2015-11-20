@@ -64,9 +64,20 @@ public class AIController : MechController {
         get { return spawnPoint; }
     }
 
+    [HideInInspector] // The last game time that a target was first seen
+    public float lastAquiredTargetTime;
+    [HideInInspector] // Is the AI currently seeing a target
+    public bool isTrackingTarget;
+
+    // enemy is some cases will have a laser sight of its own
+    [HideInInspector]
+    public LineRenderer aiLaserSight;
+
     
     protected override void Start() {
         base.Start();
+        aiLaserSight = GetComponent<LineRenderer>();
+        mechComponent.RegisterDeathListener(OnMechDeath);
     }
 
 
@@ -80,6 +91,10 @@ public class AIController : MechController {
         }
     }
 
+
+    public void OnMechDeath(Actor victim) {
+        aiLaserSight.enabled = false;
+    }
 
     /// <summary>
     /// Called when this controller is spawned
@@ -227,6 +242,8 @@ public class AIController : MechController {
             InterruptPath();
             stateMachine.GotoNewState(new Behaviour_Beserk(), BehaviourSM.TransitionMode.AbandonCurrent);
         }
+
+        aiLaserSight.enabled = false;
     }
 
 
@@ -328,12 +345,7 @@ public class AIController : MechController {
     /// </summary>
     public void SetMovetoTarget(Vector3 moveTo) {
         moveTo.z = 0;
-
-        // Only try to move there if it is actually in a different location to avoid little jerky start-stop movements
-        //if((moveTo - transform.position).magnitude > 0.5f) {
-            moveToTarget = moveTo;
-            //isMovingToTarget = true;
-        //}
+        moveToTarget = moveTo;
     }
 
     /// <summary>
@@ -409,5 +421,21 @@ public class AIController : MechController {
         return 0.2f;
     }
 
+
+    /// <summary>
+    /// Called when the AI sees a target
+    /// </summary>
+    public void OnAquireTarget() {
+        lastAquiredTargetTime = Time.time; 
+        isTrackingTarget = true;
+    }
+
+
+    /// <summary>
+    /// Called when the AI looses sight of the target, not that they have given up attacking though
+    /// </summary>
+    public void OnLostSightOfTarget() {
+        isTrackingTarget = false;
+    }
 
 }
