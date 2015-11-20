@@ -53,6 +53,12 @@ public class Whip_PhotonWhip : Weapon {
     [SerializeField]
     private AudioClip stealSound;
 
+    [SerializeField]
+    public Color wallLatchColor;
+
+    [SerializeField]
+    public Color weaponStealColor;
+
     // the location selected for where the whip will shoot to
     private Vector3 targetLocation;
     private Vector3 lerpedEndPoint;
@@ -249,6 +255,9 @@ public class Whip_PhotonWhip : Weapon {
                 if(owner.GetType() == typeof(PlayerController)) {
                     ((PlayerController)owner).SuccessfulWeaponSteal(this);
                 }
+
+                // set the whip color to the weapon steal color
+                whipEffect.SetColors(weaponStealColor, weaponStealColor);
             }
         }
         else {
@@ -262,6 +271,9 @@ public class Whip_PhotonWhip : Weapon {
 
                 Debug.Log("Whip attaching to surface for latch boost");
                 SetUpLatchBoost(endPoint);
+                
+                // Set the wall altch color
+                whipEffect.SetColors(wallLatchColor, wallLatchColor);
             }
         }
 

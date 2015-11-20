@@ -42,7 +42,7 @@ public class PlayerController : MechController {
 
     [SerializeField]
     public AudioClip boostSound;
-    
+
     /// <summary>
     /// Main camera that is tracking player / the scene camera depending on what we decide (rooms or open level)
     /// </summary>
@@ -182,8 +182,7 @@ public class PlayerController : MechController {
             }
         }
 
-        //if(Input.GetKeyDown(swapWeaponInput)) {
-        if(Mathf.Abs(Input.mouseScrollDelta.y) > 0.0f) {
+        if(Mathf.Abs(Input.mouseScrollDelta.y) > 0.0f || Input.GetKeyDown(swapWeaponInput)) {
             SwapWeapon();
         }
 
@@ -437,6 +436,7 @@ public class PlayerController : MechController {
             // swap the currentyl equiped (null or not) with the backup
             Weapon currentMain = mechComponent.leftWeapon;
             if(currentMain != null) {
+                currentMain.EndFire();
                 currentMain.GetRenderer().enabled = false;
             }
             

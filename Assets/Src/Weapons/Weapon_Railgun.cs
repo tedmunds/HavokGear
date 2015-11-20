@@ -112,8 +112,12 @@ public class Weapon_Railgun : Weapon {
         if(!controller.isTrackingTarget) {
             return false;
         }
+
+        // compare to either the last fire time or the last time the target was seen, whatever is more recent
+        float lastRelevantTime = lastFireTime > controller.lastAquiredTargetTime ? lastFireTime : controller.lastAquiredTargetTime;
+
         // Railgun must be aimed at the player for some time before it will be shot by the AI
-        float timeInSights = Time.time - controller.lastAquiredTargetTime;
+        float timeInSights = Time.time - lastRelevantTime;
 
         ai_AquireTargetPct = timeInSights / ai_targetAquireTime;
         
