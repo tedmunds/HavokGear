@@ -40,11 +40,6 @@ public class DialogueTrigger : MonoBehaviour {
         hasBeenTriggered = false;
     }
 
-	
-	private void Update() {
-	
-	}
-
 
     public void OnTriggerEnter2D(Collider2D other) {
         if(hasBeenTriggered) {
@@ -56,6 +51,8 @@ public class DialogueTrigger : MonoBehaviour {
 
             WorldManager.instance.PauseGame(false);
 
+            menuObject.SetActive(true);
+
             textBox.text = dialogueText;
             if(characterSprite != null) {
                 potraitImage.sprite = characterSprite;
@@ -64,8 +61,6 @@ public class DialogueTrigger : MonoBehaviour {
             else {
                 potraitImage.enabled = false;
             }
-            
-            menuObject.SetActive(true);
         }
     }
 }
