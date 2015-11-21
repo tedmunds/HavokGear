@@ -240,10 +240,12 @@ public class MechActor : Actor {
 
         Weapon weaponComponent = attachment.GetComponent<Weapon>();
 
+        GameObject detached = null;
+
         // do the attachment through parenting
         if(attachSide == EAttachSide.Left) {
             if(leftWeapon != null) {
-                Detach(leftWeapon.gameObject);
+                detached = Detach(leftWeapon.gameObject);
             }
 
             attachment.transform.parent = leftAttachPoint;
@@ -251,7 +253,7 @@ public class MechActor : Actor {
         }
         else {
             if(rightWeapon != null) {
-                Detach(rightWeapon.gameObject);
+                detached = Detach(rightWeapon.gameObject);
             }
 
             attachment.transform.parent = rightAttachPoint;
@@ -273,7 +275,7 @@ public class MechActor : Actor {
     
 
     /// <summary>
-    /// Attempts to detach the input oobject if it is attached 
+    /// Attempts to detach the input oobject if it is attached. Returns the detached weaopn if any
     /// </summary>
     public GameObject Detach(GameObject detachTarget, bool isBroken = false) {
         if(detachTarget == null) {

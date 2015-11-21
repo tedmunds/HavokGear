@@ -345,8 +345,10 @@ public abstract class Weapon : MonoBehaviour {
 
 
     public Sprite GetWeaponSprite() {
-        SpriteRenderer renderer = GetComponentInChildren<SpriteRenderer>();
-        return renderer != null? renderer.sprite : null;
+        if(cachedSpriteRenderer == null) {
+            cachedSpriteRenderer = GetComponentInChildren<SpriteRenderer>();
+        }
+        return cachedSpriteRenderer != null ? cachedSpriteRenderer.sprite : null;
     }
 
     public SpriteRenderer GetRenderer() {

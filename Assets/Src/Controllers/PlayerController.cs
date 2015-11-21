@@ -87,6 +87,9 @@ public class PlayerController : MechController {
     private Weapon backupWeapon;
     private float lastWeaponSwapTime;
 
+    // Ref to the weapon that has been detached
+    private Weapon detachedWeapon;
+
     
     protected override void Start () {
         base.Start();
@@ -184,7 +187,7 @@ public class PlayerController : MechController {
 
         // Pause the game
         if(Input.GetKeyDown(KeyCode.Escape)) {
-            WorldManager.instance.PauseGame();
+            WorldManager.instance.PauseGame(true);
         }
 
         // check for mouse scroll wheel or the swap button, for now at least
@@ -363,6 +366,7 @@ public class PlayerController : MechController {
     /// The player has stolen a weapon with the photon weapon
     /// </summary>
     public void SuccessfulWeaponSteal(Whip_PhotonWhip whipUsed) {
+        detachedWeapon = mechComponent.leftWeapon;
         playerHUD.SetWhipRecharge(whipUsed.stealCoolDown);
     }
 
@@ -398,12 +402,37 @@ public class PlayerController : MechController {
         if(playerHUD != null && playerHUD.damageTypeElement != null) {
             playerHUD.SetDamageTypeDisplay(attached.damageTypeList);
         }
+
+        // if there was a detached eapon, to attach this one, then swap it into the seconrady slot if there is nothing there
+        if(backupWeapon == null && detachedWeapon != null) {
+            // need to bring the detatched weapon back fromn the dead
+            detachedWeapon.transform.SetParent(mechComponent.leftAttachPoint);
+            detachedWeapon.gameObject.SetActive(true);
+            detachedWeapon.GetRenderer().enabled = false;
+            
+            // cahche the weapon
+            backupWeapon = detachedWeapon;
+            
+            // and update hud
+            playerHUD.secondarydWeaponElement.enabled = true;
+            playerHUD.secondarydWeaponElement.sprite = backupWeapon.GetWeaponSprite();
+        }
+        
+        detachedWeapon = null;
     }
 
 
     public override void WeaponDetached(Weapon detached) {
         base.WeaponDetached(detached);
 
+        if(detached != null) {
+            detached.gameObject.SetActive(false);
+        }
+
+        if(laserSightRenderer != null) {
+            laserSightRenderer.enabled = false;
+        }
+        
         // update the hud images
         if(playerHUD != null && playerHUD.equippedWeaponElement != null) {
             playerHUD.equippedWeaponElement.enabled = false;
@@ -426,12 +455,15 @@ public class PlayerController : MechController {
         if(backupWeapon != null) {
             backupWeapon.gameObject.SetActive(false);
         }
+
         backupWeapon = null;
 
         // reset the whip cooldown as well
         if(whipAttachment != null) {
             whipAttachment.ResetRefireDelay();
         }
+
+        detachedWeapon = null;
 
         Debug.Log("Player died, resetting weapons");
     }
@@ -449,10 +481,14 @@ public class PlayerController : MechController {
             if(backupWeapon != null) {
                 backupWeapon.GetRenderer().enabled = true;
             }
+
+            if(laserSightRenderer != null) {
+                laserSightRenderer.enabled = false;
+            }
             
             mechComponent.leftWeapon = backupWeapon;
             backupWeapon = currentMain;
-
+            
             // set backup image
             if(backupWeapon != null && playerHUD != null) {
                 playerHUD.secondarydWeaponElement.enabled = true;
@@ -474,8 +510,6 @@ public class PlayerController : MechController {
             Debug.Log("Weapon swapped to " + (mechComponent.leftWeapon != null? mechComponent.leftWeapon.name : "null"));
         }
     }
-
-
 
 
 

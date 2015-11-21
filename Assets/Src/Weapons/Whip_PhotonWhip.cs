@@ -4,7 +4,7 @@ using System.Collections;
 public class Whip_PhotonWhip : Weapon {
 
     // Should the old weapon get destroyed when a new one is stolen
-    private bool destroyOldWeapon = true;
+    private bool destroyOldWeapon = false;
 
     /// <summary>
     /// The effect system that makes up the actual whip trail

@@ -339,10 +339,13 @@ public class WorldManager : MonoBehaviour {
 
 
 
-    public void PauseGame() {
+    public void PauseGame(bool withMenu) {
         Time.timeScale = 0.0f;
         isPaused = true;
-        pauseMenuObject.SetActive(true);
+
+        if(withMenu) {
+            pauseMenuObject.SetActive(true);
+        }
     }
 
 

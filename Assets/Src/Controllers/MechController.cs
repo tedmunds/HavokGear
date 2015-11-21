@@ -168,7 +168,7 @@ public class MechController : MonoBehaviour {
     }
 
     public virtual void WeaponDetached(Weapon detached) {
-
+        
     }
 
 
