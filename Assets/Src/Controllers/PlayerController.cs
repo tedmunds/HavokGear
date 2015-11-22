@@ -125,6 +125,12 @@ public class PlayerController : MechController {
         }
     }
 
+    protected override void FirstFrameInitialization() {
+        base.FirstFrameInitialization();
+
+        mechComponent.AddHealth(GetHealthModifier(), gameObject);
+    }
+
 
     protected override void Update () {
         base.Update();
@@ -368,6 +374,12 @@ public class PlayerController : MechController {
     public void SuccessfulWeaponSteal(Whip_PhotonWhip whipUsed) {
         detachedWeapon = mechComponent.leftWeapon;
         playerHUD.SetWhipRecharge(whipUsed.stealCoolDown);
+
+        // Check for life steal upgrade
+        float lifeStealAmount = GetLifeSteal();
+        if(lifeStealAmount > 0.0f) {
+            mechComponent.AddHealth(lifeStealAmount, gameObject);
+        }
     }
 
 
@@ -539,4 +551,31 @@ public class PlayerController : MechController {
 
         return regen;
     }
+
+
+    public override float GetEnergyModifier() {
+        float bonusEnergy = 0.0f;
+
+        int[] equippedLevels = myState.GetEquippedLevelsFor(typeof(Upgrade_Energy).Name);
+        for(int i = 0; i < equippedLevels.Length; i++) {
+            bonusEnergy += upgradeManager.upgrade_Energy.GetBonusEnergy(equippedLevels[i]);
+        }
+
+        return bonusEnergy;
+    }
+
+    public float GetLifeSteal() {
+        float lifeSteal = 0.0f;
+
+        int[] equippedLevels = myState.GetEquippedLevelsFor(typeof(Upgrade_LifeSteal).Name);
+        for(int i = 0; i < equippedLevels.Length; i++) {
+            lifeSteal += upgradeManager.upgrade_LifeSteal.GetLifeStealAmmount(equippedLevels[i]);
+        }
+
+        Debug.Log("Life steal amount = " + lifeSteal + " :: num equipped = " + equippedLevels.Length);
+
+        return lifeSteal;
+    }
+
+
 }

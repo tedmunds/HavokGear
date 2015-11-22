@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Upgrade_Energy xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <statsPerLevel>
+    <level>
+      <bonusEnergy>100</bonusEnergy>
+      <requiredSlots>2</requiredSlots>
+      <requiredPoints>2</requiredPoints>
+    </level>
+
+    <level>
+      <bonusEnergy>200</bonusEnergy>
+      <requiredSlots>2</requiredSlots>
+      <requiredPoints>2</requiredPoints>
+    </level>
+
+    <level>
+      <bonusEnergy>400</bonusEnergy>
+      <requiredSlots>3</requiredSlots>
+      <requiredPoints>3</requiredPoints>
+    </level>
+
+    <level>
+      <bonusEnergy>700</bonusEnergy>
+      <requiredSlots>3</requiredSlots>
+      <requiredPoints>3</requiredPoints>
+    </level>
+
+    <level>
+      <bonusEnergy>1000</bonusEnergy>
+      <requiredSlots>4</requiredSlots>
+      <requiredPoints>4</requiredPoints>
+    </level>
+  </statsPerLevel>
+</Upgrade_Energy>

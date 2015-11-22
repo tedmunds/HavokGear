@@ -21,6 +21,9 @@ public class UI_StatusBar : MonoBehaviour {
     [SerializeField]
     public Image barOverlay;
 
+    [SerializeField]
+    public Text numericField;
+
     private PlayerController targetPlayer;
 
     private float baseWidth;
@@ -29,14 +32,21 @@ public class UI_StatusBar : MonoBehaviour {
         baseWidth = barOverlay.rectTransform.rect.width;
     }
 
+
+
 	private void Update() {
 	    if(targetPlayer == null) {
             targetPlayer = FindObjectOfType<PlayerController>();
         }
         else {
             // Update the width
-            float watchValue = GetWatchedValue();
-            barOverlay.rectTransform.sizeDelta = new Vector2(baseWidth * watchValue, barOverlay.rectTransform.rect.height);
+            float watchValue = GetCurrentValue();
+            float maxValue = GetMaxValue();
+            barOverlay.rectTransform.sizeDelta = new Vector2(baseWidth * (watchValue / maxValue), barOverlay.rectTransform.rect.height);
+
+            if(numericField != null) {
+                numericField.text = (int)watchValue + "";
+            }   
         }
 	}
 
@@ -44,7 +54,7 @@ public class UI_StatusBar : MonoBehaviour {
     /// <summary>
     /// Gets a percentage value for the watched player status
     /// </summary>
-    private float GetWatchedValue() {
+    private float GetCurrentValue() {
         if(targetPlayer == null) {
             return 1.0f;
         }
@@ -53,13 +63,36 @@ public class UI_StatusBar : MonoBehaviour {
             case ETargetStatus.None:
                 return 1.0f;
             case ETargetStatus.Health:
-                return targetPlayer.MechComponent.Health / targetPlayer.MechComponent.maxhealth;
+                return targetPlayer.MechComponent.Health;
             case ETargetStatus.Energy:
-                return targetPlayer.MechComponent.EnergyLevel / targetPlayer.MechComponent.maxEnergyLevel;
+                return targetPlayer.MechComponent.EnergyLevel;
             case ETargetStatus.Shield:
-                return targetPlayer.MechComponent.CurrentShield / targetPlayer.MechComponent.maxShield;
+                return targetPlayer.MechComponent.CurrentShield;
         }
 
         return 1.0f;
     }
+
+
+    private float GetMaxValue() {
+        if(targetPlayer == null) {
+            return 1.0f;
+        }
+
+        switch(watchStatus) {
+            case ETargetStatus.None:
+                return 1.0f;
+            case ETargetStatus.Health:
+                return targetPlayer.MechComponent.maxhealth + targetPlayer.GetHealthModifier();
+            case ETargetStatus.Energy:
+                return targetPlayer.MechComponent.maxEnergyLevel + targetPlayer.GetEnergyModifier();
+            case ETargetStatus.Shield:
+                return targetPlayer.MechComponent.maxShield;
+        }
+
+        return 1.0f;
+    }
+
+
+
 }

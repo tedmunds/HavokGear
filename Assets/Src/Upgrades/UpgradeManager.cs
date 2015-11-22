@@ -12,6 +12,12 @@ public class UpgradeManager : MonoBehaviour {
     [HideInInspector]
     public Upgrade_HealthRegen upgrade_HealthRegen;
 
+    [HideInInspector]
+    public Upgrade_Energy upgrade_Energy;
+
+    [HideInInspector]
+    public Upgrade_LifeSteal upgrade_LifeSteal;
+
 
     // data path for upgrade folder
     private const string upgradeDataFolder = "UpgradeData/";
@@ -23,12 +29,10 @@ public class UpgradeManager : MonoBehaviour {
         string pathToResources = Application.dataPath + "/" + upgradeDataFolder;
 
         // Load the upgrade instances
-        //upgrade_Health = XMLObjectLoader.LoadXMLObject<Upgrade_Health>(pathToResources + typeof(Upgrade_Health).Name + ".xml");
-        //upgrade_HealthRegen = XMLObjectLoader.LoadXMLObject<Upgrade_HealthRegen>(pathToResources + typeof(Upgrade_HealthRegen).Name + ".xml");
-
         upgrade_Health = XMLObjectLoader.LoadXMLObjectInternal<Upgrade_Health>(upgradeDataFolder + typeof(Upgrade_Health).Name);
         upgrade_HealthRegen = XMLObjectLoader.LoadXMLObjectInternal<Upgrade_HealthRegen>(upgradeDataFolder + typeof(Upgrade_HealthRegen).Name);
-
+        upgrade_Energy = XMLObjectLoader.LoadXMLObjectInternal<Upgrade_Energy>(upgradeDataFolder + typeof(Upgrade_Energy).Name);
+        upgrade_LifeSteal = XMLObjectLoader.LoadXMLObjectInternal<Upgrade_LifeSteal>(upgradeDataFolder + typeof(Upgrade_LifeSteal).Name);
 
         PlayerState playerState = FindObjectOfType<PlayerState>();
         if(playerState != null) {
@@ -46,6 +50,10 @@ public class UpgradeManager : MonoBehaviour {
                 return upgrade_Health.RequiredSlots(currentLevel);
             case "Upgrade_HealthRegen":
                 return upgrade_HealthRegen.RequiredSlots(currentLevel);
+            case "Upgrade_Energy":
+                return upgrade_Energy.RequiredSlots(currentLevel);
+            case "Upgrade_LifeSteal":
+                return upgrade_LifeSteal.RequiredSlots(currentLevel);
         }
 
         return 0;
@@ -65,6 +73,10 @@ public class UpgradeManager : MonoBehaviour {
                 return upgrade_Health.PointsToUpgrade(currentLevel);
             case "Upgrade_HealthRegen":
                 return upgrade_HealthRegen.PointsToUpgrade(currentLevel);
+            case "Upgrade_Energy":
+                return upgrade_Energy.PointsToUpgrade(currentLevel);
+            case "Upgrade_LifeSteal":
+                return upgrade_LifeSteal.PointsToUpgrade(currentLevel);
         }
 
         return 1;
@@ -77,6 +89,10 @@ public class UpgradeManager : MonoBehaviour {
                 return upgrade_Health.perLevelData.Length;
             case "Upgrade_HealthRegen":
                 return upgrade_HealthRegen.perLevelData.Length;
+            case "Upgrade_Energy":
+                return upgrade_Energy.perLevelData.Length;
+            case "Upgrade_LifeSteal":
+                return upgrade_LifeSteal.perLevelData.Length;
         }
 
         return 1;

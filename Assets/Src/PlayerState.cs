@@ -79,8 +79,11 @@ public class PlayerState : MonoBehaviour {
 
         upgradePoints = saveState.availablePoints;
 
+        // Have to manually load the upgrades, TODO: tie this in with the player save better... These things are seriously sprinkled everywhere
         upgradeUnlockTable.Add("Upgrade_Health", saveState.GetSavedLevelForUpgrade("Upgrade_Health"));
         upgradeUnlockTable.Add("Upgrade_HealthRegen", saveState.GetSavedLevelForUpgrade("Upgrade_HealthRegen"));
+        upgradeUnlockTable.Add("Upgrade_Energy", saveState.GetSavedLevelForUpgrade("Upgrade_Energy"));
+        upgradeUnlockTable.Add("Upgrade_LifeSteal", saveState.GetSavedLevelForUpgrade("Upgrade_LifeSteal"));
 
         if(saveState.equippedUpgrades != null) {
             //equippedUpgrades.AddRange(saveState.equippedUpgrades);

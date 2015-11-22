@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Upgrade_LifeSteal xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <statsPerLevel>
+    <level>
+      <lifeSteal>10</lifeSteal>
+      <requiredSlots>2</requiredSlots>
+      <requiredPoints>2</requiredPoints>
+    </level>
+
+    <level>
+      <lifeSteal>50</lifeSteal>
+      <requiredSlots>2</requiredSlots>
+      <requiredPoints>2</requiredPoints>
+    </level>
+
+    <level>
+      <lifeSteal>100</lifeSteal>
+      <requiredSlots>3</requiredSlots>
+      <requiredPoints>3</requiredPoints>
+    </level>
+
+    <level>
+      <lifeSteal>200</lifeSteal>
+      <requiredSlots>3</requiredSlots>
+      <requiredPoints>3</requiredPoints>
+    </level>
+
+    <level>
+      <lifeSteal>500</lifeSteal>
+      <requiredSlots>4</requiredSlots>
+      <requiredPoints>4</requiredPoints>
+    </level>
+  </statsPerLevel>
+</Upgrade_LifeSteal>

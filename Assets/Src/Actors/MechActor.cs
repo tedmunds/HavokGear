@@ -121,11 +121,13 @@ public class MechActor : Actor {
                 WorldManager.instance.PlayGlobalSound(shieldStartRechargeSound);
             }
 
-            if(currentEnergyLevel < maxEnergyLevel) {
+            float maxEnergy = maxEnergyLevel + controller.GetEnergyModifier();
+
+            if(currentEnergyLevel < maxEnergy) {
                 currentEnergyLevel += energyRechargeRate * Time.deltaTime;
 
-                if(currentEnergyLevel > maxEnergyLevel) {
-                    currentEnergyLevel = maxEnergyLevel;
+                if(currentEnergyLevel > maxEnergy) {
+                    currentEnergyLevel = maxEnergy;
                 }
             }
         }

@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
 
 
@@ -41,8 +42,8 @@ public class WorldManager : MonoBehaviour {
     [SerializeField]
     public UI_EnemyHealthBar enemyHealthBarPrototype;
 
-    [SerializeField]
-    public GameObject pauseMenuObject;
+    //[SerializeField]
+    private GameObject pauseMenuObject;
 
 
     /// <summary>
@@ -82,8 +83,22 @@ public class WorldManager : MonoBehaviour {
         playerState = FindObjectOfType<PlayerState>();
         globalAudioPlayer = GetComponent<AudioSource>();
 
+        pauseMenuObject = GameObject.FindGameObjectWithTag("UI_PauseMenu");
         if(pauseMenuObject == null) {
-            Debug.LogError("Please assign an object to WorldManager::Pause Menu Object");
+            Debug.LogError("Make sure the Pause Menu has the UI_PauseMenu tag");
+        }
+        else {
+            // Anything tagged as an unpause button needs to be registered
+            GameObject[] unpauseButtons = GameObject.FindGameObjectsWithTag("UI_UnpauseButton");
+            foreach(GameObject obj in unpauseButtons) {
+                Button btn = obj.GetComponent<Button>();
+                if(btn != null) {
+                    btn.onClick.AddListener(() => UnpauseGame());
+                    Debug.Log(btn.name + " was registereed as an UnPause Button");
+                }
+            }
+
+            pauseMenuObject.SetActive(false);
         }
     }
 	

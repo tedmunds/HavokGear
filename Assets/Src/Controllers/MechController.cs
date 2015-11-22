@@ -64,6 +64,7 @@ public class MechController : MonoBehaviour {
     protected bool controllerActive;
 
 
+    private bool hasDoneFirstFrameInit;
 
     
     // Use this for initialization
@@ -100,6 +101,8 @@ public class MechController : MonoBehaviour {
             c.a = 0.0f;
             damageFlashScreen.color = c;
         }
+
+        hasDoneFirstFrameInit = false;
     }
 
 
@@ -109,6 +112,10 @@ public class MechController : MonoBehaviour {
     public virtual void OnSpawnInitialization() {
         // proagate initialization to the actor component
         mechComponent.OnSpawnInitialization();
+    }
+
+    protected virtual void FirstFrameInitialization() {
+        hasDoneFirstFrameInit = true;
     }
 
 
@@ -122,6 +129,10 @@ public class MechController : MonoBehaviour {
     // Update is called once per frame
     protected virtual void Update () {
         const float damageFlashTime = 0.2f;
+
+        if(!hasDoneFirstFrameInit) {
+            FirstFrameInitialization();
+        }
         
         if(damageFlashScreen != null) {
             float timeSinceDamage = Time.time - mechComponent.LastDamageTime;
@@ -177,6 +188,10 @@ public class MechController : MonoBehaviour {
     }
 
     public virtual float GetHealthRegen() {
+        return 0.0f;
+    }
+
+    public virtual float GetEnergyModifier() {
         return 0.0f;
     }
 
