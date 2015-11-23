@@ -20,7 +20,7 @@ public class DoorTriggerButton : MonoBehaviour {
         // If the player enters trigger area, then open the target door
         PlayerController playerController = other.GetComponent<PlayerController>();
         if(playerController != null && targetDoor != null) {
-            targetDoor.DoorOpen(playerController);
+            targetDoor.Activate(playerController);
             hasBeenPressed = true;
 
             gameObject.SetActive(false);

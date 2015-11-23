@@ -33,6 +33,7 @@ public abstract class RoomAccess : MonoBehaviour {
             targetFog.ClearFog();
         }
 
+        Debug.Log("Room Access object " + gameObject.name + " activated...");
         WorldManager.instance.PlayGlobalSound(onActivatedSound);
     }
 
