@@ -59,6 +59,9 @@ public class MechActor : Actor {
     public AudioClip shieldDepletedSound;
 
     [SerializeField]
+    public AudioClip lowHealthSound;
+
+    [SerializeField]
     public AudioClip shieldStartRechargeSound;
 
     /// <summary>
@@ -91,7 +94,8 @@ public class MechActor : Actor {
     private float lastShieldDepletedTime;
     private const float minShieldDepletedTime = 5.0f;
     private float lastShieldRechargeTime;
-
+    private float lastLowHealthTime;
+    private const float minLowHealthThresholdTime = 5.0f;
 
     protected override void Start() {
         base.Start();
@@ -228,7 +232,21 @@ public class MechActor : Actor {
             damageHandlerCallback(reducedDamage);
         }
 
+        // Check if the health is above the "low" threshold before applying damage
+        const float lowHealthRatio = 0.5f;
+        float lowHealthThreshold = (maxhealth + controller.GetHealthModifier()) * lowHealthRatio;
+
+        bool wasAboveThreshold = health >= lowHealthThreshold;
+
         base.TakeDamage(reducedDamage, instigator, weaponUsed);
+
+        // Check if the actor is at low health (given by some arbitrary ratio) and play a sound if there is one set
+        if(lowHealthSound != null && Time.time - lastLowHealthTime > minLowHealthThresholdTime &&
+            wasAboveThreshold && health < lowHealthThreshold) { // it is now below, and previously was above
+            WorldManager.instance.PlayGlobalSound(lowHealthSound);
+
+            lastLowHealthTime = Time.time;
+        }
     }
 
 

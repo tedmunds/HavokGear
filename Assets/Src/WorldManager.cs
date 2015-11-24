@@ -346,9 +346,10 @@ public class WorldManager : MonoBehaviour {
     /// <summary>
     /// Player the inout clip through the global player
     /// </summary>
-    public void PlayGlobalSound(AudioClip clip) {
+    public void PlayGlobalSound(AudioClip clip, float pitch = 1.0f, float volumeScale = 1.0f) {
         if(globalAudioPlayer != null && clip != null) {
-            globalAudioPlayer.PlayOneShot(clip);
+            globalAudioPlayer.pitch = pitch;
+            globalAudioPlayer.PlayOneShot(clip, volumeScale);
         }
     }
 

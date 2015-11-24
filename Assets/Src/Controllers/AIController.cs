@@ -22,6 +22,9 @@ public class AIController : MechController {
     [SerializeField]
     public Explosion suicideExplosion;
 
+    [SerializeField]
+    public AudioClip beserkSound;
+
     /// <summary>
     /// The mech that this Ai is targetting for shooting etc
     /// </summary>
@@ -241,6 +244,11 @@ public class AIController : MechController {
             Debug.Log("[" + name + "] Weapon stolen - Going beserk!");
             InterruptPath();
             stateMachine.GotoNewState(new Behaviour_Beserk(), BehaviourSM.TransitionMode.AbandonCurrent);
+
+            // play a sound to notify player
+            if(beserkSound != null) {
+                WorldManager.instance.PlayGlobalSound(beserkSound);
+            }
         }
 
         aiLaserSight.enabled = false;

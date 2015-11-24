@@ -43,6 +43,9 @@ public class PlayerController : MechController {
     [SerializeField]
     public AudioClip boostSound;
 
+    [SerializeField]
+    public AudioClip weaponSwapSound;
+
     /// <summary>
     /// Main camera that is tracking player / the scene camera depending on what we decide (rooms or open level)
     /// </summary>
@@ -458,12 +461,14 @@ public class PlayerController : MechController {
 
     public void OnDied(Actor victim) {
         playerHUD.equippedWeaponElement.enabled = false;
-        
-        GameObject detached = mechComponent.Detach(mechComponent.leftWeapon.gameObject);
-        if(detached != null) {
-            detached.gameObject.SetActive(false);
-        }
 
+        if(mechComponent.leftWeapon != null) {
+            GameObject detached = mechComponent.Detach(mechComponent.leftWeapon.gameObject);
+            if(detached != null) {
+                detached.gameObject.SetActive(false);
+            }
+        }
+        
         if(backupWeapon != null) {
             backupWeapon.gameObject.SetActive(false);
         }
@@ -517,6 +522,8 @@ public class PlayerController : MechController {
             else {
                 playerHUD.equippedWeaponElement.enabled = false;
             }
+
+            WorldManager.instance.PlayGlobalSound(weaponSwapSound, 1.0f, 0.5f);
 
             lastWeaponSwapTime = Time.time;
             Debug.Log("Weapon swapped to " + (mechComponent.leftWeapon != null? mechComponent.leftWeapon.name : "null"));

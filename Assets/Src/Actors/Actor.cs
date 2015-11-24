@@ -13,6 +13,9 @@ public class Actor : MonoBehaviour {
     [SerializeField]
     public float maxhealth;
 
+    [SerializeField]
+    private AudioClip onDeathSound;
+
     // Current health
     protected float health;
     public float Health {
@@ -107,6 +110,10 @@ public class Actor : MonoBehaviour {
             foreach(OnDeathHandler handler in deathListeners) {
                 handler(this);
             }
+        }
+
+        if(onDeathSound != null) {
+            WorldManager.instance.PlayGlobalSound(onDeathSound);
         }
     }
 
