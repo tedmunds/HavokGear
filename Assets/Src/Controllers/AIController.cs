@@ -76,6 +76,8 @@ public class AIController : MechController {
     [HideInInspector]
     public LineRenderer aiLaserSight;
 
+
+    private bool isBeserking;
     
     protected override void Start() {
         base.Start();
@@ -119,6 +121,7 @@ public class AIController : MechController {
         currentPath = null;
         waitingForPath = false;
         wantsNewPath = true;
+        isBeserking = false;
         currentPathWaypoint = 0;
         SetMovetoTarget(transform.position);
     }
@@ -201,6 +204,18 @@ public class AIController : MechController {
         if(legAnimator != null && legAnimator.isInitialized) {
             legAnimator.SetFloat("MoveSpeed", moveSpeed);
         }
+
+        // when beserking, flash the damage screen!
+        if(isBeserking && damageFlashScreen != null) {
+            Color currentCol = damageFlashScreen.color;
+
+            const float flashRate = 15.0f;
+            float alpha = Mathf.Sin(Time.time * flashRate);
+            alpha = (alpha + 1.0f) / 2.0f;
+
+            currentCol.a = alpha;
+            damageFlashScreen.color = currentCol;
+        }
     }
 
 
@@ -244,10 +259,12 @@ public class AIController : MechController {
             Debug.Log("[" + name + "] Weapon stolen - Going beserk!");
             InterruptPath();
             stateMachine.GotoNewState(new Behaviour_Beserk(), BehaviourSM.TransitionMode.AbandonCurrent);
+            
+            isBeserking = true;
 
             // play a sound to notify player
             if(beserkSound != null) {
-                WorldManager.instance.PlayGlobalSound(beserkSound);
+                //WorldManager.instance.PlayGlobalSound(beserkSound, 1.0f, 0.5f);
             }
         }
 
