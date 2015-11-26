@@ -8,6 +8,9 @@ public abstract class Weapon : MonoBehaviour {
         Prierce, Blast, Energy
     }
 
+    [SerializeField]
+    public string weaponName;
+
     /// <summary>
     /// Time inbetween being able to shoot again
     /// </summary>

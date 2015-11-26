@@ -22,6 +22,10 @@ public class Proj_Grenade : ProjectileController {
 
     protected override void Update() {
         base.Update();
+
+        if(!WorldManager.instance.ObjectOnScreen(this.gameObject)) {
+            gameObject.SetActive(false);
+        }
     }
 
 

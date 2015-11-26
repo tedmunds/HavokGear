@@ -433,6 +433,11 @@ public class PlayerController : MechController {
             playerHUD.secondarydWeaponElement.sprite = backupWeapon.GetWeaponSprite();
         }
         
+        // Send a message to the HUD to display on screen
+        if(playerHUD != null) {
+            playerHUD.DoOnScreenAnnouncement(attached.weaponName);
+        }
+
         detachedWeapon = null;
     }
 

@@ -134,7 +134,7 @@ public class Behaviour_Attack : BehaviourSM.BehaviourState {
 
         // Some enemies do not shoot when they are not visible on screen
         if(controller.doesntShootOffScreen && 
-           !WorldManager.instance.ActorOnScreen(controller.MechComponent)) {
+           !WorldManager.instance.ObjectOnScreen(controller.gameObject)) {
             return false;
         }
 

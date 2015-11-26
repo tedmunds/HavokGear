@@ -41,6 +41,7 @@ public class UI_PlayerHUD : MonoBehaviour {
     // The player that this HUD is ownd by
     private PlayerController owner;
 
+    private UI_EventPopup weaponPopup;
 
     private float whipRechargeStartTime;
     private float whipRechargeLength;
@@ -73,6 +74,9 @@ public class UI_PlayerHUD : MonoBehaviour {
         else {
             whipCooldownElement.fillAmount = 0.0f;
         }
+
+        GameObject popupObj = GameObject.FindGameObjectWithTag("UI_WeaponPopup");
+        weaponPopup = popupObj.GetComponent<UI_EventPopup>();
     }
 
 
@@ -119,4 +123,9 @@ public class UI_PlayerHUD : MonoBehaviour {
     }
 
 
+    public void DoOnScreenAnnouncement(string message) {
+        if(weaponPopup != null) {
+            weaponPopup.DoAnnouncement(message);
+        }
+    }
 }
