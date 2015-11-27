@@ -482,6 +482,12 @@ public class PlayerController : MechController {
 
         // reset the whip cooldown as well
         if(whipAttachment != null) {
+            Weapon currentGrabbedWeapon = whipAttachment.GrabbedWeapon;
+            if(currentGrabbedWeapon != null) {
+                currentGrabbedWeapon.ResetRefireDelay();
+                currentGrabbedWeapon.gameObject.SetActive(false);
+            }
+
             whipAttachment.ResetRefireDelay();
         }
 

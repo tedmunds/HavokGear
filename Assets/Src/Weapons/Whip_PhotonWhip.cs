@@ -65,6 +65,9 @@ public class Whip_PhotonWhip : Weapon {
 
     // Weapon that the whip is currently targeting: Can be null
     private GameObject grabbedObject;
+    public Weapon GrabbedWeapon {
+        get { return grabbedObject != null? grabbedObject.GetComponent<Weapon>() : null; }
+    }
 
     // The surface that is latched onto
     private GameObject latchSurface;
