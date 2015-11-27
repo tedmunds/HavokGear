@@ -40,6 +40,13 @@ public class Behaviour_Attack : BehaviourSM.BehaviourState {
         Vector3 currentFacing = controller.headTransform.up;
         controller.headTransform.up = Vector3.RotateTowards(currentFacing, lookDirection, controller.baseAimRotSpeed * Time.deltaTime, 0.0f);
         
+        if(isBursting) {
+            controller.SetCanMove(false);
+        }
+        else {
+            controller.SetCanMove(true);
+        }
+
         // Update the current weapon
         if(controller.MechComponent != null && controller.MechComponent.leftWeapon != null) {
             controller.MechComponent.leftWeapon.UpdateAIAttackState(controller);

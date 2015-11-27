@@ -76,7 +76,7 @@ public class AIController : MechController {
     [HideInInspector]
     public LineRenderer aiLaserSight;
 
-
+    private bool allowMovement;
     private bool isBeserking;
     
     protected override void Start() {
@@ -138,6 +138,7 @@ public class AIController : MechController {
     public void AiStartSensing() {
         // TODO: better way of assigning target
         target = GameObject.FindObjectOfType<PlayerController>();
+        SetCanMove(true);
     }
 
     // NEcessary to degerigister our delegate
@@ -179,7 +180,7 @@ public class AIController : MechController {
             // Reached end of current path
             currentPath = null;
         }
-        else {
+        else if(allowMovement) {
             // Move towards next waypoint
             Vector3 toWaypoint = (currentPath.vectorPath[currentPathWaypoint] - transform.position).normalized;
             movementComponent.Move(toWaypoint * baseMoveSpeed * Time.deltaTime);
@@ -235,6 +236,14 @@ public class AIController : MechController {
         wantsNewPath = true;
         waitingForPath = false;
         currentPath = null;
+    }
+
+
+    /// <summary>
+    /// Tells teh AI whether or not it can move (ie follow its path or not)
+    /// </summary>
+    public void SetCanMove(bool newCanMove) {
+        allowMovement = newCanMove;
     }
 
     /// <summary>

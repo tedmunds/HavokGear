@@ -36,6 +36,10 @@ public class Actor : MonoBehaviour {
     private List<OnDeathHandler> deathListeners;
 
 	protected virtual void Start() {
+        
+    }
+
+    protected virtual void OnEnable() {
         health = maxhealth;
         isDead = false;
     }

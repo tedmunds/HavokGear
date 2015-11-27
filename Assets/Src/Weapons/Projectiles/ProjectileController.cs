@@ -47,8 +47,8 @@ public class ProjectileController : MonoBehaviour {
 
 
     public void Move() {
-        int ignoreLayer = 1 << gameObject.layer;
-        ignoreLayer = ~ignoreLayer;
+        //int ignoreLayer = 1 << gameObject.layer;
+        //ignoreLayer = ~ignoreLayer;
 
         // Update position from velocity
         transform.position += velocity * Time.deltaTime;
@@ -56,9 +56,9 @@ public class ProjectileController : MonoBehaviour {
         // Interpolation hit check
         Vector3 moveDisplacement = transform.position - previousPos;
 
-        RaycastHit2D[] hits = Physics2D.RaycastAll(transform.position, moveDisplacement, moveDisplacement.magnitude, ignoreLayer);
+        RaycastHit2D[] hits = Physics2D.RaycastAll(transform.position, moveDisplacement, moveDisplacement.magnitude);
         for(int i = 0; i < hits.Length; i++) {
-            if(hits[i].collider != null &&
+            if(hits[i].collider != null && hits[i].collider.gameObject != this.gameObject &&
             (sourceWeapon != null && hits[i].collider.gameObject != sourceWeapon.gameObject) &&
             !hits[i].collider.isTrigger) {
                 // A different thing has been hit, call impact handler

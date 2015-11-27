@@ -71,13 +71,12 @@ public class Weapon_RocketLauncher : Weapon {
                         }
 
                         numShotsThisSalvo += 1;
-
-                        Debug.Log(mech.name + " locked onto by " + owner.name + " with " + weaponName);
                     }
                 }
             }
         }
 
+        // update the UI symbols for the player
         if(owner.GetType() == typeof(PlayerController)) {
             for(int i = 0; i < numShotsThisSalvo; i++) {                
                 Vector3 targPos = lockedTargets[i].transform.position;
@@ -164,7 +163,9 @@ public class Weapon_RocketLauncher : Weapon {
 
         if(lockSymbols != null) {
             foreach(GameObject symbol in lockSymbols) {
-                symbol.SetActive(false);
+                if(symbol != null && symbol.activeSelf) {
+                    symbol.SetActive(false);
+                }
             }
         }
     }

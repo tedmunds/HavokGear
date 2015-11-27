@@ -11,7 +11,10 @@ public class Proj_SeekerMissle : ProjectileController {
     public MechController targetMech;
 
 	private void Start() {
-	
+        Actor actorComp = GetComponent<Actor>();
+        if(actorComp != null) {
+            actorComp.RegisterDeathListener(OnProjectileKilled);
+        }
 	}
 
 
@@ -64,5 +67,10 @@ public class Proj_SeekerMissle : ProjectileController {
         }
 
         gameObject.SetActive(false);
+    }
+
+
+    public void OnProjectileKilled(Actor actorComp) {
+        Explode();
     }
 }
