@@ -40,6 +40,10 @@ public class MechController : MonoBehaviour {
 
 
     protected MovementController2D movementComponent;
+    public MovementController2D MovementComponent {
+        get { return movementComponent; }
+    }
+
     protected MechActor mechComponent;
     public MechActor MechComponent {
         get { return mechComponent; }

@@ -100,7 +100,9 @@ public class MovementController2D : MonoBehaviour {
     /// Main collider for this mover
     /// </summary>
     private CircleCollider2D circleCollider;
-    
+
+    public bool collidedThisFrame;
+
 
 
     void Awake() {
@@ -147,6 +149,8 @@ public class MovementController2D : MonoBehaviour {
     /// </summary>
     /// <param name="deltaMovement">Delta movement.</param>
     public void Move(Vector3 deltaMovement) {
+        collidedThisFrame = false;
+
         Vector3 moveTo = moveLinearResolve(deltaMovement, 10.0f, 20.0f, 60.0f, 80.0f);
         moveTo.z = 0.0f;
 
@@ -210,7 +214,8 @@ public class MovementController2D : MonoBehaviour {
     }
 
 
-    /// <summary>Tests <paramref name="direction"/> from <paramref name="targetPosition"/> + <paramref name="radius"/> for a collision. If one is found, returns a Vector2 adjustment to the closest valid position. Otherwise returns Vector2.zero.</summary>
+    /// <summary>Tests <paramref name="direction"/> from <paramref name="targetPosition"/> + <paramref name="radius"/> for a collision. If one is found, returns a Vector2 adjustment to 
+    /// the closest valid position. Otherwise returns Vector2.zero.</summary>
     /// <returns>The closest valid position to <paramref name="targetPosition"/>.</returns>
     /// <param name="targetPosition">The desired position to move to.</param>
     /// <param name="direction">The direction to test for a collision.</param>
@@ -231,10 +236,12 @@ public class MovementController2D : MonoBehaviour {
         else if(amountOfHits == 1 || (amountOfHits > 1 && hits2D[0].fraction > 0.5f)) {
             // We hit one of more colliders, but none of them was ours
             hit2D = hits2D[0];
+            collidedThisFrame = true;
         }
         else {
             // We hit ourselves, but we also hit something else.
             hit2D = hits2D[1];
+            collidedThisFrame = true;
         }
 
         validPositionAdjustment = hit2D.normal.normalized * ((1.0f - hit2D.fraction) * radius);

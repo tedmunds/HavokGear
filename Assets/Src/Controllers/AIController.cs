@@ -35,17 +35,17 @@ public class AIController : MechController {
     /// State machine that governs this ai's behaviour. The controller handles the exectution of all the 
     /// instructions sent by the behaviour machine, like moving to a location or shooting etc.
     /// </summary>
-    private BehaviourSM stateMachine;
+    protected BehaviourSM stateMachine;
 
     /// <summary>
     /// A* Pathfinding integration point: used by ai to navigate to target positions
     /// </summary>
-    private Seeker seekerComponent;
+    protected Seeker seekerComponent;
 
     /// <summary>
     /// The location that the AI wants to move to: generally set by the state machine
     /// </summary>
-    private Vector3 moveToTarget;
+    protected Vector3 moveToTarget;
 
     /// <summary>
     /// Pathfinding state
@@ -53,6 +53,7 @@ public class AIController : MechController {
     private int currentPathWaypoint;
     private Path currentPath;
     private bool waitingForPath;
+    private bool doesPathfinding;
 
     // Pathing interrupt: forces a new path calculation
     private bool wantsNewPath;
@@ -76,13 +77,14 @@ public class AIController : MechController {
     [HideInInspector]
     public LineRenderer aiLaserSight;
 
-    private bool allowMovement;
+    protected bool allowMovement;
     private bool isBeserking;
     
     protected override void Start() {
         base.Start();
         aiLaserSight = GetComponent<LineRenderer>();
         mechComponent.RegisterDeathListener(OnMechDeath);
+        doesPathfinding = true;
     }
 
 
@@ -98,7 +100,9 @@ public class AIController : MechController {
 
 
     public void OnMechDeath(Actor victim) {
-        aiLaserSight.enabled = false;
+        if(aiLaserSight != null) {
+            aiLaserSight.enabled = false;
+        }        
     }
 
     /// <summary>
@@ -135,7 +139,7 @@ public class AIController : MechController {
     /// <summary>
     /// Instructs the ai to start sensing for a target (does not mean it will actually start chasing and shooting)
     /// </summary>
-    public void AiStartSensing() {
+    public virtual void AiStartSensing() {
         // TODO: better way of assigning target
         target = GameObject.FindObjectOfType<PlayerController>();
         SetCanMove(true);
@@ -165,45 +169,47 @@ public class AIController : MechController {
             return;
         }
 
-        // Start looking for a path
-        if(currentPath == null && !waitingForPath || wantsNewPath) {
-            FindNewPath();
-            return;
-        }
-
-        // for animating
-        Vector3 moveDirection = Vector3.zero;
-        float moveSpeed = 0.0f;
-
-        // Check if its reached the end of the path
-        if(currentPathWaypoint >= currentPath.vectorPath.Count) {
-            // Reached end of current path
-            currentPath = null;
-        }
-        else if(allowMovement) {
-            // Move towards next waypoint
-            Vector3 toWaypoint = (currentPath.vectorPath[currentPathWaypoint] - transform.position).normalized;
-            movementComponent.Move(toWaypoint * baseMoveSpeed * Time.deltaTime);
-
-            moveDirection = toWaypoint.normalized;
-            moveSpeed = 1.0f;
-
-            Debug.DrawLine(transform.position, currentPath.vectorPath[currentPathWaypoint], Color.blue);
-
-            if(Vector3.Distance(transform.position, currentPath.vectorPath[currentPathWaypoint]) < reachedGoalError) {
-                currentPathWaypoint++;
+        if(doesPathfinding) {
+            // Start looking for a path
+            if(currentPath == null && !waitingForPath || wantsNewPath) {
+                FindNewPath();
                 return;
             }
-        }
 
-        // Set legs to walk direction
-        if(legTransform != null && moveDirection.magnitude > 0.0f) {
-            legTransform.up = moveDirection;
-        }
+            // for animating
+            Vector3 moveDirection = Vector3.zero;
+            float moveSpeed = 0.0f;
 
-        // Update the animator
-        if(legAnimator != null && legAnimator.isInitialized) {
-            legAnimator.SetFloat("MoveSpeed", moveSpeed);
+            // Check if its reached the end of the path
+            if(currentPathWaypoint >= currentPath.vectorPath.Count) {
+                // Reached end of current path
+                currentPath = null;
+            }
+            else if(allowMovement) {
+                // Move towards next waypoint
+                Vector3 toWaypoint = (currentPath.vectorPath[currentPathWaypoint] - transform.position).normalized;
+                movementComponent.Move(toWaypoint * baseMoveSpeed * Time.deltaTime);
+
+                moveDirection = toWaypoint.normalized;
+                moveSpeed = 1.0f;
+
+                Debug.DrawLine(transform.position, currentPath.vectorPath[currentPathWaypoint], Color.blue);
+
+                if(Vector3.Distance(transform.position, currentPath.vectorPath[currentPathWaypoint]) < reachedGoalError) {
+                    currentPathWaypoint++;
+                    return;
+                }
+            }
+
+            // Set legs to walk direction
+            if(legTransform != null && moveDirection.magnitude > 0.0f) {
+                legTransform.up = moveDirection;
+            }
+
+            // Update the animator
+            if(legAnimator != null && legAnimator.isInitialized) {
+                legAnimator.SetFloat("MoveSpeed", moveSpeed);
+            }
         }
 
         // when beserking, flash the damage screen!
@@ -246,6 +252,11 @@ public class AIController : MechController {
         allowMovement = newCanMove;
     }
 
+
+    public void EnablePathfinding(bool newEnabled) {
+        doesPathfinding = newEnabled;
+    }
+
     /// <summary>
     /// Called when a path to the target destination has been created
     /// </summary>
@@ -280,6 +291,12 @@ public class AIController : MechController {
         aiLaserSight.enabled = false;
     }
 
+    /// <summary>
+    /// Manually move the ai without pathing
+    /// </summary>
+    public void MoveDirect(Vector3 direction, float speed) {
+        movementComponent.Move(direction * speed * Time.deltaTime);
+    }
 
 
     /// <summary>

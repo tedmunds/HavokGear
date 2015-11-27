@@ -30,6 +30,9 @@ public class Whip_PhotonWhip : Weapon {
     private float travelTime;
 
     [SerializeField]
+    private float whipDamage;
+
+    [SerializeField]
     private float snapRange = 1.0f;
 
     [SerializeField]
@@ -43,6 +46,9 @@ public class Whip_PhotonWhip : Weapon {
 
     [SerializeField]
     private LayerMask latchDetectionLayers;
+
+    [SerializeField]
+    private LayerMask damageDetectionLayers;
 
     [SerializeField]
     private ParticleSystem whipEndPointPrototype;
@@ -262,6 +268,11 @@ public class Whip_PhotonWhip : Weapon {
                 // set the whip color to the weapon steal color
                 whipEffect.SetColors(weaponStealColor, weaponStealColor);
             }
+            else if(damageDetectionLayers == (damageDetectionLayers | (1 << grabbedObject.layer))) {
+                // try do damage that actor
+                TryDamageObject(grabbedObject);
+                grabbedObject = null;
+            }
         }
         else {
             // Check if it should at least perform a latch boost:
@@ -306,11 +317,6 @@ public class Whip_PhotonWhip : Weapon {
             if(owner.MechComponent.EnergyLevel >= energyPerUse) {
                 owner.MechComponent.ConsumeEnergy(energyPerUse);
 
-                // check the cooldown for successful steals
-                //if(Time.time - lastStealTime < stealCoolDown) {
-                //    return false;
-                //}
-                
                 return true;
             }
         }
@@ -375,10 +381,12 @@ public class Whip_PhotonWhip : Weapon {
         float closestDist = 99999.9f;
         GameObject closesetObject = null;
 
-        RaycastHit2D[] overlaps = Physics2D.CircleCastAll(originPoint, snapRange, Vector2.zero, 0.0f, weaponDetectionLayers | pickupDetectionLayers);
+        RaycastHit2D[] overlaps = Physics2D.CircleCastAll(originPoint, snapRange, Vector2.zero, 0.0f, 
+            weaponDetectionLayers | pickupDetectionLayers | damageDetectionLayers); // combine the layer masks additively
+
         for(int i = 0; i < overlaps.Length; i++) {
 
-            // check that the owner doesnt match the whip's, so that player doesn;t steal their own weapon
+            // check that the owner doesnt match the whip's, so that player doesn't steal their own weapon
             if(CanGrabObject(overlaps[i].collider.gameObject)) {
                 float dist = (overlaps[i].collider.gameObject.transform.position - originPoint).magnitude;
 
@@ -410,6 +418,11 @@ public class Whip_PhotonWhip : Weapon {
             return true;
         }
 
+        if(damageDetectionLayers == (damageDetectionLayers | (1 << obj.layer))) {
+            // If the layer of the grabbed object was a damageable layer 
+            return true;
+        }
+
         return false;
     }
 
@@ -420,6 +433,21 @@ public class Whip_PhotonWhip : Weapon {
         isAttached = true;
         latchLocation = endPoint;
     }
+
+
+    public void TryDamageObject(GameObject obj) {
+        Debug.Log("Whip trying to damage object!");
+
+        Actor victim = obj.GetComponent<Actor>();
+        if(victim == null) {
+            victim = obj.GetComponentInParent<Actor>();
+        }
+
+        if(victim != null) {
+            victim.TakeDamage(whipDamage, owner, this);
+        }
+    }
+
 
 
     /// <summary>

@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 
 public delegate void OnDeathHandler(Actor victim);
+public delegate bool CanTakeDamage(GameObject damageInstigator);
 
 /// <summary>
 /// Actor is the base class for all objects in the game that can take damage and stuff.
@@ -32,6 +33,8 @@ public class Actor : MonoBehaviour {
         get { return isDead; }
     }
 
+    [HideInInspector]
+    public CanTakeDamage canTakeDamageRequest; 
 
     private List<OnDeathHandler> deathListeners;
 
@@ -73,6 +76,10 @@ public class Actor : MonoBehaviour {
     /// </summary>
     public virtual void TakeDamage(float damageAmount, MechController instigator, Weapon weaponUsed) {
         if(isDead) {
+            return;
+        }
+
+        if(canTakeDamageRequest != null && !canTakeDamageRequest(instigator.gameObject)) {
             return;
         }
         
