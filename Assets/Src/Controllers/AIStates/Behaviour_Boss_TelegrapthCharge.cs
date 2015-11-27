@@ -38,8 +38,10 @@ public class Behaviour_Boss_TelegrapthCharge : BehaviourSM.BehaviourState {
 
         if(elapsedStun > telegraphLength) {
             // TODO: go to telegraph state
+            ChargeBossController bossController = (ChargeBossController)controller;
+            BehaviourSM.BehaviourState nextAttack = bossController.GetNextAttackState();
 
-            return new BehaviourSM.StateResponse(BehaviourSM.TransitionMode.AbandonCurrent, new Behaviour_Boss_Charge());
+            return new BehaviourSM.StateResponse(BehaviourSM.TransitionMode.AbandonCurrent, nextAttack);
         }
 
         return new BehaviourSM.StateResponse(BehaviourSM.TransitionMode.NoChange);

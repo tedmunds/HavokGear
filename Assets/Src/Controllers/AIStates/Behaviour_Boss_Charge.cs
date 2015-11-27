@@ -29,7 +29,7 @@ public class Behaviour_Boss_Charge : BehaviourSM.BehaviourState {
         float turnRateMultiplier = (controller.target.transform.position - controller.transform.position).magnitude / bossController.chargeTurnRateFalloffDist;
         turnRateMultiplier = Mathf.Min(turnRateMultiplier, 1.0f);
 
-        Vector3 chargeDirection = Vector3.RotateTowards(currentFacing, lookDirection, controller.baseAimRotSpeed * Time.deltaTime * turnRateMultiplier, 0.0f);
+        Vector3 chargeDirection = Vector3.RotateTowards(currentFacing, lookDirection, bossController.chargeTurnRate * Time.deltaTime * turnRateMultiplier, 0.0f);
         chargeDirection.z = 0.0f;
 
         controller.headTransform.up = chargeDirection;

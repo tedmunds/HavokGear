@@ -5,10 +5,16 @@ using System.Collections;
 public class ChargeBossController : AIController {
 
     [SerializeField]
+    public string bossName;
+
+    [SerializeField]
     public float chargeSpeedModifier;
 
     [SerializeField]
     public float chargeTurnRateFalloffDist;
+
+    [SerializeField]
+    public float chargeTurnRate;
 
     [SerializeField]
     public float chargeKnockbackForce;
@@ -18,6 +24,24 @@ public class ChargeBossController : AIController {
 
     [SerializeField]
     public float weakSpotArc;
+
+    [SerializeField]
+    public GameObject bulletPrototype;
+
+    [SerializeField]
+    public Transform bulletFirePoint;
+
+    [SerializeField]
+    public float shootingSpinRate;
+
+    [SerializeField]
+    public float shootingFireDelay;
+
+    [SerializeField]
+    public AudioClip fireSound;
+
+    [SerializeField]
+    private float introBulletAttackRatio;
 
     [SerializeField]
     public Collider2D weakSpot;
@@ -31,6 +55,10 @@ public class ChargeBossController : AIController {
     [HideInInspector]
     public bool isWeakend;
 
+    private AudioSource audioPlayer;
+
+    private bool wasLastAttackCharge;
+
     protected override void Start() {
         base.Start();
 
@@ -39,6 +67,8 @@ public class ChargeBossController : AIController {
 
         // Give the controller authority over when it takes damage
         mechComponent.canTakeDamageRequest = IsVulnerable;
+
+        audioPlayer = GetComponent<AudioSource>();
     }
 
     public override void AiStartSensing() {
@@ -51,7 +81,7 @@ public class ChargeBossController : AIController {
         Text nameField = healthBar.GetComponentInChildren<Text>();
         if(nameField != null) {
             nameField.enabled = true;
-            nameField.text = "Drill Man Supreme";
+            nameField.text = bossName;
         }
 
     }
@@ -66,7 +96,6 @@ public class ChargeBossController : AIController {
     protected override void Update() {
         base.Update();
 	    
-
         if(healthBar != null) {
             float hpRatio = mechComponent.Health / mechComponent.maxhealth;
             healthBar.UpdateHealthBar(hpRatio);
@@ -108,4 +137,35 @@ public class ChargeBossController : AIController {
         // ensure that the hp bar shows its dead
         healthBar.UpdateHealthBar(0.0f);
     }
+
+
+
+
+    public void FireBullet() {
+        GameObject obj = WorldManager.instance.SpawnObject(bulletPrototype, bulletFirePoint.position);
+
+        ProjectileController proj = obj.GetComponent<ProjectileController>();
+        if(proj != null) {
+            proj.LaunchProjectile(headTransform.up, null);
+        }
+
+        if(fireSound != null && audioPlayer != null) {
+            audioPlayer.PlayOneShot(fireSound);
+        }
+    }
+
+
+
+    public BehaviourSM.BehaviourState GetNextAttackState() {
+        if(mechComponent.Health / mechComponent.maxhealth < introBulletAttackRatio) {            
+            if(wasLastAttackCharge) {
+                wasLastAttackCharge = false;
+                return new Behaviour_Boss_SpinShoot();
+            }
+        }
+
+        wasLastAttackCharge = true;
+        return new Behaviour_Boss_Charge();
+    }
+
 }
