@@ -61,7 +61,7 @@ public class ProjectileController : MonoBehaviour {
             if(hits[i].collider != null && hits[i].collider.gameObject != this.gameObject &&
             !hits[i].collider.isTrigger) {
 
-                if(sourceWeapon != null && hits[i].collider.gameObject != sourceWeapon.gameObject) {
+                if(sourceWeapon != null && hits[i].collider.gameObject == sourceWeapon.gameObject) {
                     continue;
                 }
 
