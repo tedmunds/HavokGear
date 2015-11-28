@@ -59,8 +59,12 @@ public class ProjectileController : MonoBehaviour {
         RaycastHit2D[] hits = Physics2D.RaycastAll(transform.position, moveDisplacement, moveDisplacement.magnitude);
         for(int i = 0; i < hits.Length; i++) {
             if(hits[i].collider != null && hits[i].collider.gameObject != this.gameObject &&
-            (sourceWeapon != null && hits[i].collider.gameObject != sourceWeapon.gameObject) &&
             !hits[i].collider.isTrigger) {
+
+                if(sourceWeapon != null && hits[i].collider.gameObject != sourceWeapon.gameObject) {
+                    continue;
+                }
+
                 // A different thing has been hit, call impact handler
                 OnImpact(hits[i], hits[i].collider);
                 break;

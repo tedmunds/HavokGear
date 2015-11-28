@@ -90,7 +90,9 @@ public class BehaviourSM  {
         if(currentState != null) {
             StateResponse response = currentState.Update(owner);
 
-            GotoNewState(response.newState, response.transitionMode);
+            if(response.transitionMode != TransitionMode.NoChange) {
+                GotoNewState(response.newState, response.transitionMode);
+            }
         }
     }
 
