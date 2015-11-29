@@ -15,6 +15,9 @@ public class Behaviour_Boss_TelegrapthCharge : BehaviourSM.BehaviourState {
         controller.InterruptPath();
         controller.EnablePathfinding(false);
         startedTelegraph = Time.time;
+
+        ChargeBossController bossController = (ChargeBossController)controller;
+        bossController.BeginTelegraphAttack();
     }
 
     public override void ExitState(AIController controller) {

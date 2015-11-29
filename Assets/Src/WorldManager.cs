@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
+using System.Collections.Generic;
 
 
 /// <summary>
@@ -41,6 +42,9 @@ public class WorldManager : MonoBehaviour {
 
     [SerializeField]
     public UI_EnemyHealthBar enemyHealthBarPrototype;
+
+    [SerializeField]
+    public List<AudioClip> musicSegments;
 
     //[SerializeField]
     private GameObject pauseMenuObject;

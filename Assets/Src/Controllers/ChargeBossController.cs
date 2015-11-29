@@ -41,6 +41,18 @@ public class ChargeBossController : AIController {
     public AudioClip fireSound;
 
     [SerializeField]
+    public AudioClip weakenedSound;
+
+    [SerializeField]
+    public AudioClip recievedDamageSound;
+
+    [SerializeField]
+    public AudioClip chargeUpAttack;
+
+    [SerializeField]
+    public AudioClip drivingLoopSound;
+
+    [SerializeField]
     private float introBulletAttackRatio;
 
     [SerializeField]
@@ -48,6 +60,10 @@ public class ChargeBossController : AIController {
 
     [SerializeField]
     public UI_BossHealthBar healthBar;
+
+    [SerializeField]
+    public ParticleSystem weakendEffect;
+
 
     /// <summary>
     /// Is the boss available for damage right now
@@ -69,7 +85,9 @@ public class ChargeBossController : AIController {
         mechComponent.canTakeDamageRequest = IsVulnerable;
 
         audioPlayer = GetComponent<AudioSource>();
+        weakendEffect.gameObject.SetActive(false);
     }
+
 
     public override void AiStartSensing() {
         base.AiStartSensing();
@@ -107,10 +125,19 @@ public class ChargeBossController : AIController {
 
     public void OpenWeakSpot() {
         isWeakend = true;
+
+        audioPlayer.PlayOneShot(weakenedSound);
+        weakendEffect.gameObject.SetActive(true);
+        weakendEffect.Play();
     }
 
 
     public void CloseWeakSpot() {
+        if(isWeakend) {
+            weakendEffect.Stop();
+            weakendEffect.gameObject.SetActive(false);
+        }
+
         isWeakend = false;
     }
 
@@ -126,6 +153,8 @@ public class ChargeBossController : AIController {
         float angleOfAttack = Vector3.Dot(facing, damageDirection);
 
         if(isWeakend && angleOfAttack < weakSpotArc) {
+            audioPlayer.PlayOneShot(recievedDamageSound);
+
             return true;
         }
 
@@ -138,6 +167,10 @@ public class ChargeBossController : AIController {
         healthBar.UpdateHealthBar(0.0f);
     }
 
+
+    public void BeginTelegraphAttack() {
+        audioPlayer.PlayOneShot(chargeUpAttack);
+    }
 
 
 
@@ -166,6 +199,20 @@ public class ChargeBossController : AIController {
 
         wasLastAttackCharge = true;
         return new Behaviour_Boss_Charge();
+    }
+
+
+
+    public void BeginChargeAttack() {
+        audioPlayer.clip = drivingLoopSound;
+        audioPlayer.loop = true;
+        audioPlayer.Play();
+    }
+
+    public void EndChargeAttack() {
+        audioPlayer.Stop();
+        audioPlayer.clip = null;
+        audioPlayer.loop = false;
     }
 
 }

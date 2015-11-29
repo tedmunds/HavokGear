@@ -10,10 +10,13 @@ public class Behaviour_Boss_Charge : BehaviourSM.BehaviourState {
         // Charge directly at player, no pathing
         controller.InterruptPath();
         controller.EnablePathfinding(false);
+
+        ((ChargeBossController)controller).BeginChargeAttack();
     }
 
     public override void ExitState(AIController controller) {
         controller.EnablePathfinding(true);
+        ((ChargeBossController)controller).EndChargeAttack();
     }
 
 

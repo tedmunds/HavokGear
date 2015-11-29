@@ -5,8 +5,8 @@ using System.Collections.Generic;
 [RequireComponent(typeof(AudioSource))]
 public class MusicPlayer : MonoBehaviour {
 
-    [SerializeField]
-    public List<AudioClip> musicSegments;
+    //[SerializeField]
+    private List<AudioClip> musicSegments;
 
     [SerializeField]
     public float segmentDelayLength;
@@ -24,6 +24,8 @@ public class MusicPlayer : MonoBehaviour {
 	private void Start() {
 	    audioPlayer = GetComponent<AudioSource>();
 
+        musicSegments = WorldManager.instance.musicSegments;
+
         if(musicSegments.Count > 0 
             && ShouldPlayMusic) {
 
@@ -37,6 +39,10 @@ public class MusicPlayer : MonoBehaviour {
 	
 	
 	private void Update() {
+        if(musicSegments.Count <= 0) {
+            return;
+        }
+
         if(Time.time - lastSegmentStartTime > currentSegmentLength + segmentDelayLength
             && ShouldPlayMusic) {
 
