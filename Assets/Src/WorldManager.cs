@@ -96,10 +96,10 @@ public class WorldManager : MonoBehaviour {
             GameObject[] unpauseButtons = GameObject.FindGameObjectsWithTag("UI_UnpauseButton");
             foreach(GameObject obj in unpauseButtons) {
                 Button btn = obj.GetComponent<Button>();
-                if(btn != null) {
-                    btn.onClick.AddListener(() => UnpauseGame());
-                    Debug.Log(btn.name + " was registereed as an UnPause Button");
-                }
+                //if(btn != null) {
+                btn.onClick.AddListener(() => UnpauseGame());
+                Debug.Log(btn.name + " was registered as an UnPause Button");
+                //}
             }
 
             pauseMenuObject.SetActive(false);
