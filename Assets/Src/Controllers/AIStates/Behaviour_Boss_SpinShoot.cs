@@ -4,9 +4,13 @@ using System.Collections;
 public class Behaviour_Boss_SpinShoot : BehaviourSM.BehaviourState {
         
     private float enteredShootTime;
-    private float spinShootLength = 4.0f;
+    private float spinShootLength = 5.0f;
+    private float chaseSpeedMult = 0.75f;
+    private float minDistToTarget = 5.0f;
+
 
     private float lastShootTime;
+
 
     public override void EnterState(AIController controller) {
         // no pathing
@@ -37,6 +41,12 @@ public class Behaviour_Boss_SpinShoot : BehaviourSM.BehaviourState {
 
         controller.headTransform.up = currentFacing;
 
+        // Try it with movement towards player
+        Vector3 toTarget = controller.target.transform.position - controller.transform.position;
+        if(toTarget.magnitude > minDistToTarget) {
+            controller.MoveDirect(toTarget.normalized, controller.baseMoveSpeed * chaseSpeedMult);
+        }
+        
         // decide if it should shoot a bullet
         if(Time.time - lastShootTime > bossController.shootingFireDelay) {
             bossController.FireBullet();
