@@ -19,7 +19,7 @@ public class DialogueTrigger : MonoBehaviour {
     public string DialogueBoxTag = "UI_DialogueBox";
 
     [SerializeField]
-    public List<DialoguePair> dialogueSequnce;
+    public List<DialoguePair> dialogueSequence;
 
     private bool hasBeenTriggered;
 
@@ -71,11 +71,11 @@ public class DialogueTrigger : MonoBehaviour {
             menuObject.SetActive(true);
 
             // Set hte intial text and stuff
-            if(dialogueSequnce.Count > 0) {
-                textBox.text = dialogueSequnce[0].text;
+            if(dialogueSequence.Count > 0) {
+                textBox.text = dialogueSequence[0].text;
 
-                if(dialogueSequnce[0].characterPortrait != null) {
-                    potraitImage.sprite = dialogueSequnce[0].characterPortrait;
+                if(dialogueSequence[0].characterPortrait != null) {
+                    potraitImage.sprite = dialogueSequence[0].characterPortrait;
                     potraitImage.enabled = true;
                 }
                 else {
@@ -98,11 +98,11 @@ public class DialogueTrigger : MonoBehaviour {
 
         currentSequenceIdx += 1;
 
-        if(dialogueSequnce.Count > currentSequenceIdx) {
-            textBox.text = dialogueSequnce[currentSequenceIdx].text;
+        if(dialogueSequence.Count > currentSequenceIdx) {
+            textBox.text = dialogueSequence[currentSequenceIdx].text;
 
-            if(dialogueSequnce[currentSequenceIdx].characterPortrait != null) {
-                potraitImage.sprite = dialogueSequnce[currentSequenceIdx].characterPortrait;
+            if(dialogueSequence[currentSequenceIdx].characterPortrait != null) {
+                potraitImage.sprite = dialogueSequence[currentSequenceIdx].characterPortrait;
                 potraitImage.enabled = true;
             }
             else {
