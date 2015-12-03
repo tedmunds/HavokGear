@@ -397,6 +397,16 @@ public class AIController : MechController {
     public void SetMovetoTarget(Vector3 moveTo) {
         moveTo.z = 0;
         moveToTarget = moveTo;
+
+        const float minAiSpacing = 1.5f;
+
+        AIController[] ais = FindObjectsOfType<AIController>();
+        foreach(AIController ai in ais) {
+            Vector3 toAI = (ai.transform.position - transform.position);
+            if(toAI.magnitude < minAiSpacing && ai.gameObject != this.gameObject) {
+                moveToTarget -= toAI;
+            }
+        }
     }
 
     /// <summary>

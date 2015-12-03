@@ -33,6 +33,9 @@ public class EnemySpawner : MonoBehaviour {
     [SerializeField]
     public List<Transform> patrolPoints;
 
+    [SerializeField]
+    public bool resetOnPlayerDeath = true;
+
     // reference to the woprld maanger used for spawning enemies
     private WorldManager world;
     
@@ -138,5 +141,22 @@ public class EnemySpawner : MonoBehaviour {
         }
 
         numSpawned += 1;
+    }
+
+
+
+    public void ResetEnemySpawns() {
+        for(int i = activeEnemies.Count - 1; i >= 0; i--) {
+            if(activeEnemies[i] == null || !activeEnemies[i].gameObject.activeSelf) {
+                activeEnemies[i].gameObject.SetActive(false);
+                activeEnemies.RemoveAt(i);
+            }
+        }
+
+        spawnerActive = false;
+        hasBeenCleared = false;
+        numSpawned = 0;
+        lastSpawnTime = 0.0f;
+        nextSpawnInteral = 0.0f;
     }
 }

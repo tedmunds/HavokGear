@@ -275,6 +275,14 @@ public class WorldManager : MonoBehaviour {
     public void OnPlayerDeath(Actor died) {
         const float playerRespawnDelay = 1.0f;
         SetTimer(playerRespawnDelay, RespawnPlayer);
+
+        // reset spawners
+        EnemySpawner[] enemySpawners = FindObjectsOfType<EnemySpawner>();
+        foreach(EnemySpawner spawner in enemySpawners) {
+            if(spawner.resetOnPlayerDeath) {
+                spawner.ResetEnemySpawns();
+            }
+        }
     }
 
 
