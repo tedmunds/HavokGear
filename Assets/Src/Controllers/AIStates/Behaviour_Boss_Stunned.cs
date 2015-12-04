@@ -31,8 +31,6 @@ public class Behaviour_Boss_Stunned : BehaviourSM.BehaviourState {
         float elapsedStun = Time.time - enteredStunTime;
 
         if(elapsedStun > stunLength) {
-            // TODO: go to telegraph state
-            
             return new BehaviourSM.StateResponse(BehaviourSM.TransitionMode.AbandonCurrent, new Behaviour_Boss_TelegrapthCharge());
         }
 

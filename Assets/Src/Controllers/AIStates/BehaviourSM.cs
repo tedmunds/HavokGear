@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿//#define VERBOSE_AI_STATES
+
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -100,6 +102,10 @@ public class BehaviourSM  {
     public void GotoNewState(BehaviourState newState, TransitionMode transitionMode) {
         BehaviourState oldState = currentState;
         oldState.ExitState(owner);
+
+#if VERBOSE_AI_STATES
+        Debug.Log("AI state change: [" + oldState.GetType().Name + "] --> [" + newState.GetType().Name + "] :: <" + transitionMode + ">");
+#endif
 
         switch(transitionMode) {
             case TransitionMode.PopPrevious:
