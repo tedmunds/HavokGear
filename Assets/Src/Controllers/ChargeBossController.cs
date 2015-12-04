@@ -8,6 +8,9 @@ public class ChargeBossController : AIController {
     public string bossName;
 
     [SerializeField]
+    public float telegraphLength;
+
+    [SerializeField]
     public float chargeSpeedModifier;
 
     [SerializeField]

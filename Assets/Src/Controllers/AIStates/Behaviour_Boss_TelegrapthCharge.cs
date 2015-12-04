@@ -3,7 +3,7 @@ using System.Collections;
 
 public class Behaviour_Boss_TelegrapthCharge : BehaviourSM.BehaviourState {
 
-    public float telegraphLength = 3.0f;
+    //public float telegraphLength = 3.0f;
     public float shakeMag = 0.1f;
 
     private float startedTelegraph;
@@ -28,6 +28,8 @@ public class Behaviour_Boss_TelegrapthCharge : BehaviourSM.BehaviourState {
 
 
     public override BehaviourSM.StateResponse Update(AIController controller) {
+        ChargeBossController bossController = (ChargeBossController)controller;
+
         float elapsedStun = Time.time - startedTelegraph;
 
         Vector3 lookDirection = controller.target != null ? controller.target.transform.position - controller.transform.position : controller.transform.forward;
@@ -39,9 +41,9 @@ public class Behaviour_Boss_TelegrapthCharge : BehaviourSM.BehaviourState {
         controller.headTransform.localPosition = Random.insideUnitCircle * shakeMag;
 
 
-        if(elapsedStun > telegraphLength) {
+        if(elapsedStun > bossController.telegraphLength) {
             // TODO: go to telegraph state
-            ChargeBossController bossController = (ChargeBossController)controller;
+            //ChargeBossController bossController = (ChargeBossController)controller;
             BehaviourSM.BehaviourState nextAttack = bossController.GetNextAttackState();
 
             return new BehaviourSM.StateResponse(BehaviourSM.TransitionMode.AbandonCurrent, nextAttack);
