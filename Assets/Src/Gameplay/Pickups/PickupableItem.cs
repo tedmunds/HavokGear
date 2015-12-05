@@ -55,4 +55,8 @@ public abstract class PickupableItem : MonoBehaviour {
     }
 
 
+
+    public void Reset() {
+        hasBeenActivated = false;
+    }
 }

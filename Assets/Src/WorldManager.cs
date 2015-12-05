@@ -302,6 +302,12 @@ public class WorldManager : MonoBehaviour {
         playerCharacter.MechComponent.ResetState(true, false);
 
         playerCharacter.gameObject.SetActive(true);
+
+        // Find all of the item spawners and tell them to respawn their items: They will handle the case where the item was never picked up
+        ItemSpawner[] itemSpawners = FindObjectsOfType<ItemSpawner>();
+        foreach(ItemSpawner spawner in itemSpawners) {
+            spawner.SpawnItem();
+        }
     }
 
 
