@@ -59,7 +59,8 @@ public class Explosion : MonoBehaviour {
         }
 
         if(explosionParticlePrefab != null) {
-            ParticleSystem explosionEffect = (ParticleSystem)Instantiate(explosionParticlePrefab, transform.position, Quaternion.identity);
+            GameObject spawned = WorldManager.instance.SpawnObject(explosionParticlePrefab.gameObject, transform.position);
+            ParticleSystem explosionEffect = spawned.GetComponent<ParticleSystem>(); //(ParticleSystem)Instantiate(explosionParticlePrefab, transform.position, Quaternion.identity);
             explosionEffect.Play();
         }
 
