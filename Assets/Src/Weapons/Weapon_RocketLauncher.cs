@@ -17,6 +17,9 @@ public class Weapon_RocketLauncher : Weapon {
     private AudioClip shootSound;
 
     [SerializeField]
+    private AudioClip newLockOnSound;
+
+    [SerializeField]
     private GameObject ui_TargetLock;
 
     private int numShotsThisSalvo;
@@ -71,6 +74,11 @@ public class Weapon_RocketLauncher : Weapon {
                         }
 
                         numShotsThisSalvo += 1;
+
+                        // If its wielded by player, do the lockon sound
+                        if(owner.GetType() == typeof(PlayerController) && newLockOnSound != null) {
+                            PlaySound(newLockOnSound);
+                        }
                     }
                 }
             }
