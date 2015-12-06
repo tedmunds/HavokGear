@@ -147,7 +147,7 @@ public class EnemySpawner : MonoBehaviour {
 
     public void ResetEnemySpawns() {
         for(int i = activeEnemies.Count - 1; i >= 0; i--) {
-            if(activeEnemies[i] == null || !activeEnemies[i].gameObject.activeSelf) {
+            if(activeEnemies[i] != null || activeEnemies[i].gameObject.activeSelf) {
                 activeEnemies[i].gameObject.SetActive(false);
                 activeEnemies.RemoveAt(i);
             }
