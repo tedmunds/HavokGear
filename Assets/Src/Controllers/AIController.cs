@@ -154,7 +154,7 @@ public class AIController : MechController {
     
 
     protected override void Update() {
-        const float reachedGoalError = 2.0f;
+        const float reachedGoalError = 0.5f;
 
         base.Update();
 
