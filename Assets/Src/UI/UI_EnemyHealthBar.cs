@@ -57,6 +57,11 @@ public class UI_EnemyHealthBar : MonoBehaviour {
                 if(fillPct <= 0.0f) {
                     gameObject.SetActive(false);
                 }
+
+                // Double check that the actor hasnt gone inactive for some reason
+                if(!targetActor.gameObject.activeSelf) {
+                    gameObject.SetActive(false);
+                }
             }
         }
         else {
