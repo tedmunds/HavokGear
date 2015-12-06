@@ -114,12 +114,14 @@ public class Weapon_RocketLauncher : Weapon {
 
     public override void EndFire() {
         base.EndFire();
+
+        if(isLockingOn) {
+            // launch the salvo of rockets that were locked on during firing phase
+            StartCoroutine(FireSalvo());
+            lastFireTime = Time.time;
+        }
+
         isLockingOn = false;
-
-        // launch the salvo of rockets that were locked on during firing phase
-        StartCoroutine(FireSalvo());
-
-        lastFireTime = Time.time;
     }
 
 
