@@ -6,7 +6,7 @@ using System.Collections.Generic;
 public class MusicPlayer : MonoBehaviour {
 
     //[SerializeField]
-    private List<AudioClip> musicSegments;
+    protected List<AudioClip> musicSegments;
 
     [SerializeField]
     public float segmentDelayLength;
@@ -14,12 +14,12 @@ public class MusicPlayer : MonoBehaviour {
     [SerializeField]
     public bool ShouldPlayMusic;
 
-    private AudioSource audioPlayer;
+    protected AudioSource audioPlayer;
 
-    private float currentSegmentLength;
-    private int currentSegmentIndex;
-    
-    private float lastSegmentStartTime;
+    protected float currentSegmentLength;
+    protected int currentSegmentIndex;
+
+    protected float lastSegmentStartTime;
 
 	private void Start() {
 	    audioPlayer = GetComponent<AudioSource>();
