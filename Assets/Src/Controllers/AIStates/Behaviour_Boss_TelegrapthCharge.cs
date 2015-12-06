@@ -36,7 +36,9 @@ public class Behaviour_Boss_TelegrapthCharge : BehaviourSM.BehaviourState {
         lookDirection.Normalize();
 
         Vector3 currentFacing = controller.headTransform.up;
-        controller.headTransform.up = Vector3.RotateTowards(currentFacing, lookDirection, controller.baseAimRotSpeed * Time.deltaTime, 0.0f);
+        Vector3 newFacing = Vector3.RotateTowards(currentFacing, lookDirection, controller.baseAimRotSpeed * Time.deltaTime, 0.0f);
+        newFacing.z = 0.0f;
+        controller.headTransform.up = newFacing;
 
         controller.headTransform.localPosition = Random.insideUnitCircle * shakeMag;
 
