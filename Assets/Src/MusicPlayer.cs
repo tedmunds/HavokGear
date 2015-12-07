@@ -33,7 +33,7 @@ public class MusicPlayer : MonoBehaviour {
             audioPlayer.Play();
             currentSegmentLength = musicSegments[0].length;
             currentSegmentIndex = 0;
-            lastSegmentStartTime = Time.time;
+            lastSegmentStartTime = Time.realtimeSinceStartup;
         }
 	}
 	
@@ -43,7 +43,7 @@ public class MusicPlayer : MonoBehaviour {
             return;
         }
 
-        if(Time.time - lastSegmentStartTime > currentSegmentLength + segmentDelayLength
+        if(Time.realtimeSinceStartup - lastSegmentStartTime > currentSegmentLength + segmentDelayLength
             && ShouldPlayMusic) {
 
             currentSegmentIndex += 1;
@@ -54,7 +54,7 @@ public class MusicPlayer : MonoBehaviour {
             audioPlayer.clip = musicSegments[currentSegmentIndex];
             audioPlayer.Play();
             currentSegmentLength = musicSegments[currentSegmentIndex].length;
-            lastSegmentStartTime = Time.time;
+            lastSegmentStartTime = Time.realtimeSinceStartup;
         }    
 	}
 
