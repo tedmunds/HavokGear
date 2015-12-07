@@ -29,7 +29,7 @@ public class Behaviour_Beserk : BehaviourSM.BehaviourState {
         base.EnterState(controller);
 
         baseMoveSpeed = controller.baseMoveSpeed;
-        controller.baseMoveSpeed = baseMoveSpeed * moveSpeedMultiplier;
+        controller.baseMoveSpeed = baseMoveSpeed * controller.beserkSpeedModifier;
     }
 
     public override void ExitState(AIController controller) {

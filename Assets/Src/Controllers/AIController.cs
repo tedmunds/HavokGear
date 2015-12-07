@@ -17,6 +17,9 @@ public class AIController : MechController {
     public bool doesntShootOffScreen = false;
 
     [SerializeField]
+    public float beserkSpeedModifier = 2.0f;
+
+    [SerializeField]
     public LayerMask blockLOSLayers;
 
     [SerializeField]
