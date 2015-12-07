@@ -26,9 +26,7 @@
    </objectgroup>
   </tile>
   <tile id="5">
-   <objectgroup draworder="index">
-    <object id="0" x="23.25" y="23" width="8.75" height="8.75"/>
-   </objectgroup>
+   <objectgroup draworder="index"/>
   </tile>
   <tile id="11">
    <objectgroup draworder="index">
