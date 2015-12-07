@@ -9,6 +9,9 @@ public class ProjectileController : MonoBehaviour {
     [SerializeField]
     protected float maxLifeTime = 0.0f;
 
+    [SerializeField]
+    public bool isDestructable;
+
     // Movement velocity
     protected Vector3 velocity;
 
@@ -20,7 +23,7 @@ public class ProjectileController : MonoBehaviour {
     protected Weapon sourceWeapon;
 
     protected virtual void Start() {
-	    
+
 	}
 
 
@@ -47,8 +50,8 @@ public class ProjectileController : MonoBehaviour {
 
 
     public void Move() {
-        //int ignoreLayer = 1 << gameObject.layer;
-        //ignoreLayer = ~ignoreLayer;
+        int ignoreLayer = 1 << gameObject.layer;
+        ignoreLayer = ~ignoreLayer;
 
         // Update position from velocity
         transform.position += velocity * Time.deltaTime;
@@ -56,7 +59,7 @@ public class ProjectileController : MonoBehaviour {
         // Interpolation hit check
         Vector3 moveDisplacement = transform.position - previousPos;
 
-        RaycastHit2D[] hits = Physics2D.RaycastAll(transform.position, moveDisplacement, moveDisplacement.magnitude);
+        RaycastHit2D[] hits = Physics2D.RaycastAll(transform.position, moveDisplacement, moveDisplacement.magnitude, ignoreLayer);
         for(int i = 0; i < hits.Length; i++) {
             if(hits[i].collider != null && hits[i].collider.gameObject != this.gameObject &&
             !hits[i].collider.isTrigger) {
